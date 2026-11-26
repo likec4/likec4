@@ -34,13 +34,17 @@ export type SharedVirtualModuleOptions =
     logger: ViteLogger
     likec4: LikeC4LanguageServices
     assetsDir: string
+    /**
+     * Absolute path to the file with UI customizations, if configured
+     */
+    customizationFile: string | undefined
   }
   & (
     {
       isAIAvailable: false
       ai: undefined
     } | {
-      isAIAvailable: false
+      isAIAvailable: true
       ai: AIOptions
     }
   )
@@ -111,7 +115,7 @@ export function generateCombinedProjects(
         const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
           JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
         )
-        return `${idLiteral}: async () => await import(${pkgLiteral})`
+        return `${idLiteral}: () => import(${pkgLiteral})`
       })
       const disabledExportMessageLiteral = exportFormat
         ? hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(`Project does not enable ${exportFormat} export: `))
@@ -124,17 +128,21 @@ export let ${registryName} = {
 ${cases.join(',\n')}
 }      
 
-export async function ${fnName}(projectId) {
+const cachedPromises = new Map()
+export function ${fnName}(projectId) {
+  if (cachedPromises.has(projectId)) {
+    return cachedPromises.get(projectId)
+  }
   let fn = ${registryName}[projectId]
   if (!fn) {
     const projects = Object.keys(${registryName})
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     ${
         exportFormat
-          ? `throw new Error(${disabledExportMessageLiteral} + projectId)`
+          ? `return Promise.reject(new Error(${disabledExportMessageLiteral} + projectId))`
           : `
     if (projects.length === 0) {
-      throw new Error('No projects found, invalid state')
+      return Promise.reject(new Error('No projects found, invalid state'))
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
@@ -142,17 +150,27 @@ export async function ${fnName}(projectId) {
     `
       }
   }
-  return await fn()
+  const promise = fn()
+  cachedPromises.set(projectId, promise)
+  return promise
 }
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
     if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = ${registryName}
+      import.meta.hot.data.$update = (update) => {
+        for (const [key, value] of Object.entries(update)) {
+          if (cachedPromises.has(key)) {
+            // Remove from cache to force reload
+            cachedPromises.delete(key)
+          }
+          ${registryName}[key] = value
+        }
+      }
     }
     const update = md.${registryName}
     if (update) {
-      Object.assign(import.meta.hot.data.$update, update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }    

@@ -1,0 +1,165 @@
+---
+title: Publique seus diagramas
+description: Gere um site estático com seus diagramas, confira localmente e publique no GitHub Pages ou em qualquer hospedagem estática
+sidebar:
+  order: 1
+---
+
+Publique seus diagramas como um site estático.
+Qualquer pessoa com o link pode navegar por todas as visões, e o botão **Share** dá um link para uma visão específica.
+
+Você precisa do [Node.js](https://nodejs.org) 22.23.3 ou mais recente.
+Sem Node.js? Use a [imagem Docker](/pt-br/tooling/docker/#gerar-um-site-estático).
+
+:::note
+O repositório <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a> gera e publica um site no GitHub Pages.
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/likec4/template)
+:::
+
+## Gerar o site
+
+Execute `build` na pasta com os fontes LikeC4:
+
+```sh
+npx likec4 build -o ./dist
+```
+
+A pasta `dist` agora contém arquivos estáticos, prontos para qualquer hospedagem.
+Todas as opções estão na [referência da CLI](/pt-br/tooling/cli/#gerar-um-site-estático).
+Três delas importam para a hospedagem.
+
+### `--base`: hospedar em um subcaminho
+
+O site só funciona no caminho base para o qual foi gerado (`/` por padrão).
+Se você hospedar em um subcaminho, informe esse caminho:
+
+```sh
+npx likec4 build -o ./dist --base /architecture/
+```
+
+Sem isso, a página `https://example.com/architecture/` abre em branco, porque o navegador pede os assets em `/assets/...`.
+Use `--base ./` para gerar um site que funciona em qualquer caminho.
+
+### `--use-hash-history`: hospedagens sem fallback de SPA
+
+Por padrão, cada visão tem o próprio caminho, por exemplo `/view/index`.
+A hospedagem precisa responder a qualquer caminho desses com o `index.html` (um "fallback de SPA").
+Se não responder, links para uma visão retornam 404.
+
+Com `--use-hash-history`, a visão fica no hash da URL (`/#/view/index`), e a hospedagem só serve o `index.html`.
+
+### `--output-single-file`: um único arquivo HTML
+
+`--output-single-file` grava o site inteiro em um único arquivo HTML autocontido.
+Envie o arquivo, anexe a uma página da wiki ou abra direto do disco.
+Ele sempre usa navegação baseada em hash.
+
+Você pode manter essas configurações na [configuração da aplicação](/tooling/app-config/) em vez de repetir as opções.
+
+## Conferir localmente
+
+Abra o build no navegador antes de publicar:
+
+```sh
+npx likec4 preview -o ./dist
+```
+
+O `preview` serve os arquivos gerados em `dist`, não os fontes.
+Ele mostra a URL local e abre o navegador.
+Se você gerou com `--base`, passe o mesmo `--base` para o `preview` (ou defina `base` na configuração da aplicação).
+
+:::note
+O `preview` sempre responde caminhos desconhecidos com o `index.html`.
+Ele não mostra se a sua hospedagem tem fallback de SPA.
+:::
+
+## Publicar no GitHub Pages
+
+1. No repositório, abra **Settings → Pages**.
+   Em **Build and deployment**, defina **Source** como **GitHub Actions**.
+2. Adicione este workflow:
+
+   ```yaml
+   # .github/workflows/pages.yml
+   name: Deploy diagrams
+
+   on:
+     push:
+       branches: [main]
+     workflow_dispatch:
+
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+
+   # Um deploy por vez; não cancela um deploy em andamento
+   concurrency:
+     group: pages
+     cancel-in-progress: false
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v7
+
+         - uses: actions/setup-node@v7
+           with:
+             node-version: 22 # o likec4 exige Node.js 22.23.3 ou mais recente
+
+         - id: pages
+           uses: actions/configure-pages@v6
+
+         - name: Build
+           # base_path é "/<repo>" para um site de projeto, vazio com domínio próprio
+           run: npx likec4@1.60.0 build -o ./dist --base "${{ steps.pages.outputs.base_path }}/"
+
+         - name: Serve index.html for unknown paths
+           run: cp ./dist/index.html ./dist/404.html
+
+         - uses: actions/upload-pages-artifact@v5
+           with:
+             path: ./dist
+
+     deploy:
+       needs: build
+       runs-on: ubuntu-latest
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       steps:
+         - id: deployment
+           uses: actions/deploy-pages@v5
+   ```
+
+3. Faça push para a `main`. O site é publicado em `https://<user>.github.io/<repo>/`.
+
+Sobre o workflow:
+
+- **Caminho base.** Um site de projeto fica em `/<repo>/`, então o build precisa de `--base /<repo>/`.
+  O `configure-pages` fornece esse caminho, que fica vazio quando você usa um domínio próprio.
+- **Versão fixa.** `likec4@1.60.0` gera com uma versão conhecida da CLI, então uma nova release não muda o seu site de surpresa.
+  Use a versão que você roda localmente.
+  Se o `likec4` está nas suas `devDependencies`, execute `npm ci` e `npx likec4 build`: o lockfile fixa a versão.
+- **404.html.** O GitHub Pages não tem fallback de SPA, mas serve o `404.html` para caminhos desconhecidos.
+  Uma cópia do `index.html` faz os links para as visões funcionarem.
+  Outra opção é gerar com `--use-hash-history` e pular essa etapa.
+
+Chamamos a CLI com `npx` porque assim você controla as versões do LikeC4 e do Node.js; a [GitHub Action do LikeC4](/pt-br/tooling/github/) roda a própria versão embutida da CLI, que pode ficar atrás da release mais recente.
+Para usar a action mesmo assim, substitua as etapas **Build** e **404.html** por `likec4/actions@v1` (`action: build`, `base` e `likec4-version` para fixar a versão); ela grava o `404.html` por você.
+
+## Publicar em outras hospedagens
+
+Qualquer hospedagem estática funciona: Netlify, Cloudflare Pages, GitLab Pages, S3, nginx.
+Envie a pasta `dist` e confira duas coisas:
+
+- **Caminho base.** Gere com `--base` se o site não estiver na raiz do domínio.
+- **Fallback de SPA.** Configure a hospedagem para servir o `index.html` em caminhos desconhecidos, ou gere com `--use-hash-history`.
+
+O LikeC4 gera o site com o Vite, então o [guia de deploy do Vite](https://vite.dev/guide/static-deploy.html) se aplica: substitua `vite build` por `likec4 build`.
+
+## Incorporar em um site existente
+
+Para mostrar diagramas dentro do seu próprio site ou aplicação, veja [Escolha como incorporar diagramas](/pt-br/tooling/embed/).

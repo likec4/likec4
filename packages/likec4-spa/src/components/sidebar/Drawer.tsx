@@ -1,21 +1,20 @@
 import { Button, Drawer, Group, rem, ScrollArea, SegmentedControl } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconArrowLeft, IconStarFilled } from '@tabler/icons-react'
-import { Link, useMatches } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
+import { isSingleProject } from 'likec4:projects'
 import { memo } from 'react'
+import { useCurrentProject } from '../../hooks'
 import { DiagramsTree } from './DiagramsTree'
 import { SidebarDrawerOps, useDrawerOpened } from './state'
 
 export const SidebarDrawer = memo(() => {
   const opened = useDrawerOpened()
+  const { id: projectId } = useCurrentProject()
 
   const [grouping, setGrouping] = useLocalStorage({
     key: 'sidebar-drawer-grouping',
     defaultValue: 'by-files' as 'by-files' | 'by-folders' | 'none',
-  })
-
-  const isSingleProject = useMatches({
-    select: (matches) => matches.some((match) => match.routeId === '/_single'),
   })
 
   return (
@@ -68,8 +67,8 @@ export const SidebarDrawer = memo(() => {
               size="xs"
               renderRoot={(props) => (
                 <Link
-                  to="/view/$viewId"
-                  params={{ viewId: 'index' }}
+                  to="/project/$projectId/view/$viewId/"
+                  params={{ projectId, viewId: 'index' }}
                   {...props}
                 />
               )}>

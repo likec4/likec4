@@ -1,4 +1,4 @@
-import type { Fqn, NodeId, ViewId } from '@likec4/core/types'
+import type { Fqn, NodeId, RelationId, ViewId } from '@likec4/core/types'
 import {
   type ActorRef,
   type SnapshotFrom,
@@ -15,6 +15,7 @@ export type SearchActorEvent =
   | { type: 'close' }
   | { type: 'change.search'; search: string }
   | { type: 'pickview.open'; elementFqn: Fqn }
+  | { type: 'pickview.open.relationship'; relationId: RelationId }
   | { type: 'navigate.to'; viewId: ViewId; focusOnElement?: Fqn | undefined }
   | { type: 'animation.presence.end' } // Event when presence transition (close) animation ends
   | { type: 'pickview.close' }
@@ -23,6 +24,7 @@ export interface SearchContext {
   openedWithSearch: string | null
   searchValue: string
   pickViewFor: Fqn | null
+  pickViewForRelationship: RelationId | null
 
   navigateTo: {
     viewId: ViewId
@@ -60,6 +62,7 @@ const _searchActorLogic = setup({
     }),
     'reset pickViewFor': assign(() => ({
       pickViewFor: null,
+      pickViewForRelationship: null,
     })),
   },
 }).createMachine({
@@ -68,6 +71,7 @@ const _searchActorLogic = setup({
     openedWithSearch: null,
     searchValue: '',
     pickViewFor: null,
+    pickViewForRelationship: null,
     navigateTo: null,
   },
   initial: 'inactive',
@@ -101,6 +105,12 @@ const _searchActorLogic = setup({
           target: 'pickView',
           actions: assign({
             pickViewFor: ({ event }) => event.elementFqn,
+          }),
+        },
+        'pickview.open.relationship': {
+          target: 'pickView',
+          actions: assign({
+            pickViewForRelationship: ({ event }) => event.relationId,
           }),
         },
         'navigate.to': {

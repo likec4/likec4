@@ -1,0 +1,393 @@
+---
+title: Change the model from code
+description: Add elements to a loaded workspace, write DSL back, apply model diffs and delete elements safely.
+sidebar:
+  label: Change the model
+  order: 4
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The model you load with `LikeC4.fromWorkspace` is read-only, but you can change it from code in two ways:
+
+- **Enrich it in memory.** Seed a [Model Builder](/tooling/model-api/builder/) with the loaded model, add or patch
+  elements, relationships and views, and use the result as a model or render it back to DSL.
+  See [Enriching a loaded workspace](#enriching-a-loaded-workspace).
+- **Edit the sources.** Apply or discard [model diffs](/dsl/diff/) and remove elements safely.
+  These edits change the source files of the workspace in place.
+  See [Model diffs and safe delete](#model-diffs-and-safe-delete).
+
+## Enriching a loaded workspace
+
+You can load an existing LikeC4 workspace, hand the parsed model to the [Model Builder](/tooling/model-api/builder/),
+add elements, relationships and views programmatically, and either keep working with the resulting model in memory
+or write DSL source back to disk.
+
+Typical use cases:
+
+- Overlay infrastructure pulled from Terraform state, AWS or Kubernetes onto a hand-written model.
+- Merge multiple teams' models and add cross-team relationships.
+- Generate views by convention (one view per team, per environment, etc.).
+- Patch a model from an external service catalogue and re-emit `.c4` source files.
+
+<Aside type='note'>
+The DSL round-trip (`fromWorkspace` → `toDSL` → `fromSource`) is intentionally **lossy**:
+comments, source positions and original formatting are not preserved, and some parts of the model
+(for example, `diff` blocks and global predicates) are not printed.
+Treat `writeDSL` as one-way generation, not a formatter.
+</Aside>
+
+### Reading the parsed model
+
+`likec4.parsedModel(project?)` returns the parsed-stage model (elements, relations, views, deployments,
+globals and imports) *before* view computation:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+const parsed = await likec4.parsedModel()
+
+// element/relation lookups work the same as on computed models
+console.log(parsed.element('cloud.frontend').kind)
+console.log(Object.keys(parsed.$data.views))
+```
+
+### `LikeC4.toBuilder()` — get a Builder seeded from disk
+
+`likec4.toBuilder(mode?, project?)` returns a [Model Builder](/tooling/model-api/builder/) pre-populated with the
+loaded workspace. You can then chain `.model(...)`, `.deployment(...)` and `.views(...)` to add new
+content, and call `.toLikeC4Model()` (or `.build()`) to get the enriched model.
+
+The builder is **editable** by default: re-declaring an element that already exists (same FQN, same
+kind) edits it in place rather than throwing, which is what you usually want when patching a loaded
+model. Pass `'strict'` to get the strict builder where duplicate FQNs always throw:
+
+```ts
+const editable = await likec4.toBuilder()          // editable (default)
+const strict = await likec4.toBuilder('strict')    // strict
+```
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, component }, _) =>
+    _(
+      system('monitoring').with(
+        component('grafana'),
+        component('prometheus'),
+      ),
+    )
+  )
+  .views(({ view, $include }, _) =>
+    _(
+      view('monitoring', 'Monitoring').with(
+        $include('monitoring.*'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+:::note
+The helper names (`system`, `component`, …) are the **element kinds from the loaded specification**: one
+helper per `element <kind>` declared in your DSL. When seeding from disk these are only known at runtime,
+so `toBuilder()` returns a loosely-typed builder (`Builder<AnyTypes>`); with `noUncheckedIndexedAccess` enabled,
+TypeScript reports the helpers as possibly `undefined`. To get them statically (with autocomplete and a check
+that they match the spec), use [`toTypedBuilder({ specification })`](#likec4totypedbuilder--get-a-typed-builder).
+:::
+
+The same seeding entry is also available directly on the Builder, for when you already have the parsed
+data in hand:
+
+```ts
+import { Builder } from "likec4/model/builder"
+
+const parsed = await likec4.parsedModel()
+const builder = Builder.fromParsed(parsed.$data)            // editable (default)
+const strict = Builder.fromParsed(parsed.$data, 'strict')   // strict
+```
+
+### Editable vs strict — editing seeded elements
+
+`toBuilder()` is editable by default, so you can *edit* seeded entries (for example, to update a title
+or add new children) just by re-declaring them:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const updated = (await likec4.toBuilder())
+  .model(({ component }, _) =>
+    _(
+      component('cloud.api', { title: 'Updated' }),
+      component('cloud.ui').with(
+        component('react'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+In editable mode, same-FQN + same-kind redeclaration replaces the element's properties; its children stay.
+Redeclaring with a *different kind* still throws (it's almost certainly a programmer error). If you want
+re-declaring any existing FQN to throw, use the strict builder via `await likec4.toBuilder('strict')`
+(or `Builder.fromParsed(data, 'strict')`).
+
+:::caution
+Editing **replaces**, it does not **merge**. Re-declaring an element overwrites it with exactly the
+properties you pass: any property you omit falls back to its default, it is *not* carried over from the
+loaded element. In the example above, `cloud.ui` gets the default title and loses its description. To patch one property while
+keeping the rest, read the existing element first and pass back the properties you want to preserve
+(see [Finding and patching existing elements](#finding-and-patching-existing-elements)).
+:::
+
+### Relating new elements to existing ones
+
+A common task is adding a new element and connecting it to something already in the DSL. Existing FQNs
+aren't in the static type set, but with `toBuilder()` you can reference them as plain strings: the relationship
+is validated against the seeded model when the builder runs:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, relTo }, _) =>
+    _(
+      system('monitoring').with(
+        // `cloud.backend` is an existing element loaded from the DSL
+        relTo('cloud.backend', 'observes'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+
+// or, equivalently, from the top level via `rel`:
+//   .model(({ system, rel }, _) =>
+//     _(
+//       system('monitoring'),
+//       rel('monitoring', 'cloud.backend', 'observes'),
+//     )
+//   )
+```
+
+Referencing an FQN that doesn't exist throws, so typos surface immediately even though the
+compiler can't catch them.
+
+### Finding and patching existing elements
+
+To discover what's already in the model, walk the [LikeC4Model](/tooling/model-api/reference/#likec4model) returned by
+`computedModel()` (or inspect the parsed shape via `parsedModel()`):
+
+```ts
+const model = await likec4.computedModel()
+for (const element of model.elements()) {
+  console.log(element.id, element.kind, element.title)
+}
+```
+
+Because editing **replaces** rather than merges (see the caution above), patching a single property means
+reading the existing element and passing back the values you want to keep alongside your change:
+
+```ts
+const existing = (await likec4.parsedModel()).element('customer')
+
+const updated = (await likec4.toBuilder())
+  .model(({ actor }, _) =>
+    _(
+      actor('customer', {
+        title: existing.title, // keep what you are not changing
+        metadata: { team: 'platform' }, // add / patch
+      }),
+    )
+  )
+  .toLikeC4Model()
+```
+
+### `Builder.specification()` — add new kinds and tags
+
+The instance method `.specification(spec)` extends an existing builder with extra element / deployment /
+relationship kinds, tags and metadata keys. Existing keys with the same name are overridden; new keys
+are added. Useful when the workspace's specification is a starting point and you want to introduce
+overlay-specific kinds:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const model = (await likec4.toBuilder())
+  .specification({
+    elements: {
+      database: { style: { shape: 'storage' } },
+    },
+    tags: {
+      experimental: { color: '#f00' },
+    },
+  })
+  .model(({ database }, _) =>
+    _(database('warehouse', { tags: ['experimental'] })),
+  )
+  .toLikeC4Model()
+```
+
+The returned builder's types are the **union** of the prior types and the newly-declared spec, so
+element-kind helpers, tags and metadata keys accumulate across chained `.specification(...)` calls
+instead of being narrowed.
+
+### `LikeC4.toTypedBuilder()` — get a *typed* Builder
+
+When the parsed model comes from a workspace, element kinds and FQNs are only known at runtime, so the
+builder returned by `LikeC4.toBuilder()` has loose types (`Builder<AnyTypes>`). If your code authors the
+model with the **same specification** as the DSL, pass that spec to `likec4.toTypedBuilder({ specification, mode?, project? })`
+and get a builder typed by it, with autocomplete on element/deployment/relationship kinds, tags and metadata keys:
+
+```ts
+const builder = await likec4.toTypedBuilder({
+  specification: {
+    elements: ['actor', 'system', 'component'],
+    tags: ['external'],
+  },
+})
+
+// `system` / `component` are statically known — no cast needed.
+builder.model(({ system, component }, _) =>
+  _(system('monitoring').with(component('grafana'))),
+)
+```
+
+The given specification is **validated** against the loaded model (subset semantics): every kind / tag /
+metadata key you declare must exist in the loaded model, otherwise the call throws, so the types can't
+silently drift away from the DSL. The loaded model may contain *extra* kinds you didn't declare; you
+just won't get typed helpers for them. `mode` defaults to `'editable'`, same as `toBuilder`.
+
+:::caution
+**Loaded FQNs are not typed.** `toTypedBuilder` types the *kinds*, not the FQNs of the loaded elements.
+The compiler only knows the FQNs you declare in the builder, so it rejects references to loaded elements,
+such as `relTo('cloud.backend')` or `rel('monitoring', 'cloud.backend')`. To relate new elements to loaded ones,
+use [`toBuilder()`](#relating-new-elements-to-existing-ones), which accepts any FQN and validates it at runtime.
+
+If you can't (or don't want to) pass a spec, the escape hatch is an explicit, unchecked cast on `toBuilder()`:
+
+```ts
+import type { Builder, Types } from "likec4/model/builder"
+
+type MySpec = { elements: ['actor', 'system', 'component'] }
+const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>
+```
+:::
+
+### `LikeC4.toDSL()` and `writeDSL()` — render DSL back
+
+`likec4.toDSL(project?)` renders the parsed model of the workspace back to LikeC4 DSL source. To write that source to
+disk, use the Node-only `writeDSL(likec4, targetDir, options?)` helper exported from `likec4`.
+It writes a single file into `targetDir` (the directory must exist) and returns the path of the file:
+
+```ts
+import { LikeC4, writeDSL } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+// Render to string
+const dsl = await likec4.toDSL()
+
+// Or write to a file (default: ${targetDir}/model.c4)
+const outPath = await writeDSL(likec4, './generated')
+console.log(`Wrote DSL to ${outPath}`)
+
+// Custom filename, and the project in a multi-project workspace
+await writeDSL(likec4, './generated', { fileName: 'snapshot.c4', project: 'cloud' })
+```
+
+`toDSL` and `writeDSL` print the model loaded from the sources, not the changes you made in a builder.
+To print an enriched model, pass the data of the builder to `generate` from `likec4/generators/likec4`
+(this is what `toDSL` calls) and write the result yourself:
+
+```ts
+import { writeFile } from "node:fs/promises"
+import { LikeC4 } from "likec4"
+import { generate } from "likec4/generators/likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .specification({ tags: { autogenerated: { color: '#999' } } })
+  .model(({ component }, _) =>
+    _(component('cloud.new-service', { tags: ['autogenerated'] })),
+  )
+
+const dsl = generate(enriched.build())
+await writeFile('./generated/model.c4', dsl)
+```
+
+See [Generate LikeC4 DSL](/tooling/code-generation/dsl/) for the input of `generate`, what it does not print,
+and the building blocks to print parts of the DSL yourself.
+
+:::tip
+For working examples, see
+[`Builder.fromParsed.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder.fromParsed.spec.ts)
+and
+[`LikeC4.toBuilder.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/language-services/src/__tests__/LikeC4.toBuilder.spec.ts).
+:::
+
+## Model diffs and safe delete
+
+A [model diff](/dsl/diff/) describes a planned change of the model in the DSL. These APIs apply or discard diffs and
+remove elements safely, and they **change the source files** of the workspace.
+The same operations are available in the CLI: [`likec4 diff`](/tooling/cli/#model-diffs) and
+[`likec4 safe-delete`](/tooling/cli/#safe-delete).
+
+| API                                                 | Description                                                                                          |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `likec4.modelDiffs.list(projectId?)`                | Diffs with the number of added, removed and modified elements and relationships, and the views they change |
+| `likec4.removalImpact.analyze(targets, projectId?)` | Safe delete dry run: what removing the elements takes with it. `null` if none of the elements exists |
+| `likec4.modelEdits.preview(request, projectId?)`    | The text of each changed file, before and after, without writing anything                           |
+| `likec4.modelEdits.apply(request, options?)`        | Writes the changes. Options: `projectId`, and `token` from the preview                               |
+| `likec4.modelEdits.rollback(editId?)`               | Restores the files to the state before an applied edit (the latest one by default)                  |
+
+```ts
+import { LikeC4 } from "likec4"
+import type { DiffId } from "likec4/model"
+
+await using likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+
+// Diffs with their changes and the views they change
+const diffs = await likec4.modelDiffs.list()
+
+// What removing an element takes with it (safe delete dry run)
+const report = await likec4.removalImpact.analyze(['shop.legacyPayments'])
+
+// Preview, apply and roll back an edit of the sources
+const request = { type: 'apply-diff', diffId: 'rfc1' as DiffId, action: 'apply' } as const
+const preview = await likec4.modelEdits.preview(request) // text of each changed file, before and after
+if ('error' in preview) throw new Error(preview.error)
+// With the token, apply refuses if the model changed after the preview
+const result = await likec4.modelEdits.apply(request, { token: preview.token })
+if (result.edit) await likec4.modelEdits.rollback(result.edit.id)
+```
+
+An edit request is one of:
+
+- `{ type: 'apply-diff', diffId, action: 'apply' | 'discard', acceptOverlaps? }` applies or discards a diff.
+  A diff with errors is not applied. A diff that [overlaps](/dsl/diff/#overlapping-diffs) other diffs is applied
+  only with `acceptOverlaps: true`; the preview lists the overlaps.
+- `{ type: 'safe-delete', targets, options? }` removes the elements and everything that references them.
+  The options `includeOrphans`, `includeScopedViews` and `includeDynamicSteps` also remove elements left without
+  relationships, views scoped to removed elements, and dynamic view steps with removed elements.
+
+`apply` returns `{ applied, remaining, error?, edit? }`. `remaining` lists errors left in the changed files and new
+errors in other files (for example, in other diffs). `edit` identifies the applied edit for `rollback`; the history
+is kept in memory, for the last 20 edits. Rollback fails if a file changed after the edit.
+
+If a file cannot be written, `apply` restores the files it already wrote and returns `applied: false` with the reason.
+If a file cannot be restored either, the reason names it.
+A workspace from `fromSource` has no files: `preview` works, `apply` returns `applied: false`.

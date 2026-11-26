@@ -3,8 +3,7 @@ import { css } from '@likec4/styles/css'
 import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import { CloseButton, Spoiler } from '@mantine/core'
 import { IconDirectionSignFilled } from '@tabler/icons-react'
-import { Markdown } from '../../../base-primitives/Markdown'
-import { DiagramMarkdownRefs } from '../../../components/DiagramMarkdownRefs'
+import { MarkdownWithRefs } from '../../../components/markdown'
 import { useDiagram } from '../../../hooks/safeContext'
 import { useSelectContext } from './StoreProvider'
 
@@ -121,15 +120,13 @@ export const OutlineHeader = () => {
           hideLabel={<Txt size="xxs">hide</Txt>}
           maxHeight={16}
         >
-          <DiagramMarkdownRefs>
-            <Markdown
-              value={RichText.from(description)}
-              className={css({
-                color: 'text.dimmed',
-              })}
-              fontSize={'xxs'}
-            />
-          </DiagramMarkdownRefs>
+          <MarkdownWithRefs
+            value={RichText.from(description)}
+            className={css({
+              color: 'text.dimmed',
+            })}
+            fontSize={'xxs'}
+          />
         </Spoiler>
       )}
     </VStack>

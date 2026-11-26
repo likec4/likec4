@@ -12,10 +12,11 @@ import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { edgePathThroughLabel } from '../../../utils/edge-path-through-label'
 import type { RelationshipsBrowserTypes } from '../_types'
-import { useRelationshipsBrowser } from '../hooks'
+import { useRelationshipsBrowser, useRelationshipsBrowserState } from '../hooks'
 
 export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((props) => {
   const browser = useRelationshipsBrowser()
+  const isGlobalScope = useRelationshipsBrowserState(state => state.context.scope === 'global')
   const { enableNavigateTo } = useEnabledFeatures()
   const {
     data: {
@@ -29,9 +30,11 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
   const [svgPath, labelPosition] = edgePathThroughLabel(props, labelBBox)
   const diagram = useDiagram()
 
-  const markOrange = relations.length > 1 || !existsInCurrentView
+  const isGrouped = relations.length > 1
+  const isThick = isGrouped || !existsInCurrentView
+  const overrideColor = (isGlobalScope && isGrouped) || !existsInCurrentView
 
-  const edgeProps = markOrange
+  const edgeProps = overrideColor
     ? {
       ...props,
       data: {
@@ -81,7 +84,7 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
       <EdgePath
         edgeProps={edgeProps}
         svgPath={svgPath}
-        {...markOrange && {
+        {...isThick && {
           strokeWidth: 5,
         }}
       />

@@ -89,11 +89,17 @@ describe('Markdown refs in the model', () => {
     expect(el.description.text).toBe(el.description.text)
   })
 
-  it('equals the plain RichText with the same source', () => {
+  it('equals the RichText with the same resolved html', () => {
     const desc = m.element('cloud.ui').description
-    expect(desc.equals(RichText.from(description))).toBe(true)
-    expect(RichText.from(description).equals(desc)).toBe(true)
+    // same source and resolver → the same cached instance
+    expect(RichText.from(description, m.resolveMarkdownRef)).toBe(desc)
+    expect(desc.equals(RichText.from(description, m.resolveMarkdownRef))).toBe(true)
+    // resolved titles differ from the plain RichText
     expect(desc).not.toBe(RichText.from(description))
+    expect(desc.equals(RichText.from(description))).toBe(false)
+    // the same source resolved by another model: equal only if titles are the same
+    expect(desc.equals(buildModel('API').element('cloud.ui').description)).toBe(true)
+    expect(desc.equals(buildModel('Gateway').element('cloud.ui').description)).toBe(false)
   })
 
   it('does not change hasSummary', () => {
@@ -108,7 +114,8 @@ describe('Markdown refs in the model', () => {
         el('b', { summary: { md: 'See [[a]]' }, description: { md: 'See [[a]]' } }),
       ))
       .toLikeC4Model()
-    expect(m2.element('b').summary).not.toBe(m2.element('b').description)
+    // same source within the model → the same cached instance
+    expect(m2.element('b').summary).toBe(m2.element('b').description)
     expect(m2.element('b').hasSummary).toBe(false)
   })
 

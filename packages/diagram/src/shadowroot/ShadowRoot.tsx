@@ -256,8 +256,10 @@ function scopeStylesToShadowRoot(styles: string): string {
  */
 const shadowScopedCSS = once(() => {
   const scoped = scopeStylesToShadowRoot(inlinedStyles)
-  console.log('Shadow root scoped CSS:')
-  console.log(scoped)
+  if (import.meta.env.DEV) {
+    console.log('Shadow root scoped CSS:')
+    console.log(scoped)
+  }
   return scoped
 })
 /**

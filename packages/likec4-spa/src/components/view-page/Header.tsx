@@ -36,10 +36,7 @@ export const Header = memo(() => {
   const projects = useLikeC4Projects()
   const isReactDiagramRoute = useMatches({
     select(matches) {
-      return matches.some(({ routeId }) =>
-        routeId === '/_single/view/$viewId/'
-        || routeId === '/project/$projectId/view/$viewId/'
-      )
+      return matches.some(({ routeId }) => routeId === '/project/$projectId/view/$viewId/')
     },
   })
   const { breakpoints } = useMantineTheme()
@@ -110,9 +107,6 @@ const enableJpegDownload = <P extends Record<string, unknown>>(params: P): P & {
 })
 
 function ExportButton() {
-  const isInsideProject = useMatches({
-    select: matches => matches.some(({ routeId }) => routeId === '/project/$projectId'),
-  })
   const [isDrawioLoading, setIsDrawioLoading] = useState(false)
   const project = useCurrentProject()
   const viewId = useCurrentViewId()
@@ -158,7 +152,8 @@ function ExportButton() {
             renderRoot={(props) => (
               <Link
                 target="_blank"
-                to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
+                to="/project/$projectId/export/$viewId/"
+                params={{ projectId: project.id, viewId }}
                 search={enableDownload}
                 {...props} />
             )}
@@ -171,7 +166,8 @@ function ExportButton() {
             renderRoot={(props) => (
               <Link
                 target="_blank"
-                to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
+                to="/project/$projectId/export/$viewId/"
+                params={{ projectId: project.id, viewId }}
                 search={enableJpegDownload}
                 {...props} />
             )}
@@ -183,7 +179,8 @@ function ExportButton() {
           <MenuItem
             renderRoot={(props) => (
               <Link
-                to={isInsideProject ? '/project/$projectId/view/$viewId/dot/' : '/view/$viewId/dot/'}
+                to="/project/$projectId/view/$viewId/dot/"
+                params={{ projectId: project.id, viewId }}
                 search
                 {...props} />
             )}
@@ -195,7 +192,8 @@ function ExportButton() {
           <MenuItem
             renderRoot={(props) => (
               <Link
-                to={isInsideProject ? '/project/$projectId/view/$viewId/d2' : '/view/$viewId/d2'}
+                to="/project/$projectId/view/$viewId/d2"
+                params={{ projectId: project.id, viewId }}
                 search
                 {...props} />
             )}
@@ -207,7 +205,8 @@ function ExportButton() {
           <MenuItem
             renderRoot={(props) => (
               <Link
-                to={isInsideProject ? '/project/$projectId/view/$viewId/mmd' : '/view/$viewId/mmd'}
+                to="/project/$projectId/view/$viewId/mmd"
+                params={{ projectId: project.id, viewId }}
                 search
                 {...props} />
             )}>
@@ -218,7 +217,8 @@ function ExportButton() {
           <MenuItem
             renderRoot={(props) => (
               <Link
-                to={isInsideProject ? '/project/$projectId/view/$viewId/puml' : '/view/$viewId/puml'}
+                to="/project/$projectId/view/$viewId/puml"
+                params={{ projectId: project.id, viewId }}
                 search
                 {...props} />
             )}>

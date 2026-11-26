@@ -3,7 +3,7 @@ import { css } from '@likec4/styles/css'
 import { SegmentedControl } from '@mantine/core'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
-import { selectDiagramContext, useDiagram, useDiagramSelector } from '../hooks/useDiagram'
+import { useDiagram } from '../hooks/useDiagram'
 import type { ElementViewDisplayVariant } from '../likec4diagram/state/machine.setup'
 
 /**
@@ -11,12 +11,14 @@ import type { ElementViewDisplayVariant } from '../likec4diagram/state/machine.s
  */
 const ElementViewModeSwitcher = forwardRef<HTMLDivElement, {
   value: ElementViewDisplayVariant
+  disabled: boolean
   onChange: (variant: ElementViewDisplayVariant) => void
-}>(({ value, onChange }, ref) => (
+}>(({ value, disabled, onChange }, ref) => (
   <m.div ref={ref} layout="position">
     <SegmentedControl
       size="xs"
       value={value}
+      disabled={disabled}
       onChange={variant => {
         invariant(variant === 'diagram' || variant === 'graph', 'Invalid element view variant')
         onChange(variant)
@@ -39,17 +41,21 @@ const ElementViewModeSwitcher = forwardRef<HTMLDivElement, {
   </m.div>
 ))
 
-const selectElementViewVariant = selectDiagramContext(c => c.elementViewVariant)
-
 /**
  * Renders the Diagram/Graph toggle for the current element view and switches the diagram's
  * display variant when the user picks a different mode.
  */
-export function ElementViewControls() {
-  const elementViewVariant = useDiagramSelector(selectElementViewVariant)
+export function ElementViewControls({
+  elementViewVariant,
+  disabled = false,
+}: {
+  elementViewVariant: ElementViewDisplayVariant
+  disabled?: boolean
+}) {
   const diagram = useDiagram()
   return (
     <ElementViewModeSwitcher
+      disabled={disabled}
       value={elementViewVariant}
       onChange={mode => {
         diagram.switchElementViewVariant(mode)

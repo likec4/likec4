@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder'
 import { isElementView } from '../../types'
 import { invariant } from '../../utils'
-import { TestHelper } from '../element-view/__test__/TestHelper'
 import { calcViewLayoutHash } from './view-hash'
 
 const builder = Builder

@@ -1,0 +1,394 @@
+---
+title: Alterar o modelo a partir do código
+description: Adicione elementos a um workspace carregado, gere a DSL novamente, aplique diffs do modelo e remova elementos com segurança.
+sidebar:
+  label: Alterar o modelo
+  order: 4
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+O modelo carregado com `LikeC4.fromWorkspace` é somente leitura, mas você pode alterá-lo a partir do código de duas formas:
+
+- **Enriquecer o modelo em memória.** Inicialize um [Model Builder](/pt-br/tooling/model-api/builder/) com o modelo carregado,
+  adicione ou altere elementos, relacionamentos e visões e use o resultado como modelo ou gere a DSL novamente.
+  Consulte [Enriquecendo um workspace carregado](#enriquecendo-um-workspace-carregado).
+- **Editar as fontes.** Aplique ou descarte [diffs do modelo](/dsl/diff/) e remova elementos com segurança.
+  Essas edições alteram diretamente os arquivos-fonte do workspace.
+  Consulte [Diffs do modelo e remoção segura](#diffs-do-modelo-e-remoção-segura).
+
+## Enriquecendo um workspace carregado
+
+Você pode carregar um workspace LikeC4 existente, fornecer o modelo processado ao [Model Builder](/pt-br/tooling/model-api/builder/),
+adicionar elementos, relacionamentos e visões programaticamente e continuar trabalhando com o modelo em memória
+ou gravar o código DSL resultante em disco.
+
+Casos de uso comuns:
+
+- Sobrepor informações de infraestrutura obtidas do estado Terraform, AWS ou Kubernetes a um modelo criado manualmente.
+- Mesclar modelos de diferentes equipes e adicionar relacionamentos entre elas.
+- Gerar visões por convenção (uma visão por equipe, ambiente etc.).
+- Atualizar um modelo a partir de um catálogo externo de serviços e gerar novamente os arquivos `.c4`.
+
+<Aside type='note'>
+O ciclo de conversão da DSL (`fromWorkspace` → `toDSL` → `fromSource`) apresenta **perda de informações** intencional:
+comentários, posições no código-fonte e formatação original não são preservados, e algumas partes do modelo
+(por exemplo, blocos `diff` e predicados globais) não são geradas.
+Trate `writeDSL` como geração unidirecional de código, e não como um formatador.
+</Aside>
+
+### Lendo o modelo processado
+
+`likec4.parsedModel(project?)` retorna o modelo processado (elementos, relacionamentos, visões, implantações,
+definições globais e importações) *antes* do cálculo das visões:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+const parsed = await likec4.parsedModel()
+
+// element/relation lookups work the same as on computed models
+console.log(parsed.element('cloud.frontend').kind)
+console.log(Object.keys(parsed.$data.views))
+```
+
+### `LikeC4.toBuilder()` — obter um Builder inicializado a partir do disco
+
+`likec4.toBuilder(mode?, project?)` retorna um [Model Builder](/pt-br/tooling/model-api/builder/) previamente preenchido com o
+workspace carregado. Em seguida, você pode encadear `.model(...)`, `.deployment(...)` e `.views(...)` para adicionar
+conteúdo e chamar `.toLikeC4Model()` (ou `.build()`) para obter o modelo enriquecido.
+
+Por padrão, o Builder é **editável**: declarar novamente um elemento existente (mesmo FQN e mesmo
+tipo) altera o elemento, em vez de lançar uma exceção. Isso costuma ser desejável ao atualizar um modelo
+carregado. Informe `'strict'` para usar o modo estrito, em que FQNs duplicados sempre causam erro:
+
+```ts
+const editable = await likec4.toBuilder()          // editable (default)
+const strict = await likec4.toBuilder('strict')    // strict
+```
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, component }, _) =>
+    _(
+      system('monitoring').with(
+        component('grafana'),
+        component('prometheus'),
+      ),
+    )
+  )
+  .views(({ view, $include }, _) =>
+    _(
+      view('monitoring', 'Monitoring').with(
+        $include('monitoring.*'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+:::note
+Os nomes dos métodos auxiliares (`system`, `component`, …) correspondem aos **tipos de elemento da especificação carregada**:
+um método por `element <kind>` declarado na DSL. Ao carregar do disco, esses tipos só são conhecidos em tempo de execução,
+portanto `toBuilder()` retorna um Builder com tipagem flexível (`Builder<AnyTypes>`); com `noUncheckedIndexedAccess`
+ativado, o TypeScript indica que os métodos auxiliares podem ser `undefined`. Para obter tipos estáticos, com autocompletar
+e validação contra a especificação, utilize [`toTypedBuilder({ specification })`](#likec4totypedbuilder--obter-um-builder-tipado).
+:::
+
+A mesma funcionalidade de inicialização está disponível diretamente no Builder, quando você já possui os
+dados processados:
+
+```ts
+import { Builder } from "likec4/model/builder"
+
+const parsed = await likec4.parsedModel()
+const builder = Builder.fromParsed(parsed.$data)            // editable (default)
+const strict = Builder.fromParsed(parsed.$data, 'strict')   // strict
+```
+
+### Editável versus estrito — alterando elementos carregados
+
+`toBuilder()` utiliza o modo editável por padrão. Assim, você pode *alterar* elementos carregados (por exemplo,
+atualizar um título ou adicionar filhos) apenas declarando-os novamente:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const updated = (await likec4.toBuilder())
+  .model(({ component }, _) =>
+    _(
+      component('cloud.api', { title: 'Updated' }),
+      component('cloud.ui').with(
+        component('react'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+No modo editável, declarar novamente um elemento com o mesmo FQN e tipo substitui suas propriedades; seus filhos
+são mantidos. Declarar o mesmo FQN com um *tipo diferente* ainda causa erro (provavelmente um erro de programação).
+Para impedir qualquer redeclaração de FQN existente, utilize o modo estrito com `await likec4.toBuilder('strict')`
+(ou `Builder.fromParsed(data, 'strict')`).
+
+:::caution
+A edição **substitui**, não **mescla**, as propriedades. Ao declarar novamente um elemento, suas propriedades
+são substituídas exatamente pelas informações fornecidas; propriedades omitidas voltam ao valor padrão, sem
+herdar os valores do elemento carregado. No exemplo acima, `cloud.ui` recebe o título padrão e perde a descrição.
+Para atualizar uma propriedade e preservar as demais, leia o elemento existente e reenvie as propriedades que
+devem ser mantidas (consulte [Localizando e atualizando elementos](#localizando-e-atualizando-elementos)).
+:::
+
+### Relacionando novos elementos com os existentes
+
+Uma tarefa comum é adicionar um elemento e conectá-lo a outro já definido na DSL. FQNs existentes
+não integram o conjunto de tipos estáticos, mas com `toBuilder()` podem ser referenciados como strings: o relacionamento
+é validado em relação ao modelo carregado quando o Builder é executado:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, relTo }, _) =>
+    _(
+      system('monitoring').with(
+        // `cloud.backend` is an existing element loaded from the DSL
+        relTo('cloud.backend', 'observes'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+
+// or, equivalently, from the top level via `rel`:
+//   .model(({ system, rel }, _) =>
+//     _(
+//       system('monitoring'),
+//       rel('monitoring', 'cloud.backend', 'observes'),
+//     )
+//   )
+```
+
+Referenciar um FQN inexistente causa erro, revelando erros de digitação imediatamente, mesmo que
+o compilador não consiga identificá-los.
+
+### Localizando e atualizando elementos
+
+Para descobrir o que já existe no modelo, percorra o [LikeC4Model](/pt-br/tooling/model-api/reference/#likec4model) retornado por
+`computedModel()` (ou inspecione a estrutura processada com `parsedModel()`):
+
+```ts
+const model = await likec4.computedModel()
+for (const element of model.elements()) {
+  console.log(element.id, element.kind, element.title)
+}
+```
+
+Como a edição **substitui** as propriedades em vez de mesclá-las (consulte o aviso acima), atualizar
+uma propriedade exige ler o elemento existente e reenviar os valores que devem ser preservados:
+
+```ts
+const existing = (await likec4.parsedModel()).element('customer')
+
+const updated = (await likec4.toBuilder())
+  .model(({ actor }, _) =>
+    _(
+      actor('customer', {
+        title: existing.title, // keep what you are not changing
+        metadata: { team: 'platform' }, // add / patch
+      }),
+    )
+  )
+  .toLikeC4Model()
+```
+
+### `Builder.specification()` — adicionar tipos e tags
+
+O método de instância `.specification(spec)` estende um Builder com novos tipos de elementos, implantação,
+relacionamentos, tags e chaves de metadados. Chaves existentes com o mesmo nome são substituídas, enquanto
+novas chaves são adicionadas. Isso é útil quando a especificação do workspace serve de base para introduzir
+tipos específicos de uma sobreposição de informações:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const model = (await likec4.toBuilder())
+  .specification({
+    elements: {
+      database: { style: { shape: 'storage' } },
+    },
+    tags: {
+      experimental: { color: '#f00' },
+    },
+  })
+  .model(({ database }, _) =>
+    _(database('warehouse', { tags: ['experimental'] })),
+  )
+  .toLikeC4Model()
+```
+
+Os tipos do Builder retornado são a **união** dos tipos anteriores com os da nova especificação. Assim,
+os métodos auxiliares de tipos de elemento, tags e chaves de metadados se acumulam ao encadear chamadas
+`.specification(...)`, em vez de serem restringidos.
+
+### `LikeC4.toTypedBuilder()` — obter um Builder *tipado*
+
+Quando o modelo processado vem de um workspace, os tipos de elementos e FQNs só são conhecidos em tempo de execução.
+Por isso, o Builder retornado por `LikeC4.toBuilder()` possui tipagem flexível (`Builder<AnyTypes>`). Se o código
+utiliza a **mesma especificação** da DSL, forneça essa especificação a `likec4.toTypedBuilder({ specification, mode?, project? })`
+para obter um Builder tipado, com autocompletar para tipos de elementos, implantação, relacionamentos, tags e chaves de metadados:
+
+```ts
+const builder = await likec4.toTypedBuilder({
+  specification: {
+    elements: ['actor', 'system', 'component'],
+    tags: ['external'],
+  },
+})
+
+// `system` / `component` are statically known — no cast needed.
+builder.model(({ system, component }, _) =>
+  _(system('monitoring').with(component('grafana'))),
+)
+```
+
+A especificação fornecida é **validada** em relação ao modelo carregado (semântica de subconjunto): todo tipo, tag
+ou chave de metadados declarado precisa existir no modelo, caso contrário a chamada gera erro. Isso impede a
+divergência silenciosa entre os tipos e a DSL. O modelo carregado pode conter tipos *adicionais* não declarados,
+mas não serão gerados métodos auxiliares tipados para eles. `mode` utiliza `'editable'` por padrão, como `toBuilder`.
+
+:::caution
+**FQNs carregados não são tipados.** `toTypedBuilder` tipa os *tipos de elemento*, não os FQNs dos elementos carregados.
+O compilador conhece apenas os FQNs declarados no Builder e, por isso, rejeita referências a elementos carregados,
+como `relTo('cloud.backend')` ou `rel('monitoring', 'cloud.backend')`. Para relacionar novos elementos aos carregados,
+utilize [`toBuilder()`](#relacionando-novos-elementos-com-os-existentes), que aceita qualquer FQN e o valida em tempo de execução.
+
+Se não puder (ou não quiser) fornecer uma especificação, ainda é possível recorrer a uma conversão explícita de tipos,
+sem validação, em `toBuilder()`:
+
+```ts
+import type { Builder, Types } from "likec4/model/builder"
+
+type MySpec = { elements: ['actor', 'system', 'component'] }
+const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>
+```
+:::
+
+### `LikeC4.toDSL()` e `writeDSL()` — gerar a DSL novamente
+
+`likec4.toDSL(project?)` converte o modelo processado do workspace novamente para o código-fonte DSL do LikeC4. Para gravar
+esse código em disco, utilize `writeDSL(likec4, targetDir, options?)`, disponível somente em Node e exportado por `likec4`.
+Ele grava um único arquivo em `targetDir` (o diretório precisa existir) e retorna o caminho do arquivo:
+
+```ts
+import { LikeC4, writeDSL } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+// Render to string
+const dsl = await likec4.toDSL()
+
+// Or write to a file (default: ${targetDir}/model.c4)
+const outPath = await writeDSL(likec4, './generated')
+console.log(`Wrote DSL to ${outPath}`)
+
+// Custom filename, and the project in a multi-project workspace
+await writeDSL(likec4, './generated', { fileName: 'snapshot.c4', project: 'cloud' })
+```
+
+`toDSL` e `writeDSL` geram o modelo carregado das fontes, e não as alterações feitas em um Builder.
+Para gerar um modelo enriquecido, passe os dados do Builder para `generate` de `likec4/generators/likec4`
+(é o que `toDSL` utiliza) e grave o resultado:
+
+```ts
+import { writeFile } from "node:fs/promises"
+import { LikeC4 } from "likec4"
+import { generate } from "likec4/generators/likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .specification({ tags: { autogenerated: { color: '#999' } } })
+  .model(({ component }, _) =>
+    _(component('cloud.new-service', { tags: ['autogenerated'] })),
+  )
+
+const dsl = generate(enriched.build())
+await writeFile('./generated/model.c4', dsl)
+```
+
+Consulte [Gerar a DSL do LikeC4](/tooling/code-generation/dsl/) para ver a entrada de `generate`, o que não é gerado
+e as funções para gerar partes da DSL por conta própria.
+
+:::tip
+Para ver exemplos funcionais, consulte
+[`Builder.fromParsed.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder.fromParsed.spec.ts)
+e
+[`LikeC4.toBuilder.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/language-services/src/__tests__/LikeC4.toBuilder.spec.ts).
+:::
+
+## Diffs do modelo e remoção segura
+
+Um [diff do modelo](/dsl/diff/) descreve na DSL uma alteração planejada do modelo. Estas APIs aplicam ou descartam diffs e
+removem elementos com segurança, e **alteram os arquivos-fonte** do workspace.
+As mesmas operações estão disponíveis na CLI: [`likec4 diff`](/pt-br/tooling/cli/#diffs-do-modelo) e
+[`likec4 safe-delete`](/pt-br/tooling/cli/#remoção-segura).
+
+| API                                                 | Descrição                                                                                              |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `likec4.modelDiffs.list(projectId?)`                | Diffs com o número de elementos e relacionamentos adicionados, removidos e alterados, e as visões que eles alteram |
+| `likec4.removalImpact.analyze(targets, projectId?)` | Simulação da remoção segura: o que a remoção dos elementos leva junto. `null` se nenhum dos elementos existe |
+| `likec4.modelEdits.preview(request, projectId?)`    | O texto de cada arquivo alterado, antes e depois, sem gravar nada                                       |
+| `likec4.modelEdits.apply(request, options?)`        | Grava as alterações. Opções: `projectId` e `token` da pré-visualização                                  |
+| `likec4.modelEdits.rollback(editId?)`               | Restaura os arquivos ao estado anterior a uma edição aplicada (por padrão, a mais recente)             |
+
+```ts
+import { LikeC4 } from "likec4"
+import type { DiffId } from "likec4/model"
+
+await using likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+
+// Diffs with their changes and the views they change
+const diffs = await likec4.modelDiffs.list()
+
+// What removing an element takes with it (safe delete dry run)
+const report = await likec4.removalImpact.analyze(['shop.legacyPayments'])
+
+// Preview, apply and roll back an edit of the sources
+const request = { type: 'apply-diff', diffId: 'rfc1' as DiffId, action: 'apply' } as const
+const preview = await likec4.modelEdits.preview(request) // text of each changed file, before and after
+if ('error' in preview) throw new Error(preview.error)
+// With the token, apply refuses if the model changed after the preview
+const result = await likec4.modelEdits.apply(request, { token: preview.token })
+if (result.edit) await likec4.modelEdits.rollback(result.edit.id)
+```
+
+Uma solicitação de edição é uma das seguintes:
+
+- `{ type: 'apply-diff', diffId, action: 'apply' | 'discard', acceptOverlaps? }` aplica ou descarta um diff.
+  Um diff com erros não é aplicado. Um diff que se [sobrepõe](/dsl/diff/#overlapping-diffs) a outros diffs só é
+  aplicado com `acceptOverlaps: true`; a pré-visualização lista as sobreposições.
+- `{ type: 'safe-delete', targets, options? }` remove os elementos e tudo o que os referencia.
+  As opções `includeOrphans`, `includeScopedViews` e `includeDynamicSteps` também removem elementos que ficam sem
+  relacionamentos, visões com escopo em elementos removidos e passos de visões dinâmicas com elementos removidos.
+
+`apply` retorna `{ applied, remaining, error?, edit? }`. `remaining` lista os erros que restam nos arquivos alterados e
+os novos erros em outros arquivos (por exemplo, em outros diffs). `edit` identifica a edição aplicada para `rollback`;
+o histórico fica em memória e guarda as últimas 20 edições. O rollback falha se um arquivo mudou depois da edição.
+
+Se um arquivo não puder ser gravado, `apply` restaura os arquivos já gravados e retorna `applied: false` com o motivo.
+Se um arquivo também não puder ser restaurado, o motivo o identifica.
+Um workspace criado com `fromSource` não tem arquivos: `preview` funciona, e `apply` retorna `applied: false`.

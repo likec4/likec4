@@ -121,7 +121,8 @@ model {
 | **icon**        | Shortcut for `style { icon ... }`, takes precedence over the style block                   |
 | **metadata**    | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings   |
 | **link**        | `link URL "Optional title"` — repeatable; URL can be relative to the document              |
-| **navigateTo**  | ID of a dynamic view to navigate to on click                                               |
+
+Elements have no `navigateTo` property. To set where a click on an element navigates, override it in a view: `include api with { navigateTo detail }`.
 
 ## Relationship Properties
 

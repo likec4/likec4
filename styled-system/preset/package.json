@@ -1,6 +1,6 @@
 {
   "name": "@likec4/style-preset",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "description": "Shared PandaCSS preset used in LikeC4",
   "homepage": "https://likec4.dev",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -20,12 +20,9 @@
       "default": "./dist/index.mjs"
     },
     "./defaults": {
-      "sources": "./src/defaults/index.ts",
-      "default": {
-        "types": "./dist/defaults/index.d.mts",
-        "import": "./dist/defaults/index.mjs",
-        "default": "./dist/defaults/index.mjs"
-      }
+      "types": "./dist/defaults/index.d.mts",
+      "import": "./dist/defaults/index.mjs",
+      "default": "./dist/defaults/index.mjs"
     },
     "./src": "./src/index.ts"
   },

@@ -40,7 +40,8 @@ export const overlay = defineRecipe({
       [borderRadius]: '0px',
       _backdrop: {
         cursor: 'zoom-out',
-        backdropFilter: `blur(var(${backdropBlur}))`,
+        backdropFilter: 'auto',
+        backdropBlur: `var(${backdropBlur})`,
         background: `color-mix(in oklab, {colors.likec4.overlay.backdrop} var(${backdropOpacity}), transparent)`,
       },
       inset: '0',

@@ -199,6 +199,7 @@ export async function viteBuild({
       languageServices,
       outDir: publicDir,
       base: config.base,
+      customization: cfg.customization,
     })
     await build(webcomponentConfig)
   }

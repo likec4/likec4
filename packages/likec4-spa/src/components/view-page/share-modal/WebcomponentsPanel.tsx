@@ -57,7 +57,12 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
             <Text fw={'500'} size="sm">JavaScript</Text>
           </Box>
           <Group gap={'xs'}>
-            <ActionIcon component="a" href={webcomponentPreview.href} target="_blank" variant="light" color="gray">
+            <ActionIcon
+              component="a"
+              href={webcomponentPreview.publicHref}
+              target="_blank"
+              variant="light"
+              color="gray">
               <IconExternalLink />
             </ActionIcon>
             <CopyButton

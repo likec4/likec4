@@ -14,24 +14,18 @@ import { useRef } from 'react'
 import { clamp } from 'remeda'
 import { FloatingWindow } from '../../components/FloatingWindow'
 import { useRootContainer } from '../../context'
-import { selectDiagramContext, useDiagramSelector } from '../../hooks/useDiagram'
+import { useIsComparingLayouts } from '../../context/ComparingLayoutsContext'
 import { ViewDetailsWindow } from '../windows/ViewDetailsWindow'
 
-const selector = selectDiagramContext(({ view }) => {
-  return {
-    id: view.id,
-    links: view.links?.length ?? 0,
-  }
-})
-
 type ViewDetailsButtonProps = {
+  linksCount: number
   onOpen: () => void
 }
 
-export function ViewDetailsButton({ onOpen }: ViewDetailsButtonProps) {
+export function ViewDetailsButton({ linksCount, onOpen }: ViewDetailsButtonProps) {
   const { ref: rootRef } = useRootContainer()
   const [opened, handlers] = useDisclosure(false)
-  const data = useDiagramSelector(selector)
+  const isComparing = useIsComparingLayouts()
 
   const initialsRef = useRef({
     dimensions: {
@@ -71,9 +65,18 @@ export function ViewDetailsButton({ onOpen }: ViewDetailsButtonProps) {
 
   return (
     <>
-      <ViewDetailsCardTrigger linksCount={data.links} onClick={toggle} opened={opened} />
+      <ViewDetailsCardTrigger linksCount={linksCount} onClick={toggle} opened={opened} />
       {opened && (
-        <FloatingWindow windowId={'view-details'} {...initialsRef.current} onClose={handlers.close}>
+        <FloatingWindow
+          windowId={'view-details'}
+          {...initialsRef.current}
+          style={isComparing ?
+            {
+              opacity: 0.35,
+              pointerEvents: 'none',
+            } :
+            undefined}
+          onClose={handlers.close}>
           <ViewDetailsWindow />
         </FloatingWindow>
       )}

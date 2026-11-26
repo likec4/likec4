@@ -5,48 +5,43 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { LikeC4ProjectConfig, RelationshipBrowserScope, WebappExportFormat } from '@likec4/config'
 import type { NonEmptyArray } from '@likec4/core'
 import JSON5 from 'json5'
 import { map } from 'remeda'
+import type { ProjectData } from '../internal'
 import { logGenerating } from '../logger'
 import type { VirtualModule } from './_shared'
 import { effectiveWebappExportFormats } from './export-formats'
 
-type ProjectData = {
-  id: string
-  title: string | undefined
-  path: string
-  landingPage: LikeC4ProjectConfig['landingPage']
-  relationshipBrowserDefaultScope: RelationshipBrowserScope
-  exportFormats: WebappExportFormat[]
-}
-
 const code = (projects: NonEmptyArray<ProjectData>) => `
-import { atom, useStore } from 'likec4/vite-plugin/internal'
+import { atom, computed, useStore, deepEqual } from 'likec4/vite-plugin/internal'
 
-export const isSingleProject = ${projects.length === 1};
-export const projects = ${JSON5.stringify(projects, null, 2)};
+export let isSingleProject = ${projects.length === 1};
+export let projects = ${JSON5.stringify(projects)};
 
-export const $projects = atom([...projects])
+export let $projects = atom([...projects])
+$projects.eq = deepEqual
+export let $projectIds = computed($projects, projects => projects.map(p => p.id))
+$projectIds.eq = deepEqual
 
 export function useLikeC4Projects() {
   return useStore($projects)
 }
 
+export function useLikeC4ProjectIds() {
+  return useStore($projectIds)
+}
+
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$projects) {
-      import.meta.hot.data.$projects = $projects
+    import.meta.hot.data.$update ??= (newdata) => {
+      projects.length = 0
+      projects.push(...newdata)
+      $projects.set(newdata)
     }
-    if (!import.meta.hot.data.projects) {
-      import.meta.hot.data.projects = projects
-    }      
-    const update = md.projects
+    const update = md.$projects?.get()
     if (update) {
-      import.meta.hot.data.projects.length = 0
-      import.meta.hot.data.projects.push(...update)
-      import.meta.hot.data.$projects.set(update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }
@@ -62,8 +57,9 @@ export const projectsModule = {
     return {
       code: code(map(projects, p => ({
         id: p.id,
-        title: p.title,
+        title: p.config.title ?? p.id,
         path: p.path,
+        contactPerson: p.config.contactPerson,
         landingPage: p.config.landingPage,
         relationshipBrowserDefaultScope: p.config.webapp?.relationshipsBrowser?.defaultScope ?? 'view',
         exportFormats: effectiveWebappExportFormats(p.config),

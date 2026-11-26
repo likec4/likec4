@@ -1,23 +1,32 @@
 /**
  * This module is used by the Vite plugin to generate the virtual modules
  */
+import type { RelationshipBrowserScope, WebappExportFormat } from '@likec4/config'
 import { LikeC4Model } from '@likec4/core/model'
-import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core/types'
+import type { LayoutedLikeC4ModelData, LayoutedView, ProjectId } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
 import { useMemo } from 'react'
-import { mapValues } from 'remeda'
 import type { LikeC4VitePluginRpc } from './rpc/protocol'
+import type { ResolvedLikeC4AppOptions } from './types'
 
-export { atom, batched, computed, map } from 'nanostores'
+export { atom, batch, batched, computed, map, onMount } from 'nanostores'
 
 export { useStore } from '@nanostores/react'
 
+export { deepEqual, shallowEqual }
+
+export type { LayoutedLikeC4ModelData, LayoutedView }
+
+export type { RelationshipBrowserScope, WebappExportFormat }
+// Subpath import: the package root pulls in zod and json5
+export { WebappExportFormats } from '@likec4/config/webapp-export-formats'
 export type { Atom, ReadableAtom, WritableAtom } from 'nanostores'
 export type { LikeC4VitePluginRpc } from './rpc/protocol'
+export type { ResolvedLikeC4AppOptions as LikeC4AppConfig }
 
 export interface LikeC4VitePluginRpcOptions {
   /**
@@ -59,23 +68,12 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
   useLikeC4Model: () => LikeC4Model.Layouted
   useLikeC4Views: () => ReadonlyArray<LayoutedView>
   useLikeC4View: (viewId: string) => LayoutedView | null
+  isLikeC4ViewId: (id: unknown) => id is string
 } {
   const $likec4model = computed($atom, (data) => LikeC4Model.create(data))
 
   function updateModel(data: LayoutedLikeC4ModelData) {
-    const current = $atom.get()
-    const next = {
-      ...data,
-      views: mapValues(data.views, (next) => {
-        const currentView = current.views[next.id]
-        return deepEqual(currentView, next) ? currentView : next
-      }),
-    }
-    // Check for shallow first, then deep equality to avoid unnecessary updates
-    if (shallowEqual(next.views, current.views) && deepEqual(next, current)) {
-      return
-    }
-    $atom.set(next as LayoutedLikeC4ModelData)
+    $atom.set(data)
   }
 
   // Return views with manual layouts applied via $layouted (#2553).
@@ -94,7 +92,11 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
 
   function useLikeC4View(viewId: string): LayoutedView | null {
     const $view = useMemo(
-      () => computed($likec4model, (model) => model.findView(viewId)?.$layouted ?? null),
+      () => {
+        const $computed = computed($likec4model, (model) => model.findView(viewId)?.$layouted ?? null)
+        $computed.eq = deepEqual
+        return $computed
+      },
       [viewId],
     )
     return useStore($view)
@@ -106,5 +108,37 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
     useLikeC4Model,
     useLikeC4Views,
     useLikeC4View,
+    isLikeC4ViewId: (id: unknown): id is string => typeof id === 'string' && Object.hasOwn($atom.get().views, id),
   }
+}
+
+/**
+ * Dev only: asks the dev server to open the project config in the editor
+ * (the server resolves the path by project id, see `enableOpenProjectInEditor`)
+ */
+export function openProjectInEditor(projectId: string): void {
+  fetch(`/__likec4/open-project?id=${encodeURIComponent(projectId)}`).catch(console.error)
+}
+
+/**
+ * Dev only: asks the dev server to open the source of an element, relation or view in the editor.
+ * Accepts the same params as `onOpenSource` of the diagram, plus `projectId`.
+ */
+export function openSourceInEditor(params: Record<string, unknown>): void {
+  fetch(`/__likec4/open-source?params=${encodeURIComponent(JSON.stringify(params))}`).catch(console.error)
+}
+
+type LandingPageConfig =
+  | { redirect: true }
+  | { include: string[] }
+  | { exclude: string[] }
+
+export interface ProjectData {
+  readonly id: ProjectId
+  readonly title: string
+  readonly path: string
+  readonly contactPerson: string | undefined
+  readonly landingPage: LandingPageConfig | undefined
+  readonly relationshipBrowserDefaultScope: RelationshipBrowserScope
+  readonly exportFormats: readonly WebappExportFormat[]
 }

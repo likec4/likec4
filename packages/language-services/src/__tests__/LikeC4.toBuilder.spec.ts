@@ -252,6 +252,34 @@ describe('LikeC4.toBuilder / toDSL / writeDSL', () => {
     expect(reloadedModel.view('index').id).toBe('index')
   })
 
+  it('round-trips backslashes and quotes in generated strings', async () => {
+    const source = String.raw`
+      specification {
+        element system
+      }
+      model {
+        a = system 'C:\\Program Files\\App\\' {
+          technology 'regex \\d+ isn\'t \\n'
+          description '''
+            Run C:\\tools\\run.bat
+          '''
+        }
+        b = system 'B'
+      }
+    `
+    const original = (await fromSource(source, { throwIfInvalid: true })).syncComputedModel().element('a')
+    expect(original.title).toBe('C:\\Program Files\\App\\')
+
+    const dsl = await (await fromSource(source)).toDSL()
+    const reloaded = (await fromSource(dsl, { throwIfInvalid: true })).syncComputedModel()
+    const a = reloaded.element('a')
+
+    expect(a.title).toBe(original.title)
+    expect(a.technology).toBe(original.technology)
+    expect(a.description.$source).toEqual(original.description.$source)
+    expect(reloaded.element('b').title).toBe('B')
+  })
+
   describe('writeDSL', () => {
     beforeEach(() => {
       vol.reset()

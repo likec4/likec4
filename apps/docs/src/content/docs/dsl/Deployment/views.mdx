@@ -2,8 +2,8 @@
 title: Deployment views
 description: How to visualize deployments with LikeC4
 sidebar: 
-  # label: Deployment views
-  order: 12
+  label: Views
+  order: 21
 ---
 
 import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -44,28 +44,30 @@ views {
 Deployment views are based on same [predicates](/dsl/views/predicates) as model views.  
 But they refer to deployment nodes and instances.
 
-<Aside type='caution' title='In development'>
-  The following features are not supported yet or do not work as expected:
- 
-  - `with` expressions
-  - Shared styles and predicates
-  - Relationships browser, Element and Relationship Details popups (work with logical model)
+<Aside type='caution' title='Limitations'>
+  Deployment views differ from model views:
+
+  - Element `with` expressions support only `navigateTo`. Other properties are ignored, and an element `with` without `navigateTo` includes nothing. Use [`style` rules](/dsl/views/styles#style-predicates) to change the appearance.
+  - Shared styles from the `views` block, global styles and global predicate groups are not supported.
+  - The relationships browser and the relationship details popup work with the logical model.
+    The relationships browser is available for deployed instances and shows relationships of the logical element;
+    relationships defined in the deployment model are not shown in the relationship details popup.
 
   ```likec4
   deployment view prod {
     include *                                   // works
-    include * where tag is #next                // works (see details below)
+    include * where tag is #next                // works (see Filtering below)
     include server with {
-      navigateTo server_deployment              // works (see details below)
+      navigateTo server_deployment              // works (see Navigation below)
     }
-    include * with { color: red }               // does not work
+    include server with { color red }           // ignored, only navigateTo is supported
+    style server { color red }                  // works
 
     include * -> *                              // works
-    include * -> * where tag is #next           // works
-    include * -> * where source.tag is #next    // works (see details below)
-    include * -> * with { color: red }          // does not work
+    include * -> * where source.tag is #next    // works (see Filtering below)
+    include * -> * with { color red }           // works
 
-    global style applications                   // does not work    
+    global style applications                   // not supported
   }
   ```
 </Aside>
@@ -91,7 +93,7 @@ views {
 The target must be an existing view.
 
 ### Filtering
-Filtering in deployment views use the same principles as in normal views but takes into account deployment nodes, relations, tags and metadata defined in deployment model.
+Filtering in deployment views uses the same principles as in normal views but takes into account deployment nodes, relations, tags and metadata defined in deployment model.
 When condition on element is checked the following rules are applied:
 - For deployment instances, tags are combined from tags defined in model and tags defined in deployment model
 - For a child of deployment instance the tags defined on child in model are used
@@ -105,17 +107,29 @@ When condition on element is checked the following rules are applied:
 - Tags are not inherited from parent nodes/elements
 
 ```likec4
+specification {
+  element system
+  element component
+  deploymentNode environment
+  deploymentNode zone
+  tag next
+  tag alpha
+  tag beta
+  tag gamma
+  tag sigma
+  tag delta
+}
 model {
-  element cloud {
-    element frontend {
+  cloud = system {
+    frontend = component {
       #next
       -> backend "rel1"
     }
-    element backend {
+    backend = component {
       #next
       -> db "rel2"
     }
-    element db
+    db = component
   }
 }
 deployment {
@@ -123,15 +137,15 @@ deployment {
     #alpha
     zone eu { // Resulting tags: #beta
       #beta
-      instanceOf frontend { // Resulting tags: #next, #gamma
+      instanceOf cloud.frontend { // Resulting tags: #next, #gamma
           #gamma
       }
-      instanceOf backend { // Resulting tags: #next, #sigma
+      instanceOf cloud.backend { // Resulting tags: #next, #sigma
           #sigma
       }
       eu -> prod.db "rel3"
     }
-    instanceOf db { // Resulting tags: #delta
+    instanceOf cloud.db { // Resulting tags: #delta
       #delta
     }
   }
@@ -146,8 +160,8 @@ views {
       where source.tag is #beta // includes relation "rel3"
     include prod.eu -> prod.db
       where source.tag is #sigma // does not include any relations
-    include eu.* -> prod.db
-      where source.tag is #sigma // includes relations "rel2"
+    include prod.eu.* -> prod.db
+      where source.tag is #sigma // includes relation "rel2"
   }
 }
 ```
@@ -227,7 +241,7 @@ Sometimes, it's useful to visualize exactly how elements are deployed. In this c
 the `includeAncestors` attribute on a deployment view.
 
 The purpose of this attribute is to force all ancestors of already visible elements to show in the final diagram. 
-It will not affect the visible relationships. It's just a representation preference allowing to view how each relevant elements are deployed.
+It will not affect the visible relationships. It's just a representation preference allowing to view how each relevant element is deployed.
 
 ```likec4
 specification {
@@ -275,16 +289,11 @@ deployment {
 }
 
 views {
-  view index {
-    title 'Landscape'
-    include *
-  }
-
   deployment view ancestors_test {
-    includeAncestors: true
+    includeAncestors true
 
-    include hyp1.tomcat1.svc1
-    include hyp2.tomcat2.svc2
+    include hyp1.vm.tomcat1.svc1
+    include hyp2.vm.tomcat2.svc2
   }
 }
 ```

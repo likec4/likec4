@@ -1,6 +1,6 @@
 import { hasProp, isDynamicView } from '@likec4/core'
 import { useRerender } from '@react-hookz/web'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { selectDiagramSnapshot, useDiagramSelector } from '../hooks'
@@ -30,7 +30,7 @@ const selectChildren = selectDiagramSnapshot(s => ({
     }),
 }))
 
-export function LikeC4DiagramUI() {
+export const LikeC4DiagramUI = memo(() => {
   const {
     enableControls,
     enableNotations,
@@ -63,4 +63,5 @@ export function LikeC4DiagramUI() {
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}
     </ErrorBoundary>
   )
-}
+})
+LikeC4DiagramUI.displayName = 'LikeC4DiagramUI'

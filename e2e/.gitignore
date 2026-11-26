@@ -11,6 +11,7 @@ src/*.js
 !src/*.spec.ts
 
 test-results/*
+fixtures/*/dist
 playwright-report/*
 tests/*.spec.ts
 !tests/drawio-playground.spec.ts
@@ -22,7 +23,9 @@ tests/*.spec.ts
 !tests/markdown-image.spec.ts
 !tests/manual-layout-views.spec.ts
 !tests/webcomponent-overlay.spec.ts
+!tests/app-config-customization.spec.ts
 !tests/diagram-a11y.spec.ts
+!tests/export-page-layout.spec.ts
 
 pnpm-lock.yaml
 package-lock.json

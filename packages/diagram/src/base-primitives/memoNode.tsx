@@ -24,7 +24,7 @@ export function memoNode<P extends BaseNodeProps>(
   Node: FunctionComponent<P>,
   displayName = 'Node',
 ): FunctionComponent<P> {
-  if (Node.hasOwnProperty(isMemoized)) {
+  if (Object.hasOwn(Node, isMemoized)) {
     return Node
   }
   const NodeComponent = memo(

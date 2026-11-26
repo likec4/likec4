@@ -1,4 +1,3 @@
-import { onNextTick } from '@likec4/core/utils'
 import { type GraphvizPort, QueueGraphvizLayoter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import type { Module } from 'langium'
@@ -16,11 +15,9 @@ import type {
   FileSystemModuleContext,
   FileSystemProvider,
   FileSystemWatcher,
-  LikeC4DescriptionFiles,
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
-import { DefaultLikeC4DescriptionFiles } from './filesystem/LikeC4DescriptionFiles'
 import { NoFileSystem, NoLikeC4ManualLayouts, NoopFileSystemProvider } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
@@ -47,6 +44,7 @@ import {
   DeploymentsIndex,
   FqnIndex,
   LastSeenArtifacts,
+  LikeC4DescriptionFiles,
   LikeC4ModelLocator,
   LikeC4ModelParser,
   LikeC4ValueConverter,
@@ -99,7 +97,6 @@ interface LikeC4AddedSharedServices {
     FileSystemProvider: FileSystemProvider
     FileSystemWatcher: FileSystemWatcher
     ManualLayouts: LikeC4ManualLayouts
-    DescriptionFiles: LikeC4DescriptionFiles
   }
 }
 
@@ -130,7 +127,6 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       FileSystemProvider: services => context.fileSystemProvider(services),
       FileSystemWatcher: services => context.fileSystemWatcher(services),
       ManualLayouts: services => context.manualLayouts(services),
-      DescriptionFiles: services => new DefaultLikeC4DescriptionFiles(services),
     },
   })
 }
@@ -147,6 +143,7 @@ export interface LikeC4AddedServices {
   }
   Rpc: Rpc
   likec4: {
+    DescriptionFiles: LikeC4DescriptionFiles
     LanguageServices: LikeC4LanguageServices
     Views: LikeC4Views
     Graphviz: GraphvizPort
@@ -211,6 +208,7 @@ export function createLikeC4Module(
     },
     Rpc: bind(Rpc),
     likec4: {
+      DescriptionFiles: bind(LikeC4DescriptionFiles),
       LanguageServices: bind(DefaultLikeC4LanguageServices),
       Graphviz: (services: LikeC4Services) => context.graphviz(services),
       Layouter: (services: LikeC4Services) => {

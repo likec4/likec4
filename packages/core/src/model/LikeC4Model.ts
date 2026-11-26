@@ -433,6 +433,14 @@ export class LikeC4Model<A extends Any = Any> {
   }
 
   /**
+   * Returns true if the model has manual layouts
+   * You can access manual layouts via {@link $data.manualLayouts}
+   */
+  hasManualLayouts(): this is typeof this & { $data: { manualLayouts: {} } } {
+    return 'manualLayouts' in this.$data && Object.keys(this.$data.manualLayouts).length > 0
+  }
+
+  /**
    * Returns the element with the given FQN.
    *
    * @throws Error if element is not found\

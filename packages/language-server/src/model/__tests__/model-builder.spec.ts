@@ -279,6 +279,43 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.nodes.map(node => node.id)).toStrictEqual(['test'])
   })
 
+  it('filters by metadata values with escaped quotes and backslashes', async ({ expect, t }) => {
+    // the LikeC4 generator writes such values escaped (generators/src/likec4/operators/expressions.ts)
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(String.raw`
+    specification {
+      element system
+    }
+    model {
+      a = system {
+        metadata {
+          label 'say "hi"'
+          path 'C:\\temp\\'
+        }
+      }
+      b = system {
+        metadata {
+          label 'other'
+          path 'x'
+        }
+      }
+    }
+    views {
+      view byLabel {
+        include * where metadata.label is "say \"hi\""
+      }
+      view byPath {
+        include * where metadata.path is "C:\\temp\\"
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model.elements['a']!.metadata).toEqual({ label: 'say "hi"', path: 'C:\\temp\\' })
+    expect(model.views['byLabel' as ViewId]!.nodes.map(node => node.id)).toStrictEqual(['a'])
+    expect(model.views['byPath' as ViewId]!.nodes.map(node => node.id)).toStrictEqual(['a'])
+  })
+
   it('builds model with array metadata using array syntax', async ({ expect, t }) => {
     const { validate, buildModel } = t
     const { diagnostics } = await validate(`
@@ -1795,6 +1832,63 @@ describe('LikeC4ModelBuilder', () => {
       async: {
         multiple: true,
       },
+    })
+  })
+
+  it('applies custom relation properties in deployment views', async ({ expect, t }) => {
+    const { validate, buildLikeC4Model } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      deploymentNode node
+    }
+    model {
+      a = component 'A'
+      b = component 'B'
+      a -> b 'Logical title'
+    }
+    deployment {
+      node env {
+        node n1 {
+          i1 = instanceOf a
+        }
+        node n2 {
+          i2 = instanceOf b
+        }
+      }
+    }
+    views {
+      deployment view instances {
+        include env.**
+        include env.n1.i1 -> env.n2.i2 with {
+          title 'HTTPS'
+          color red
+          line dotted
+          technology 'TLS'
+        }
+      }
+      deployment view nodes {
+        include env.n1 -> env.n2 with {
+          title 'HTTPS'
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildLikeC4Model()
+    const [instancesEdge] = model.view('instances').edges()
+    expect(instancesEdge?.$edge).toMatchObject({
+      label: 'HTTPS',
+      color: 'red',
+      line: 'dotted',
+      technology: 'TLS',
+    })
+    const nodesEdges = [...model.view('nodes').edges()].map(e => e.$edge)
+    expect(nodesEdges).toHaveLength(1)
+    expect(nodesEdges[0]).toMatchObject({
+      source: 'env.n1',
+      target: 'env.n2',
+      label: 'HTTPS',
     })
   })
 

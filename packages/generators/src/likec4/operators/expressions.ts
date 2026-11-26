@@ -66,7 +66,11 @@ export const whereKindEqual = zodOp(schemas.whereKind)(function whereKindEqualOp
 })
 
 function quoteMetadataValue(v: string): string {
-  return v === 'true' || v === 'false' ? v : `"${v}"`
+  if (v === 'true' || v === 'false') {
+    return v
+  }
+  // the parser reads `\"` and `\\` back as escapes
+  return `"${v.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`
 }
 
 export const whereMetadataEqual = zodOp(schemas.whereMetadata)(

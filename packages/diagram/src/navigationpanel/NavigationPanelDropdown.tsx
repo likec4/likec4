@@ -9,6 +9,7 @@ import { compareNaturalHierarchically, ifilter, ifirst, nonexhaustive, toArray }
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
+import { navigationPanel } from '@likec4/styles/recipes'
 import {
   Breadcrumbs,
   Button,
@@ -21,28 +22,30 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { useThrottledCallback, useUncontrolled } from '@mantine/hooks'
-import { useMountEffect } from '@react-hookz/web'
+import { useMountEffect, useRafEffect } from '@react-hookz/web'
 import {
+  IconAlertTriangleFilled,
   IconChevronRight,
   IconFolderFilled,
   IconSearch,
 } from '@tabler/icons-react'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   type ComponentPropsWithoutRef,
   type KeyboardEventHandler,
   memo,
-  useDeferredValue,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { EmptyBox } from '../components/EmptyBox'
+import { ErrorBoundary } from '../components/ErrorFallback'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { viewIcon } from '../components/ViewIcon'
-import { type CurrentViewModel, ErrorBoundary, useOptionalCurrentViewModel } from '../custom'
+import { type CurrentViewModel, useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import { Tooltip } from './_common'
@@ -53,7 +56,6 @@ import {
   useNavigationActorRef,
   useNavigationActorSelector,
 } from './hooks'
-import { breadcrumbTitle } from './styles.css'
 
 const scopedKeydownHandler: KeyboardEventHandler<HTMLElement> = createScopedKeydownHandler({
   siblingSelector: '[data-likec4-focusable]',
@@ -143,23 +145,22 @@ const SearchResults = memo(() => {
   const likec4model = useLikeC4Model()
   const actor = useNavigationActor()
   const searchQuery = useNavigationActorSelector(selectSearchQuery)
-  const deferredSearchQuery = useDeferredValue(searchQuery)
-  const isSearchByPath = deferredSearchQuery.includes(VIEW_FOLDERS_SEPARATOR)
-  const highlight = isSearchByPath ? deferredSearchQuery.split(VIEW_FOLDERS_SEPARATOR) : deferredSearchQuery
+  const isSearchByPath = searchQuery.includes(VIEW_FOLDERS_SEPARATOR)
+  const highlight = isSearchByPath ? searchQuery.split(VIEW_FOLDERS_SEPARATOR) : searchQuery
 
   const [found, setFound] = useState<LikeC4ViewModel[]>([])
 
-  useEffect(() => {
+  useRafEffect(() => {
     setFound(current => {
       const results = pipe(
         likec4model.views(),
         ifilter(v => {
           // if search query contains folder separator, search in view data
           if (isSearchByPath && v.$view.title) {
-            return normalizeViewPath(v.$view.title).toLowerCase().includes(deferredSearchQuery)
+            return normalizeViewPath(v.$view.title).toLowerCase().includes(searchQuery)
           }
-          return v.id.toLowerCase().includes(deferredSearchQuery) ||
-            !!v.title?.toLowerCase().includes(deferredSearchQuery)
+          return v.id.toLowerCase().includes(searchQuery) ||
+            !!v.title?.toLowerCase().includes(searchQuery)
         }),
         ifirst(20),
         toArray(),
@@ -167,15 +168,7 @@ const SearchResults = memo(() => {
       )
       return shallowEqual(results, current) ? current : results
     })
-  }, [likec4model, deferredSearchQuery, isSearchByPath])
-
-  if (found.length === 0) {
-    return (
-      <EmptyBox style={{ minWidth: 200 }}>
-        no results
-      </EmptyBox>
-    )
-  }
+  }, [likec4model, searchQuery, isSearchByPath])
 
   return (
     <ScrollAreaAutosize
@@ -193,6 +186,11 @@ const SearchResults = memo(() => {
         ],
       })}>
       <VStack gap="0.5">
+        {found.length === 0 && (
+          <EmptyBox style={{ minWidth: 200 }}>
+            no results
+          </EmptyBox>
+        )}
         {found.map(v => (
           <FoundedView
             key={v.id}
@@ -240,6 +238,8 @@ const inheritColor = css({
   },
 })
 
+const breadcrumbTitle = navigationPanel().breadcrumb
+
 function FoundedView(
   { view, highlight, ...props }: FoundedViewProps & Omit<ComponentPropsWithoutRef<'button'>, keyof FoundedViewProps>,
 ) {
@@ -252,7 +252,7 @@ function FoundedView(
       component={'div'}
       className={cx(
         inheritColor,
-        breadcrumbTitle({ truncate: true }),
+        breadcrumbTitle,
         css({
           '& > mark': {
             backgroundColor: {
@@ -293,6 +293,7 @@ function FoundedView(
     <Highlight
       key={b.path}
       component={'div'}
+      data-dimmed="true"
       className={cx(
         css({
           _groupHover: {
@@ -300,7 +301,7 @@ function FoundedView(
           },
         }),
         inheritColor,
-        breadcrumbTitle({ dimmed: true, truncate: true }),
+        breadcrumbTitle,
       )}
       maw={170}
       highlight={isArray(highlight) ? highlight : []}
@@ -367,6 +368,7 @@ type ColumnItem =
     title: string
     description: string | null
     selected: boolean
+    hasLayoutDrifts: boolean
   }
 type FolderColumnData = {
   folderPath: string
@@ -396,6 +398,7 @@ function folderColumn(
         title: s.titleOrId,
         description: s.description.nonEmpty && s.description.text || null,
         selected: s.id === context.viewModel.id,
+        hasLayoutDrifts: s.hasLayoutDrifts,
       })),
     ],
   }
@@ -427,7 +430,22 @@ const selectState = selectNavigationContext(c => c.selectedFolder)
 const FolderColumns = memo(() => {
   const selectedFolder = useNavigationActorSelector(selectState)
   const viewModel = useOptionalCurrentViewModel()
-  const columns = selectColumns(viewModel, selectedFolder)
+
+  const initialColumnsRef = useRef<FolderColumnData[] | null>(null)
+  const columns = useMemo(() => {
+    const next = selectColumns(viewModel, selectedFolder)
+    const prev = initialColumnsRef.current ?? []
+    for (let i = 0; i < next.length; i++) {
+      if (i === prev.length) {
+        break
+      }
+      if (deepEqual(next[i], prev[i])) {
+        next[i] = prev[i]!
+      }
+    }
+
+    return initialColumnsRef.current = next
+  }, [viewModel, selectedFolder])
 
   return (
     <HStack gap="xs" alignItems="stretch">
@@ -443,7 +461,7 @@ const FolderColumns = memo(() => {
   )
 })
 
-function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolean }) {
+const FolderColumn = memo<{ data: FolderColumnData; isLast: boolean }>(({ data, isLast }) => {
   const ref = useRef<HTMLDivElement>(null)
   const actor = useNavigationActorRef()
 
@@ -461,7 +479,7 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
       ref.current.scrollIntoView({
         block: 'nearest',
         inline: 'end',
-        behavior: 'smooth',
+        behavior: 'instant',
       })
     }
   })
@@ -483,6 +501,32 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
       </ColumnScrollArea>
     </Box>
   )
+})
+FolderColumn.displayName = 'FolderColumn'
+
+const layoutDriftedIcon = (
+  <IconAlertTriangleFilled
+    size={10}
+    className={css({
+      position: 'absolute',
+      color: 'text.warning',
+    })}
+    style={{
+      left: -3,
+      top: 16,
+    }}
+  />
+)
+const viewIconWithLayoutDrift = (view: Extract<ColumnItem, { type: 'view' }>) => {
+  const icon = viewIcon(view.viewType)
+  return view.hasLayoutDrifts ?
+    (
+      <Box pos="relative">
+        {icon}
+        {layoutDriftedIcon}
+      </Box>
+    ) :
+    icon
 }
 
 function FolderColumnItem({
@@ -518,7 +562,7 @@ function FolderColumnItem({
             active={columnItem.selected}
             label={columnItem.title}
             description={columnItem.description}
-            leftSection={viewIcon(columnItem.viewType)}
+            leftSection={viewIconWithLayoutDrift(columnItem)}
             {...props}
           />
         </Tooltip>
@@ -566,7 +610,7 @@ function SearchInput(props: {
         }),
       }}
       style={{
-        ['--input-fz']: 'var(--mantine-font-size-sm)',
+        ['--input-fz']: 'var(--font-sizes-sm)',
       }}
       leftSection={<IconSearch size={14} />}
       rightSectionPointerEvents="all"
@@ -575,10 +619,10 @@ function SearchInput(props: {
         ? null
         : (
           <Button
-            variant="subtle"
+            variant="default"
             h="100%"
             size={'compact-xs'}
-            color="gray"
+            fz="xxs"
             onClick={(e) => {
               e.stopPropagation()
               handleChange('')

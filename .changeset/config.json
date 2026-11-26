@@ -11,7 +11,8 @@
     ]
   ],
   "ignore": [
-    "@likec4/devops"
+    "@likec4/devops",
+    "@likec4/example-customization-roughjs"
   ],
   "linked": [],
   "access": "public",

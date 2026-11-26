@@ -8,8 +8,20 @@ const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCa
 
 const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
 
+/**
+ * A quoted D2 key, so that names like `Label`, `Icon` or `Top` are not read as D2 reserved keywords
+ */
+const d2key = (name: string): string => JSON.stringify(name)
+
+/**
+ * A double-quoted D2 string. D2 substitutes `${...}` in double-quoted strings, so `$` before `{` is escaped.
+ */
+const d2string = (value: string): string => JSON.stringify(value).replaceAll('${', '\\${')
+
 const nodeName = (node: ComputedNode): string => {
-  return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
+  // The parent may be a group (`@gr1`), whose id is not a prefix of the node id
+  const prefix = node.parent ? node.parent + '.' : ''
+  return fqnName(prefix && node.id.startsWith(prefix) ? node.id.slice(prefix.length) : node.id)
 }
 
 type Node = AnyView['nodes'][number]
@@ -60,13 +72,22 @@ export function generateD2(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const view = viewmodel.$view
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
+  const usedNames = new Set<string>()
 
   const printNode = (node: Node, parentName?: string): CompositeGeneratorNode => {
-    const name = nodeName(node)
-    const fqnName = (parentName ? parentName + '.' : '') + name
+    const baseName = nodeName(node)
+    const prefix = parentName ? parentName + '.' : ''
+    let name = d2key(baseName)
+    let fqnName = prefix + name
+    // D2 merges case-insensitive keys, even when they are quoted.
+    for (let suffix = 2; usedNames.has(fqnName.toLowerCase()); suffix++) {
+      name = d2key(`${baseName}${suffix}`)
+      fqnName = prefix + name
+    }
+    usedNames.add(fqnName.toLowerCase())
     names.set(node.id, fqnName)
 
-    const label = JSON.stringify(node.title)
+    const label = d2string(node.title)
     const shape = d2shape(node)
 
     return new CompositeGeneratorNode()
@@ -92,7 +113,7 @@ export function generateD2(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const printEdge = (edge: Edge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode()
       .append(names.get(edge.source), ' -> ', names.get(edge.target))
-      .append(out => edge.label && out.append(': ', JSON.stringify(edge.label)))
+      .append(out => edge.label && out.append(': ', d2string(edge.label)))
   }
 
   return toStringLF(

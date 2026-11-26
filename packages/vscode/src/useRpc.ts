@@ -12,7 +12,6 @@ import {
   GetDocumentTags,
   LayoutView,
   Locate,
-  RegisterProject,
   ReloadProjects,
   ValidateLayout,
 } from '@likec4/language-server/protocol'
@@ -144,11 +143,6 @@ export const useRpc = defineService(() => {
 
     async reloadProjects() {
       await queue(() => client.sendRequest(ReloadProjects.req))
-    },
-
-    async registerProject(params: RegisterProject.Params) {
-      const { id } = await queue(() => client.sendRequest(RegisterProject.req, params))
-      return id
     },
 
     async fetchProjects() {

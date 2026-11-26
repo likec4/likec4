@@ -1,4 +1,5 @@
 import type { ComputedLikeC4ModelData, LayoutedLikeC4ModelData } from '@likec4/core'
+import type { ProjectId } from '@likec4/core/types'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
@@ -8,6 +9,7 @@ import type { Argv } from 'yargs'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
+import { workspaceProjects } from '../../utils'
 
 const ERR_PROJECT_NOT_FOUND = 'project not found'
 const ERR_NO_PROJECTS = 'No projects found'
@@ -22,21 +24,22 @@ type JsonExportArgs = {
 }
 
 /** Run the JSON export workflow: init workspace, load model(s), write to outfile. */
-async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
+export async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
   await using languageServices = await fromWorkspace(args.path, {
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })
 
-  let projects = [...languageServices.projectsManager.all]
+  let projects: ProjectId[]
   if (args.project) {
-    projects = projects.filter(p => p === args.project)
+    projects = languageServices.projectsManager.all.filter(p => p === args.project)
     if (!hasAtLeast(projects, 1)) {
       logger.error(`${ERR_PROJECT_NOT_FOUND}: ${args.project}`)
       throw new Error(`${ERR_PROJECT_NOT_FOUND}: ${args.project}`)
     }
   } else {
+    projects = workspaceProjects(languageServices)
     if (!hasAtLeast(projects, 1)) {
       logger.error(ERR_NO_PROJECTS)
       throw new Error(ERR_NO_PROJECTS)

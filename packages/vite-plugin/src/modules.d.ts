@@ -6,23 +6,15 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 declare module 'likec4:projects' {
-  import type { RelationshipBrowserScope, WebappExportFormat } from 'likec4/config'
   import type { ProjectId } from 'likec4/model'
-  type LandingPageConfig =
-    | { redirect: true }
-    | { include: string[] }
-    | { exclude: string[] }
-  export interface Project {
-    id: ProjectId
-    title?: string
-    path: string
-    landingPage?: LandingPageConfig
-    relationshipBrowserDefaultScope: RelationshipBrowserScope
-    exportFormats: readonly WebappExportFormat[]
-  }
+  import type { ProjectData, ReadableAtom } from 'likec4/vite-plugin/internal'
+  export type Project = ProjectData
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]
+  export const $projects: ReadableAtom<readonly [Project, ...Project[]]>
+  export const $projectIds: ReadableAtom<readonly [ProjectId, ...ProjectId[]]>
   export function useLikeC4Projects(): readonly [Project, ...Project[]]
+  export function useLikeC4ProjectIds(): readonly [ProjectId, ...ProjectId[]]
 }
 
 declare module 'likec4:projects-overview' {
@@ -33,32 +25,25 @@ declare module 'likec4:projects-overview' {
 }
 
 declare module 'likec4:icons' {
-  import type { ReactNode } from 'react'
+  import type { ElementIconRenderer, ElementIconRendererProps } from 'likec4/react'
 
-  export type ElementIconRendererProps = {
-    node: {
-      id: string
-      title: string
-      icon?: string | null | undefined
-    }
-  }
-
-  export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
+  export type { ElementIconRenderer, ElementIconRendererProps }
   export function getProjectIcons(projectId: string): ElementIconRenderer
 }
 
 declare module 'likec4:model' {
-  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId } from 'likec4/model'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, ReadableAtom, UnknownLayouted, ViewId }
 
   export function loadModel(projectId: string): Promise<{
-    $likec4data: Atom<LayoutedLikeC4ModelData>
-    $likec4model: Atom<LikeC4Model<UnknownLayouted>>
+    $likec4data: ReadableAtom<LayoutedLikeC4ModelData>
+    $likec4model: ReadableAtom<LikeC4Model<UnknownLayouted>>
     useLikeC4Model: () => LikeC4Model<UnknownLayouted>
     useLikeC4Views: () => ReadonlyArray<DiagramView<UnknownLayouted>>
     useLikeC4View: (viewId: string) => DiagramView<UnknownLayouted> | null
+    isLikeC4ViewId: (value: unknown) => value is ViewId
   }>
 }
 
@@ -69,15 +54,19 @@ declare module 'likec4:single-project' {
     LikeC4Model,
     types,
     UnknownLayouted,
+    ViewId,
   } from 'likec4/model'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
   import type { ElementIconRenderer } from 'likec4:icons'
 
-  export const $likec4data: Atom<LayoutedLikeC4ModelData>
-  export const $likec4model: Atom<LikeC4Model<UnknownLayouted>>
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId }
+
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData>
+  export const $likec4model: ReadableAtom<LikeC4Model<UnknownLayouted>>
   export function useLikeC4Model(): LikeC4Model<UnknownLayouted>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<UnknownLayouted>>
   export function useLikeC4View(viewId: string): DiagramView<UnknownLayouted> | null
+  export function isLikeC4ViewId(value: unknown): value is ViewId
 
   export const IconRenderer: ElementIconRenderer
 
@@ -85,23 +74,39 @@ declare module 'likec4:single-project' {
 }
 
 declare module 'likec4:react' {
-  import type { aux, DiagramView, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
+  import type {
+    aux,
+    DiagramView,
+    LayoutedLikeC4ModelData,
+    LayoutedView,
+    LikeC4Model,
+    UnknownLayouted,
+  } from 'likec4/model'
+  import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  export type { Atom, DiagramView, LayoutedView, LikeC4Model, ReadableAtom, UnknownLayouted }
+
+  // This will be used for augmenting the types
+  export interface Register {
   }
+  export type $Types<T = Register> = T extends { aux: infer A extends aux.Any } ? A : UnknownLayouted
 
-  export type LikeC4ViewId = aux.ViewId<Types>
+  export type LikeC4ViewId = aux.ViewId<$Types>
 
-  export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
-  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  // Re-export from likec4:model
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData<$Types>>
+  export const $likec4model: ReadableAtom<LikeC4Model<$Types>>
+  export function useLikeC4Model(): LikeC4Model<$Types>
+  export function useLikeC4Views(): ReadonlyArray<LayoutedView<$Types>>
+  export function useLikeC4View(viewId: LikeC4ViewId): LayoutedView<$Types> | null
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
-  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
-  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types>): JSX.Element
+  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<$Types>): JSX.Element
+  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<$Types>): JSX.Element
+  export function IconRenderer(props: ElementIconRendererProps): JSX.Element
 }
 
 declare module 'likec4:dot' {
@@ -132,7 +137,7 @@ declare module 'likec4:drawio' {
 }
 declare module 'likec4:diffs' {
   import type { DiffSummary, LayoutedView } from 'likec4/model'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
   /**
    * Diffs of the project, with the compare views of the views they change (by diff id, then by view id)
@@ -143,7 +148,7 @@ declare module 'likec4:diffs' {
   }
 
   export function loadDiffs(projectId: string): Promise<{
-    $diffs: Atom<ProjectDiffs>
+    $diffs: ReadableAtom<ProjectDiffs>
   }>
 }
 
@@ -151,58 +156,81 @@ declare module 'likec4:diffs' {
 
 declare module 'likec4:diffs/*' {
   import type { ProjectDiffs } from 'likec4:diffs'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export const $diffs: Atom<ProjectDiffs>
+  export const $diffs: ReadableAtom<ProjectDiffs>
 }
 
 declare module 'likec4:model/*' {
-  import type { aux, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { Atom } from 'likec4:model'
+  import type {
+    aux,
+    DiagramView,
+    LayoutedLikeC4ModelData,
+    LayoutedView,
+    LikeC4Model,
+    UnknownLayouted,
+  } from 'likec4/model'
+  import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  export type { Atom, DiagramView, LayoutedView, LikeC4Model, ReadableAtom, UnknownLayouted }
+
+  // This will be used for augmenting the types
+  export interface Register {
   }
+  export type $Types<T = Register> = T extends { aux: infer A extends aux.Any } ? A : UnknownLayouted
 
-  export type LikeC4ViewId = aux.ViewId<Types>
+  export type LikeC4ViewId = aux.ViewId<$Types>
 
-  export const $likec4data: Atom<LayoutedLikeC4ModelData<Types>>
-  export const $likec4model: Atom<LikeC4Model<Types>>
-  export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
-  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData<$Types>>
+  export const $likec4model: ReadableAtom<LikeC4Model<$Types>>
+  export function useLikeC4Model(): LikeC4Model<$Types>
+  export function useLikeC4Views(): ReadonlyArray<LayoutedView<$Types>>
+  export function useLikeC4View(viewId: LikeC4ViewId): LayoutedView<$Types> | null
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 }
 
 declare module 'likec4:icons/*' {
-  import type { ReactNode } from 'react'
-  type ElementIconRendererProps = {
-    node: {
-      id: string
-      title: string
-      icon?: string | null | undefined
-    }
-  }
-  export function IconRenderer(props: ElementIconRendererProps): ReactNode
+  import type { JSX } from 'react'
+  import type { ElementIconRendererProps } from 'likec4/react'
+
+  export function IconRenderer(props: ElementIconRendererProps): JSX.Element
 }
 
 declare module 'likec4:react/*' {
-  import type { aux, DiagramView, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
+  import type {
+    aux,
+    DiagramView,
+    LayoutedLikeC4ModelData,
+    LayoutedView,
+    LikeC4Model,
+    UnknownLayouted,
+  } from 'likec4/model'
+  import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  export type { DiagramView, LayoutedView, LikeC4Model, ReadableAtom, UnknownLayouted }
+
+  // This will be used for augmenting the types
+  export interface Register {
   }
+  export type $Types<T = Register> = T extends { aux: infer A extends aux.Any } ? A : UnknownLayouted
 
-  export type LikeC4ViewId = aux.ViewId<Types>
+  export type LikeC4ViewId = aux.ViewId<$Types>
 
-  export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
-  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  // Re-export from likec4:model
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData<$Types>>
+  export const $likec4model: ReadableAtom<LikeC4Model<$Types>>
+  export function useLikeC4Model(): LikeC4Model<$Types>
+  export function useLikeC4Views(): ReadonlyArray<LayoutedView<$Types>>
+  export function useLikeC4View(viewId: LikeC4ViewId): LayoutedView<$Types> | null
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
-  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
-  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types>): JSX.Element
+  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<$Types>): JSX.Element
+  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<$Types>): JSX.Element
+  export function IconRenderer(props: ElementIconRendererProps): JSX.Element
 }
 
 declare module 'likec4:webcomponents/*' {
@@ -230,13 +258,28 @@ declare module 'likec4:rpc' {
 declare module 'likec4:app-config' {
   export let ComponentName: {
     View: string
+    /**
+     * @deprecated
+     */
     Browser: string
   }
-  export let pageTitle: string
-  export let useHashHistory: boolean
-  export let defaultTheme: 'light' | 'dark' | 'auto'
-  export let basepath: string
-  export let isDevelopment: boolean
-  export let krokiD2SvgUrl: string
-  export let krokiPumlSvgUrl: string
+  export const pageTitle: string
+  export const useHashHistory: boolean
+  export const defaultTheme: 'light' | 'dark' | 'auto'
+  export const basepath: string
+  export const isDevelopment: boolean
+  export const krokiD2SvgUrl: string
+  export const krokiPumlSvgUrl: string
+}
+
+declare module 'likec4:customization' {
+  import type { JSX, PropsWithChildren } from 'react'
+  import type { CustomComponents } from 'likec4/react'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
+
+  export type { CustomComponents }
+
+  export const ComponentsAtom: ReadableAtom<CustomComponents>
+
+  export function CustomizationContext(props: PropsWithChildren): JSX.Element
 }

@@ -21,8 +21,9 @@ LikeC4 Vite Plugin allows you to embed views directly, without any pre-build/gen
 The plugin automatically generates all the necessary code to render the views in your application, with Hot Module Replacement (HMR) supported.
 
 This is useful for building documentation, tutorials, or any other application where you want to include diagrams.  
+Not sure this is the right approach? See [Embed in your app](/tooling/embed/) to compare the options.
 
-## Guide
+## Getting started
 
 <br />
 
@@ -45,7 +46,8 @@ This is useful for building documentation, tutorials, or any other application w
 
 2. ### Install LikeC4
 
-    Add `likec4` dependency:
+    Add `likec4` as a dev dependency. The plugin runs at build time, and Vite bundles
+    everything your app imports from the virtual modules, so `likec4` is not needed at runtime:
     
     <PackageManagers
        pkg="likec4"
@@ -68,8 +70,8 @@ This is useful for building documentation, tutorials, or any other application w
 
     export default defineConfig({
       plugins: [
+    +    LikeC4VitePlugin(),
         react(),
-    +     LikeC4VitePlugin(),
       ],
     })
     ```
@@ -201,9 +203,11 @@ This is useful for building documentation, tutorials, or any other application w
 
 <AdvancedCustomizationTip />
 
-## Plugin
+## Plugin options and modules
 
 ### Options
+
+Options that load the LikeC4 model:
 
 | Option         | Description                                                                                         |
 | -----------------| --------------------------------------------------------------------------------------------------- |
@@ -211,10 +215,57 @@ This is useful for building documentation, tutorials, or any other application w
 | `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | fails with rejected promise if model is invalid  (default `false`) |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
+| `watch`          | watch the source files for changes in the dev server (default `true`; a build never watches) |
+| `logLevel`       | `'trace'`, `'debug'`, `'info'`, `'warning'` (default) or `'error'` |
+| <span style="text-wrap:nowrap">`languageServices`</span> | an already initialized model, see [Usage with API](#usage-with-api); can't be combined with the options above |
+
+Application options, at the top level of the plugin options.
+Check the "Read by" column: only `customization` changes the components you embed.
+
+| Option               | Read by                                       | Description                                                                                          |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `customization`      | `likec4:react`, `likec4:webcomponents/*`      | path to the file with [UI customization](/tooling/customization/), relative to the Vite root (experimental) |
+| `title`              | `likec4:app-config`                           | base title of the application pages (default `'LikeC4'`)                                             |
+| `theme`              | `likec4:app-config`                           | default color scheme, `'light'` or `'dark'` (follows the system preference if not set)               |
+| `useHashHistory`     | `likec4:app-config`                           | hash-based navigation, e.g. `/#/view` instead of `/view` (default `false`)                           |
+| `webcomponentPrefix` | `likec4:app-config`                           | prefix for web components, e.g. `'c4'` generates `<c4-view/>` (default `'likec4'`)                   |
+
+- `customization` applies to the React components from `likec4:react` and `likec4:react/<project>`,
+  and to the web components from `likec4:webcomponents/<project>`, which render those React components.
+- `title`, `theme`, `useHashHistory` and `webcomponentPrefix` only set values in the `likec4:app-config` virtual module,
+  which the LikeC4 application (the one served by `likec4 start` and `likec4 build`) reads.
+  They don't change the components from `likec4:react` or `likec4:webcomponents/<project>`
+  (the latter registers the element under the name you pass), and your code sees them only if it imports `likec4:app-config`.
+
+```ts
+// vite.config.ts
+import react from '@vitejs/plugin-react'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    LikeC4VitePlugin({
+      customization: './likec4.customization.tsx',
+    }),
+    react(),
+  ],
+})
+```
+
+:::note
+These options used to be nested in `appConfig` (with `pageTitle` instead of `title`).
+`appConfig` still works, but is deprecated: move the options to the top level. Top-level options win if both are set.
+:::
+
+:::note
+The plugin does not read the [app config](/tooling/app-config/) (`likec4.app.config.ts`).
+That file is for the LikeC4 CLI; with the plugin, pass the options as shown above.
+:::
 
 ### Multi-project workspaces
 
-If you have [multiple projects](/dsl/config/multi-projects/) in your workspace:
+If you have [multiple projects](/config/multi-projects/) in your workspace:
 
 ```tsx "project-a" "project-b"
 // src/main.tsx
@@ -234,29 +285,16 @@ const example = () => (
 
 ### Web components
 
-Use a project-scoped `likec4:webcomponents/*` virtual module to render a LikeC4 view in HTML without adding
-React components to your application code:
+The project-scoped `likec4:webcomponents/<project>` virtual module renders LikeC4 views as custom HTML elements,
+without React components in your application code:
 
 ```ts
 import { defineWebcomponent } from 'likec4:webcomponents/project-a'
 
-defineWebcomponent('likec4-view-project-a')
+defineWebcomponent('likec4-view-project-a') // then use <likec4-view-project-a view-id="index">
 ```
 
-The custom element supports the same attributes as generated LikeC4 web components:
-
-```html
-<likec4-view-project-a
-  view-id="index"
-  browser="true"
-  dynamic-variant="sequence"
-  color-scheme="dark">
-</likec4-view-project-a>
-```
-
-The project id in the import must match a project from your LikeC4 workspace. The custom element name must follow the
-[custom element naming rules](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names),
-including at least one hyphen.
+See [Web components](/tooling/web-components/#with-the-vite-plugin) for the naming rules and the supported attributes.
 
 ### Usage with API
 
@@ -320,7 +358,7 @@ import { loadDiffs } from 'likec4:diffs'
 Complete list - <a href="https://github.com/likec4/likec4/blob/main/packages/vite-plugin/src/modules.d.ts">vite-plugin/modules.d.ts</a>
 
 
-## Usage 
+## Framework integrations
 
 Here are some examples of how to use the plugin with different frameworks
 
@@ -363,7 +401,6 @@ const { viewId } = Astro.props
 
 <ReactLikeC4View
   viewId={viewId}
-  {/* Configure view */}
   controls={false}
   browser={{
     // options for likec4 browser
@@ -398,7 +435,7 @@ Check sources how LikeC4 <a href="https://github.com/likec4/likec4/tree/main/app
 :::
 
 :::caution
-Don't forget to add type references as described [here](/tooling/vite-plugin/#add-type-references).  
+Don't forget to [add type references](#add-type-references).  
 For Astro this is `src/env.d.ts` file.
 :::
 
@@ -469,6 +506,8 @@ You can run `vite build --watch` as a background process to watch for changes in
 
 :::tip
 You can use LikeC4 with other frameworks as well:
-- via [React code generation](/tooling/code-generation/react/)   
-- For non-react-based documentation tools like Docusaurus, see [Web Components](/tooling/code-generation/webcomponent/)
+- via [React code generation](/tooling/react/)
+- for documentation tools that don't use Vite, like Docusaurus or MkDocs, see [Web components](/tooling/web-components/)
+
+See [Embed in your app](/tooling/embed/) to compare all the options.
 :::

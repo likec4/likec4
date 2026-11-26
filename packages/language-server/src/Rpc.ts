@@ -32,7 +32,6 @@ import {
   LayoutView,
   Locate,
   PreviewModelEdit,
-  RegisterProject,
   ReloadProjects,
   RollbackModelEdit,
   ValidateLayout,
@@ -216,19 +215,6 @@ export class Rpc extends ADisposable {
         return
       }),
       // ----------
-      connection.onRequest(RegisterProject.req, async (params, cancelToken) => {
-        logger.debug`received request ${'RegisterProject'}`
-        workspace.ManualLayouts.clearCaches()
-        let project
-        if ('configUri' in params) {
-          project = await workspace.ProjectsManager.registerConfigFile(URI.parse(params.configUri), cancelToken)
-        } else {
-          project = await workspace.ProjectsManager.registerProject(params, cancelToken)
-        }
-
-        return { id: project.id }
-      }),
-      // ----------
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
         logger.debug`received request ${'FetchViewsFromAllProjects'}`
         const views: FetchViewsFromAllProjects.Res['views'] = []
@@ -301,7 +287,7 @@ export class Rpc extends ADisposable {
         const projectId = params.projectId as ProjectId | undefined
         switch (true) {
           case 'element' in params:
-            return likec4Services.ModelLocator.locateElement(params.element, projectId)
+            return likec4Services.ModelLocator.locateElement(params.element, projectId, params.property)
           case 'relation' in params:
             return likec4Services.ModelLocator.locateRelation(params.relation, projectId)
           case 'astPath' in params:
@@ -313,7 +299,7 @@ export class Rpc extends ADisposable {
           case 'view' in params:
             return likec4Services.ModelLocator.locateView(params.view, projectId)
           case 'deployment' in params:
-            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId)
+            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId, params.property)
           default:
             nonexhaustive(params)
         }

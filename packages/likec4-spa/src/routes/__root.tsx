@@ -9,7 +9,7 @@ import type { ProjectId } from '@likec4/core/types'
 import { FramerMotionConfig, LikeC4MantineProvider } from '@likec4/diagram'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { defaultTheme } from 'likec4:app-config'
-import { map } from 'remeda'
+import { CustomizationContext } from 'likec4:customization'
 import { ErrorBoundary } from '../components/ErrorComponent'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
 
@@ -33,6 +33,7 @@ export const Route = createRootRouteWithContext<Context>()({
         padding: 20,
         theme: undefined,
         dynamic: undefined,
+        diff: undefined,
         relationships: undefined,
         focusOnElement: undefined,
       }),
@@ -59,7 +60,9 @@ function RootComponent() {
     >
       <FramerMotionConfig>
         <ErrorBoundary>
-          <Outlet />
+          <CustomizationContext>
+            <Outlet />
+          </CustomizationContext>
         </ErrorBoundary>
       </FramerMotionConfig>
     </LikeC4MantineProvider>

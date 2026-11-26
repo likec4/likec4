@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "description": "A core package for LikeC4, containing types, api, utilities and guards.",
   "homepage": "https://likec4.dev",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -139,8 +139,8 @@
     "mdast-util-to-hast": "^13.2.1",
     "mdast-util-to-string": "^4.0.0",
     "micromark-util-decode-string": "^2.0.1",
-    "micromark-util-types": "^2.0.2",
-    "mnemonist": "0.40.6",
+    "micromark-util-types": "^2.0.3",
+    "mnemonist": "0.40.8",
     "natural-compare-lite": "catalog:utils",
     "obliterator": "^2.0.5",
     "ohash": "catalog:utils",

@@ -1,5 +1,51 @@
 # @likec4/generators
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3564](https://github.com/likec4/likec4/pull/3564) [`4e082a2`](https://github.com/likec4/likec4/commit/4e082a2eb642cb4a323c6e5de2d6ff5e92cb3db6) Thanks [@D0ktay](https://github.com/D0ktay)! - `toDSL()` and `writeDSL()` now escape backslashes in generated strings, so values such as `C:\tools\` or `regex \d+` are read back unchanged instead of corrupting the output.
+
+- [#3598](https://github.com/likec4/likec4/pull/3598) [`a7ff6e6`](https://github.com/likec4/likec4/commit/a7ff6e6f706246783105b0ff31535b29469bb393) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Draw.io export: HTML-escape relationship labels (their cells use `html=1`), so `<`, `>` and `&` in a label show up in draw.io instead of being read as markup. Draw.io import: strip tags before decoding entities, so titles and labels with `<`, `>` or `&` keep that text.
+
+- [#3608](https://github.com/likec4/likec4/pull/3608) [`1e9df9c`](https://github.com/likec4/likec4/commit/1e9df9cb4e4b1c14b8401678fc1e5886562663fe) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Draw.io export follows the layouted edge routes: each edge gets waypoints along its path (with `curved=1`, or `edgeStyle=orthogonalEdgeStyle` for `routing ortho`) and anchors where the path meets its nodes, so parallel edges and their labels no longer sit on top of each other.
+
+- [#3588](https://github.com/likec4/likec4/pull/3588) [`71b60d8`](https://github.com/likec4/likec4/commit/71b60d80eb3f38228be491c1b2da4dbb82553e43) Thanks [@vanshbarfiwala-lgtm](https://github.com/vanshbarfiwala-lgtm)! - Keep distinct elements and their relationships separate in D2 exports when element IDs differ only by case or normalize to the same name.
+
+- [#3603](https://github.com/likec4/likec4/pull/3603) [`e6f5c74`](https://github.com/likec4/likec4/commit/e6f5c740f11e3f9fb40c7ded148c92d09b82916f) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Escape quotes and backslashes in `where metadata.<key> is "..."` values when generating LikeC4 sources
+
+- [#3609](https://github.com/likec4/likec4/pull/3609) [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - The Markdown export writes the project and view titles as one-line headings and escapes Markdown characters in them, so a title such as `Release #`, `Q&A <draft>` or one with a line break is shown as written. `escapeInlineMarkdown` is now exported from `@likec4/core/utils`.
+
+- [#3548](https://github.com/likec4/likec4/pull/3548) [`55955d7`](https://github.com/likec4/likec4/commit/55955d7e20cbf5a6f8a377e4b68e50f0cd771ba3) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Mermaid export: a backtick in a relationship label or in the title of an element with children no longer produces a diagram Mermaid cannot parse
+
+- [#3599](https://github.com/likec4/likec4/pull/3599) [`dbd2e22`](https://github.com/likec4/likec4/commit/dbd2e224870f810587ecc1eb050da350f53faffb) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - The PlantUML export escapes the view title like element titles, so a title with a line break no longer breaks the diagram with a syntax error.
+- Updated dependencies [[`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550), [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534), [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706), [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c)]:
+  - @likec4/core@1.61.1
+  - @likec4/config@1.61.1
+  - @likec4/log@1.61.1
+
+## 1.61.0
+
+### Patch Changes
+
+- [#3549](https://github.com/likec4/likec4/pull/3549) [`334f3b2`](https://github.com/likec4/likec4/commit/334f3b224663336ac822fa0f631fd8455dc459b7) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - D2 export now compiles when an element is named like a D2 keyword (`label`, `icon`, `link`, `top`, `width`, ...), when a title or label contains `${`, and for views with groups. Element keys are quoted, `${` is escaped, and children of a group keep their names.
+
+- [#3354](https://github.com/likec4/likec4/pull/3354) [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Support styled and nested `group` boundaries around deployment nodes and instances in deployment views.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) show the element or view title (or your label) in PlantUML, Draw.io and Markdown exports and in MCP tool results, instead of the raw `[[…]]`. Broken links show their target. The LikeC4 DSL export keeps the links as written.
+  
+  In the model API, `description`, `summary` and `notes` resolve links to titles in `.text` and `.html` (`.md` stays as written), and `LikeC4Model.resolveMarkdownRef` and `resolveMarkdownRefs` from `@likec4/core/utils` resolve links for your own outputs.
+
+- [#3485](https://github.com/likec4/likec4/pull/3485) [`6756c79`](https://github.com/likec4/likec4/commit/6756c790d86400b5b5dd2db7a749fe0c3ce0ab26) Thanks [@bim-ba](https://github.com/bim-ba)! - Mermaid export (`likec4 gen mermaid`) keeps the diagram's colors and line styles: each element gets the fill, border and text color of its LikeC4 color through `classDef`/`class`, and each relationship gets its line color and pattern through `linkStyle` (solid lines are drawn solid, dashed ones dashed, dotted ones dotted). Previously every node used Mermaid's default style and every edge was dotted.
+
+- [#3551](https://github.com/likec4/likec4/pull/3551) [`9d25f39`](https://github.com/likec4/likec4/commit/9d25f392183b02c5bb962af3a30065a986352501) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Mermaid export: elements whose ids map to the same Mermaid name (like `order-service` and `order_service`) get unique names instead of being merged into one
+
+- [#3550](https://github.com/likec4/likec4/pull/3550) [`c15d556`](https://github.com/likec4/likec4/commit/c15d5560eeb5ac41f95bf2ccf96b0665437d6c69) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - PlantUML export: elements whose ids map to the same PlantUML name (like `payment.gateway` and `payment-gateway`) get unique names instead of being merged into one
+- Updated dependencies [[`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7), [`dcf8fef`](https://github.com/likec4/likec4/commit/dcf8fef824432db03c19ea5e30e218d7c2790e38), [`129495d`](https://github.com/likec4/likec4/commit/129495d8a8b24a3189c5fdf84886ab7d4eb37b09), [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1), [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385)]:
+  - @likec4/config@1.61.0
+  - @likec4/core@1.61.0
+  - @likec4/log@1.61.0
+
 ## 1.60.0
 
 ### Patch Changes

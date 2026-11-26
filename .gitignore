@@ -149,3 +149,10 @@ docs/PR-REVIEW-AND-BOT-RESPONSES.md
 
 # Architecture-intelligence planning docs (internal, not official project docs)
 docs/architecture-intelligence/
+
+# Skills linked by pnpm from dependencies
+.agents/skills/pnpm-*
+.claude/skills/pnpm-*
+# pnpm also writes these ignore files on install; keep them untracked
+.agents/skills/.gitignore
+.claude/skills/.gitignore

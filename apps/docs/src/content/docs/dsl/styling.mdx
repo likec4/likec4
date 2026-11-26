@@ -3,7 +3,7 @@ title: Styling
 description: How to customize styles of your diagrams to match your brand and guidelines.
 sidebar: 
   label: Styling
-  order: 7
+  order: 6
 ---
 
 import { Aside, LinkCard } from '@astrojs/starlight/components';
@@ -16,7 +16,7 @@ LikeC4 provides advanced customization capabilities. You can change colors, shap
 There are multiple ways to style elements:
 - Style all elements of a kind in `specification`
 - Specific for an element in `model` or `deployment`
-- Override styles in `view` (more on this in [next section](/dsl/views/predicates/#style-predicates))
+- Override styles in `view` (more on this in [Styles in views](/dsl/views/styles/))
 
 ### Elements of a kind
 
@@ -68,7 +68,7 @@ model {
 
 ### Per view
 
-The [next section](/dsl/views/predicates/#style-predicates) explains how to customize elements per view.
+[Styles in views](/dsl/views/styles/) explains how to customize elements per view.
 
 ## Style properties
 
@@ -101,7 +101,7 @@ specification {
 }
 ```
 
-Available colors: `primary` (default), `secondary`, `muted`, `amber`, `gray`, `green`, `indigo`, `red`.
+Available colors: `primary` (default), `secondary`, `muted`, `amber`, `blue`, `gray`, `green`, `indigo`, `red`, `sky`, `slate`.
 
 <LikeC4ThemeView viewId="index"/>
 
@@ -389,7 +389,7 @@ Supported values: `left` (default), `right`, `top`, `bottom`.
 
 ### Aliased icons
 
-With `@` prefix, you can use aliased folders (learn more in [configuration](/dsl/config/#image-aliases)):
+With `@` prefix, you can use aliased folders (learn more in [configuration](/config/#image-aliases)):
 
 ```likec4 copy
 model {
@@ -535,5 +535,5 @@ How to override default styles is explained in project configuration
 <LinkCard
   title="Project configuration"
   description="Learn how to customize styles in your project"
-  href="/dsl/config/#styles-customization"
+  href="/config/#styles-customization"
 />

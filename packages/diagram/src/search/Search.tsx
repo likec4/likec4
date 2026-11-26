@@ -7,6 +7,7 @@
 
 import { css } from '@likec4/styles/css'
 import { Box, VStack } from '@likec4/styles/jsx'
+import { searchOverlay } from '@likec4/styles/recipes'
 import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
 import { useHotkeys, useMergedRef } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
@@ -18,7 +19,8 @@ import { PortalToContainer } from '../custom'
 import { useDiagram } from '../hooks/useDiagram'
 import { Overlay } from '../overlays/overlay/Overlay'
 import { ElementsColumn } from './components/ElementsColumn'
-import { PickView } from './components/PickView'
+import { PickRelationshipView, PickView } from './components/PickView'
+import { RelationshipsColumn } from './components/RelationshipsColumn'
 import { SearchByTags } from './components/SearchByTags'
 import { LikeC4SearchInput } from './components/SearchInput'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './components/utils'
@@ -27,34 +29,11 @@ import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 import { useSearchContext } from './SearchContext'
 import { XStateSearchAdapter } from './XStateSearchAdapter'
 
-export const dialogCss = css({
-  backgroundColor: `[rgb(34 34 34 / var(--_opacity, 95%))]`,
-  _light: {
-    backgroundColor: `[rgb(250 250 250 / var(--_opacity, 95%))]`,
-  },
-  backdropFilter: 'auto',
-  backdropBlur: 'var(--_blur, 10px)',
-})
-
-export const bodyCss = css({
-  width: '100%',
-  height: '100%',
-  maxHeight: '100vh',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  gap: 'sm',
-  paddingTop: '[20px]',
-  paddingLeft: 'md',
-  paddingRight: 'md',
-  paddingBottom: 'sm',
-  background: 'transparent',
-})
+const overlayClasses = searchOverlay()
 
 const classes = {
-  dialog: dialogCss,
-  body: bodyCss,
+  dialog: overlayClasses.dialog,
+  body: overlayClasses.body,
 }
 
 export const scrollAreaCss = css({
@@ -149,7 +128,7 @@ function SearchOverlayBody({ searchActorRef }: { searchActorRef: SearchActorRef 
  */
 export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
   const contentRef = useRef<HTMLDivElement>(null)
-  const { pickViewFor } = useSearchContext()
+  const { pickViewFor, pickViewForRelationship } = useSearchContext()
 
   return (
     <Box ref={useMergedRef(ref, contentRef)} display={'contents'}>
@@ -166,10 +145,13 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
         </VStack>
       </Group>
       <Grid>
-        <GridCol span={6}>
+        <GridCol span={4}>
           <Title component={'div'} order={6} c="dimmed" pl="md">Elements</Title>
         </GridCol>
-        <GridCol span={6}>
+        <GridCol span={4}>
+          <Title component={'div'} order={6} c="dimmed" pl="sm">Relationships</Title>
+        </GridCol>
+        <GridCol span={4}>
           <Title component={'div'} order={6} c="dimmed" pl="sm">Views</Title>
         </GridCol>
       </Grid>
@@ -180,27 +162,40 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
           overflow: 'hidden',
           flexGrow: 1,
         })}>
-        <GridCol span={6}>
+        <GridCol span={4}>
           <ScrollArea
             type="scroll"
             className={scrollAreaCss}
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="wait" initial={false}>
                 <ElementsColumn />
               </AnimatePresence>
             </LayoutGroup>
           </ScrollArea>
         </GridCol>
-        <GridCol span={6}>
+        <GridCol span={4}>
+          <ScrollArea
+            type="scroll"
+            className={scrollAreaCss}
+            pr="xs"
+            scrollbars="y">
+            <LayoutGroup id="likec4-search-relationships">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <RelationshipsColumn />
+              </AnimatePresence>
+            </LayoutGroup>
+          </ScrollArea>
+        </GridCol>
+        <GridCol span={4}>
           <ScrollArea
             type="scroll"
             className={scrollAreaCss}
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-views">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="popLayout" initial={false}>
                 <ViewsColumn />
               </AnimatePresence>
             </LayoutGroup>
@@ -208,6 +203,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
         </GridCol>
       </Grid>
       {pickViewFor && <PickView elementFqn={pickViewFor} />}
+      {pickViewForRelationship && <PickRelationshipView relationId={pickViewForRelationship} />}
     </Box>
   )
 })

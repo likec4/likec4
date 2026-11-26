@@ -1,7 +1,7 @@
 import { DefaultTagColorValues, isDefaultTagColor } from '@likec4/style-preset/defaults'
 import chroma from 'chroma-js'
 import { defu } from 'defu'
-import { isDeepEqual, isEmptyish, pick } from 'remeda'
+import { pick } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import type {
   ComputedNodeStyle,
@@ -11,7 +11,7 @@ import type {
   NTuple,
 } from '../types'
 import { ensureSizes, flattenMarkdownOrString } from '../types'
-import { memoizeProp, objectHash } from '../utils'
+import { LRUMap, memoizeProp, objectHash } from '../utils'
 import type { DefaultTagColors } from './assignTagColors'
 import { computeColorValues } from './compute-color-values'
 import { computeCompoundColorValues } from './compute-compound-colors'
@@ -55,45 +55,69 @@ export class LikeC4Styles {
   public readonly theme: LikeC4Theme
   public readonly defaults: LikeC4StyleDefaults
 
-  public static readonly DEFAULT: LikeC4Styles = new LikeC4Styles(defaultStyle)
+  private static _T: LikeC4Styles | undefined = undefined
+  public static get DEFAULT(): LikeC4Styles {
+    return this._T ??= new LikeC4Styles(
+      defaultStyle,
+      objectHash({
+        config: defaultStyle,
+        customCss: {},
+      }),
+    )
+  }
 
-  static from(
+  private static readonly instances = new LRUMap<string, WeakRef<LikeC4Styles>>(100)
+  public static from(
     stylesConfig: LikeC4ProjectStylesConfig | undefined,
     customColors?: CustomColorDefinitions | undefined,
   ) {
-    if (!stylesConfig && !customColors) {
+    const { customCss, theme, defaults } = { ...stylesConfig }
+    if (!customCss && !theme && !defaults && !customColors) {
       return this.DEFAULT
     }
-    const { customCss, theme, defaults } = { ...stylesConfig }
     const mergedConfig = defu(
       { theme },
       { defaults: { ...defaults } as LikeC4StyleDefaults },
       { theme: { colors: { ...customColors } } } satisfies LikeC4ProjectStylesConfig,
       defaultStyle,
     )
-    if (isEmptyish(customCss?.content) && isDeepEqual(mergedConfig, defaultStyle)) {
+    const fingerprint = objectHash({
+      config: mergedConfig,
+      customCss: customCss ?? {},
+    })
+    if (fingerprint === this.DEFAULT.fingerprint) {
       return this.DEFAULT
     }
-    return new LikeC4Styles(
+    const cached = this.instances.get(fingerprint)?.deref()
+    if (cached) {
+      return cached
+    }
+    const instance = new LikeC4Styles(
       mergedConfig,
+      fingerprint,
       customCss,
     )
+    this.instances.set(fingerprint, new WeakRef(instance))
+    return instance
   }
+
+  public readonly fingerprint: string
 
   private constructor(
     protected config: LikeC4StylesConfig,
+    fingerprint: string,
     protected customCss?: LikeC4ProjectStylesCustomStylesheets,
   ) {
     this.theme = config.theme
     this.defaults = config.defaults
+    this.fingerprint = fingerprint
   }
 
-  get fingerprint(): string {
-    return memoizeProp(this, 'fingerprint', () =>
-      objectHash({
-        config: this.config,
-        customCss: this.customCss,
-      }))
+  /**
+   * Content of the project's custom stylesheets
+   */
+  get customCssContent(): string {
+    return this.customCss?.content ?? ''
   }
 
   /**

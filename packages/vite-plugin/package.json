@@ -1,6 +1,6 @@
 {
   "name": "@likec4/vite-plugin",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "private": true,
   "description": "LikeC4 Vite Plugin",
   "homepage": "https://likec4.dev",
@@ -70,6 +70,7 @@
     "langium": "catalog:langium",
     "nano-spawn": "catalog:externals",
     "p-debounce": "catalog:utils",
+    "p-limit": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "pathe": "catalog:utils",
     "remeda": "catalog:utils",

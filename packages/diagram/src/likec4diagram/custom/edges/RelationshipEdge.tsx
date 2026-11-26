@@ -6,7 +6,8 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { EdgeId, EdgeRouting } from '@likec4/core/types'
-import { css, cx as clsx } from '@likec4/styles/css'
+import { css, cx } from '@likec4/styles/css'
+import { edgeControlPoints } from '@likec4/styles/recipes'
 import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
@@ -38,9 +39,15 @@ import {
 } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import { EdgeDrifts } from './EdgeDrifts'
-import * as edgesCss from './edges.css'
 import { useControlPoints } from './useControlPoints'
 import { useRelationshipEdgePath } from './useRelationshipEdgePath'
+
+const labelDraggable = css({
+  cursor: 'grab!',
+  _active: {
+    cursor: 'grabbing!',
+  },
+})
 
 export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
@@ -367,7 +374,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           >
             <EdgeLabel
               pointerEvents="all"
-              className={enabledEditing ? edgesCss.labelDraggable : undefined}
+              className={enabledEditing ? labelDraggable : undefined}
               {...sequenceStepData}
               edgeProps={props}>
               {navigateTo && (
@@ -401,6 +408,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 })
 RelationshipEdge.displayName = 'RelationshipEdge'
 
+const controlPointsClasses = edgeControlPoints()
 function ControlPoints({
   isControlPointDragging,
   edgeProps,
@@ -558,7 +566,7 @@ function ControlPoints({
     <EdgeLabelRenderer>
       <EdgeContainer
         component="svg"
-        className={edgesCss.controlPointsContainer}
+        className={controlPointsClasses.container}
         {...edgeProps}>
         <g
           data-active={isControlPointDragging ? true : undefined}
@@ -569,8 +577,8 @@ function ControlPoints({
               data-control-point-index={i}
               onPointerDownCapture={onControlPointerDown}
               onDoubleClick={onControlPointerDblClick}
-              className={clsx('nodrag nopan', edgesCss.controlPoint)}
               key={'controlPoints' + edgeId + '#' + i}
+              className={cx('nodrag nopan', controlPointsClasses.point)}
               cx={p.x}
               cy={p.y}
             />

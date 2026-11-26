@@ -79,6 +79,7 @@ export { objectHash } from './object-hash'
 export { stringHash } from './string-hash'
 
 export {
+  escapeInlineMarkdown,
   extractRefs,
   type MarkdownRef,
   markdownRefText,
@@ -88,5 +89,13 @@ export {
   resolveMarkdownRefs,
   type ResolveMarkdownRefsOptions,
 } from './markdown'
+
+export {
+  byId,
+  findById,
+  hasId,
+  hasTag,
+  someTagIncludes,
+} from './helpers'
 
 export { unsafePartial } from './unsafe'

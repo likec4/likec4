@@ -1,10 +1,173 @@
 ---
-title: Incorporar em um site
-draft: true
+title: Incorporar diagramas no seu site
+description: Adicione visões LikeC4 a qualquer página HTML com web components, passo a passo, e mantenha-as atualizadas.
+sidebar:
+  label: Incorporar diagramas no seu site
+  order: 3
 ---
 
-import { Card } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
 
-<Card title="Em breve" icon="warning">
-  Esta página está em construção.
-</Card>
+Este guia adiciona visões LikeC4 a uma página HTML simples com [web components](/pt-br/tooling/web-components/).
+Funciona com qualquer site, com ou sem framework.
+Para comparar com as outras formas, veja [Escolha como incorporar diagramas](/pt-br/tooling/embed/).
+
+## Antes de começar
+
+Você precisa do [Node.js](https://nodejs.org) e de uma pasta com seus arquivos `.c4`.
+Os exemplos usam esta estrutura:
+
+```
+my-site/
+├── model/          # seus arquivos .c4
+├── public/         # os arquivos que você hospeda
+│   └── index.html
+└── package.json
+```
+
+## Incorporar uma visão
+
+<Steps>
+
+1. ### Instale o LikeC4
+
+    Adicione [`likec4`](https://www.npmjs.com/package/likec4) às dependências de desenvolvimento:
+
+    <PackageManagers
+      pkg="likec4"
+      dev
+      pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+      frame="none"
+    />
+
+    O próximo passo também precisa de `react` e `react-dom`.
+    O comando oferece instalá-los se estiverem faltando.
+
+2. ### Gere o bundle
+
+    Execute o comando na raiz do projeto:
+
+    <PackageManagers
+      type="exec"
+      pkg="likec4"
+      args="gen webcomponent ./model -o ./public/likec4-views.js"
+      pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+      frame="none"
+    />
+
+    Ele gera um único arquivo JavaScript com todas as suas visões.
+    O React e os estilos vão dentro do bundle, então a página não precisa de mais nada.
+
+    | Opção | Descrição |
+    | ----- | --------- |
+    | `[path]` | Diretório com seus arquivos `.c4` (o padrão é o diretório atual) |
+    | `-o`, `--outfile` | Arquivo de saída, `.js` ou `.mjs` (o padrão é `likec4-views.js` no workspace) |
+    | `-w`, `--webcomponent-prefix` | Prefixo do nome do elemento (padrão `likec4`, gera `<likec4-view>`) |
+    | `-p`, `--project` | Projeto a gerar, em um workspace com [vários projetos](/pt-br/config/multi-projects/) |
+
+    `wc` e `webcomp` são aliases de `webcomponent`.
+    Execute `likec4 gen webcomponent --help` para ver todas as opções.
+
+3. ### Adicione a visão a uma página
+
+    Carregue o script e adicione um elemento `<likec4-view>`:
+
+    ```html {6,10}
+    <!-- public/index.html -->
+    <!doctype html>
+    <html>
+      <head>
+        <title>Arquitetura</title>
+        <script src="./likec4-views.js"></script>
+      </head>
+      <body>
+        <h1>Contexto do sistema</h1>
+        <likec4-view view-id="index"></likec4-view>
+      </body>
+    </html>
+    ```
+
+    Adicione quantos elementos precisar, um por visão.
+    Configure a visão com estes atributos:
+
+    | Atributo | Descrição |
+    | -------- | --------- |
+    | `view-id` | Id da visão a mostrar (padrão `index`) |
+    | `browser` | Abre o navegador de visões ao clicar. Use `"false"` para desativar (padrão `true`) |
+    | `dynamic-variant` | Como mostrar uma visão dinâmica: `diagram` ou `sequence` (padrão `diagram`) |
+    | `color-scheme` | Força `light` ou `dark` (o padrão segue o sistema) |
+
+    Por exemplo, uma visão dinâmica como diagrama de sequência, sem o navegador de visões:
+
+    ```html
+    <likec4-view view-id="checkout" dynamic-variant="sequence" browser="false"></likec4-view>
+    ```
+
+    Se você usar `-w c4`, o elemento será `<c4-view>`.
+
+4. ### Abra a página
+
+    Sirva a pasta `public` com qualquer servidor estático, por exemplo:
+
+    ```sh
+    npx serve public
+    ```
+
+    Depois abra a página no navegador.
+
+</Steps>
+
+## Gere de novo após mudanças
+
+O bundle não se atualiza sozinho.
+Execute o comando de novo sempre que o modelo mudar.
+
+Adicione um script ao `package.json` e chame-o antes do build do site:
+
+```json title="package.json"
+{
+  "scripts": {
+    "likec4:gen": "likec4 gen webcomponent ./model -o ./public/likec4-views.js",
+    "build": "npm run likec4:gen && <build do seu site>"
+  }
+}
+```
+
+Para gerar o bundle no CI, execute o mesmo comando antes do deploy.
+Por exemplo, no GitHub Actions:
+
+```yaml
+- run: npm ci
+- run: npm run likec4:gen
+```
+
+Assim você pode adicionar `public/likec4-views.js` ao `.gitignore`.
+
+<Aside type="tip">
+Para verificar o modelo antes do build, execute `likec4 validate` no CI.
+Veja [Validar seu modelo no CI](/pt-br/guides/validate-your-model/).
+</Aside>
+
+## Outras configurações
+
+### Aplicação Vite ou React
+
+Em uma aplicação React com Vite, use o [plugin Vite](/pt-br/tooling/vite-plugin/).
+Ele lê seus arquivos `.c4` e atualiza os diagramas enquanto você edita, então não há passo de geração.
+Importe `LikeC4View` de `likec4:react`, ou defina um web component com `likec4:webcomponents/<project>`.
+Para React sem Vite, gere componentes com `likec4 gen react`, veja [Componentes React](/pt-br/tooling/react/#componentes-gerados).
+
+### Sites de documentação
+
+- **MkDocs:** use o [plugin para MkDocs](/pt-br/tooling/community/mkdocs-plugin/) da comunidade.
+  Ele renderiza uma visão a partir de um bloco de código `likec4-view` no Markdown.
+- **Docusaurus, VitePress e outros geradores de sites:** use web components como acima.
+  Gere o bundle na pasta de arquivos estáticos (`static/` no Docusaurus, `public/` no VitePress).
+  Carregue o script nas páginas e use `<likec4-view>` no Markdown ou MDX.
+  No VitePress, marque as tags que começam com `likec4-` como custom elements nas opções do compilador Vue.
+
+### Ainda sem site
+
+Para publicar todas as visões como um site, gere o [site estático](/pt-br/guides/publish/).
+O diálogo Share dele fornece um snippet `<iframe>` ou de web component para cada visão.

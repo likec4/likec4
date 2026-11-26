@@ -70,6 +70,33 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           }
         }
       }
+      this.parseDiffViews()
+    }
+
+    /**
+     * Parses dynamic views written inside a diff. They stay on the diff until it is applied.
+     */
+    parseDiffViews() {
+      let index = 0
+      for (const diffAst of this.doc.parseResult.value.diffs) {
+        const parsed = this.doc.c4Diffs[index]
+        if (!parsed || parsed.id !== diffAst.name) {
+          continue
+        }
+        index += 1
+        for (const block of diffAst.viewBlocks) {
+          for (const view of block.views) {
+            if (!this.isValid(view)) {
+              continue
+            }
+            try {
+              parsed.views.push(this.parseDynamicElementView(view, []))
+            } catch (e) {
+              this.logError(e, view, 'diff')
+            }
+          }
+        }
+      }
     }
 
     parseElementView(

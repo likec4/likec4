@@ -2,7 +2,7 @@
 //
 // Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { Fqn, ViewId } from '@likec4/core/types'
+import type { Fqn, RelationId, ViewId } from '@likec4/core/types'
 import { createContext, useContext } from 'react'
 
 export interface SearchContextValue {
@@ -11,8 +11,10 @@ export interface SearchContextValue {
   normalizedSearch: string
   navigateTo: (viewId: ViewId, focusOnElement?: Fqn) => void
   openPickView: (elementFqn: Fqn) => void
+  openPickViewForRelationship: (relationId: RelationId) => void
   closePickView: () => void
   pickViewFor: Fqn | null
+  pickViewForRelationship: RelationId | null
   close: () => void
   currentViewId: string | null
   openedWithSearch: string | null

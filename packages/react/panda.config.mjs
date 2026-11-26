@@ -4,8 +4,8 @@ export default defineConfig({
   include: [
     'src/*.ts',
     '../diagram/src/**/*.{ts,tsx}',
+    '../likec4-spa/src/**/*.{ts,tsx}',
   ],
   clean: true,
   outdir: 'styled-system',
-  // cssVarRoot: ':where(:host,.likec4-shadow-root)',
 })

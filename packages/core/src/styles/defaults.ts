@@ -8,6 +8,7 @@ export const styleDefaults: LikeC4StyleDefaults = {
   opacity: 15,
   shape: 'rectangle',
   group: {
+    // color inherits from root defaults
     opacity: 15,
     border: 'dashed',
   },

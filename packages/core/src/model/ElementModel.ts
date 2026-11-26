@@ -12,7 +12,7 @@ import type {
   Link,
   RichTextOrEmpty,
 } from '../types'
-import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'
+import { exact, preferDescription, preferSummary, splitGlobalFqn } from '../types'
 import type * as aux from '../types/_aux'
 import type * as scalar from '../types/scalar'
 import { commonAncestor, hierarchyLevel, isAncestor, nameFromFqn, sortNaturalByFqn } from '../utils/fqn'
@@ -22,6 +22,7 @@ import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
+import { memoizeDescription, memoizeSummary } from './utils/richtext'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
@@ -117,7 +118,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$element), this.$model.resolveMarkdownRef)
+    return memoizeSummary(this, preferSummary(this.$element))
   }
 
   /**
@@ -125,7 +126,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$element), this.$model.resolveMarkdownRef)
+    return memoizeDescription(this, preferDescription(this.$element))
   }
 
   get technology(): string | null {

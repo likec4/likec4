@@ -53,10 +53,10 @@ model {
       description: 'Serverless compute'
 
       fn_enrich = lambda 'Enrichment' {
-        description: '
-          Enriches raw data
+        description: '''
+          Enriches [[amazon.sqs.queue1]]
           by adding additional information
-        '
+        '''
       }
 
       fn_enrich -> queue1 'reads raw data'
@@ -104,6 +104,14 @@ views 'External' {
 
   view amazon_lambdas of lambdas {
     title: 'Amazon / Lambdas'
+    description '''
+      Lambdas used by the system
+
+      Known lambdas:
+      - [[amazon.lambdas.fn_enrich]]
+
+      More details here: [[view:amazon]]
+    '''
 
     include
       *,

@@ -1,0 +1,54 @@
+---
+title: Arquivos de configuração
+description: Qual arquivo de configuração do LikeC4 usar para cada coisa, e como eles se diferenciam.
+sidebar:
+  label: Arquivos de configuração
+  order: 1
+---
+
+Use a configuração do projeto para o modelo, a configuração do app para a CLI, o arquivo de customização para a interface e a configuração do Vite quando você incorpora o LikeC4 no seu próprio app Vite.
+
+| Arquivo | O que configura | Quem lê | Quando você precisa |
+| ------- | --------------- | ------- | ------------------- |
+| `likec4.config.json`, `.likec4.config.json`, `.likec4rc` ou `likec4.config.{ts,mts,cts,js,mjs,cjs}` | O projeto: nome, título, arquivos incluídos e excluídos, aliases de imagens, estilos, views implícitas, página inicial, configurações do web app para este projeto e mais | Tudo o que carrega o modelo: a extensão do editor, a CLI, o plugin do Vite | Para dividir o modelo em vários projetos, ou para definir qualquer opção do projeto. Sem ele, todos os arquivos pertencem a um único projeto chamado `default` |
+| `likec4.app.config.{ts,mts,cts,js,mjs,cjs}` (experimental) | A aplicação LikeC4 gerada pela CLI: título, tema, URL base, diretório de saída, servidor de desenvolvimento etc. | A CLI: `start`, `build`, `preview`, `export png`, `export jpg`, `gen react`, `gen webcomponent` | Para não repetir as mesmas flags em todo comando |
+| Arquivo de customização, com qualquer nome (os exemplos usam `likec4.customization.tsx`) (experimental) | Componentes React que substituem ou envolvem partes da interface, como o logo ou as formas dos elementos | A CLI, se a configuração do app ou `--customization` apontar para ele; o plugin do Vite, se a opção `customization` apontar | Para mudar a interface além do que os estilos permitem |
+| `vite.config.*` com `LikeC4VitePlugin(...)` | Onde estão os fontes, o motor de layout e as opções da aplicação: título, tema, navegação por hash, prefixo dos web components, arquivo de customização | O Vite | Quando você usa o LikeC4 no seu próprio app Vite |
+
+O plugin do Vite não lê a configuração do app. Com o plugin, passe as opções para `LikeC4VitePlugin`.
+
+O arquivo de customização não tem nome padrão. O LikeC4 não procura por ele: aponte para ele na configuração do app, na flag da CLI ou no plugin do Vite.
+
+## Configuração do projeto em JSON ou TypeScript
+
+Os dois formatos descrevem as mesmas opções do projeto.
+
+Use JSON (`likec4.config.json`, `.likec4.config.json` ou `.likec4rc`) quando a configuração for apenas dados.
+O LikeC4 lê esses arquivos como JSON5, então comentários e vírgulas finais são permitidos.
+`extends` funciona apenas em configurações JSON. Ele mescla apenas `styles` de outros arquivos de configuração.
+
+Use JavaScript ou TypeScript (`likec4.config.ts` e outros) quando precisar de código:
+
+- geradores customizados, que são funções (`generators`, executados com `likec4 gen <nome>`)
+- valores calculados no código, ou importados de outros arquivos
+
+Importe `defineConfig` de `likec4/config` para ter os tipos. O LikeC4 fornece esse módulo ao carregar o arquivo, então você não precisa instalar o `likec4` ao lado dele.
+
+## Título do projeto e título do app
+
+As duas configurações têm um `title`. Eles definem coisas diferentes:
+
+- `title` na configuração do projeto é o título do projeto.
+  O app o mostra no seletor de projetos e na aba do navegador nas páginas deste projeto.
+- `title` na configuração do app é o título da aplicação (`'LikeC4'` por padrão).
+  Ele é usado onde não há projeto, como a lista de projetos, e nas páginas de um projeto sem título.
+
+Com o plugin do Vite, o título da aplicação é a opção `title` do plugin.
+
+## Mais detalhes
+
+- [Configuração do projeto](/pt-br/config/)
+- [Vários projetos](/pt-br/config/multi-projects/)
+- [Configuração do app](/tooling/app-config/)
+- [Customização da interface](/tooling/customization/)
+- [Plugin do Vite](/pt-br/tooling/vite-plugin/)

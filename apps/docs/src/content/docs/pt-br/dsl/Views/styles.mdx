@@ -1,0 +1,213 @@
+---
+title: Estilos nas visões
+description: Altere a aparência dos elementos em uma visão e compartilhe estilos entre visões
+sidebar:
+  label: Estilos
+  order: 12
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Os estilos de tipos de elementos e de elementos são definidos na [especificação e no modelo](/pt-br/dsl/styling/) e valem para todas as visões.
+Uma visão pode alterá-los apenas para si com predicados `style`.
+As visões também podem compartilhar estilos: em um bloco `views`, ou pelo nome a partir do bloco `global`.
+
+Para alterar relacionamentos em uma visão (cor, linha, título), veja [personalização de relacionamentos](/pt-br/dsl/views/predicates/#personalização-de-relacionamentos).
+
+## Predicados de estilo
+
+Predicados de estilo definem como os elementos são renderizados e são aplicados na ordem em que foram definidos, combinando-se com os anteriores:
+
+```likec4
+view apiApp of internetBankingSystem.apiApplication {
+
+  include *
+
+  // apply to all elements
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  // apply only to these elements
+  style singlePageApplication, mobileApp {
+    color secondary
+    size xlarge
+  }
+
+  // apply to all nested elements of apiApplication
+  // (in style predicates, .* and .** match the same elements)
+  style apiApplication.* {
+    color primary
+    multiple true
+  }
+  // apply to apiApplication and its children
+  style apiApplication._ {
+    color primary
+  }
+
+  // apply only to elements with specific tag
+  style element.tag = #deprecated {
+    color muted
+  }
+
+  // apply to elements not tagged
+  style element.tag != #deprecated {
+    opacity 20%
+  }
+}
+```
+
+:::caution
+[`group`](/pt-br/dsl/views/predicates/#grupos) ainda não aceita predicados `style` aninhados.
+:::
+
+## Estilos locais compartilhados
+
+Estilos podem ser compartilhados dentro de um bloco `views` (_"estilos locais"_):
+
+```likec4
+views {
+  // apply to all views in this block
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  view of apiApp {
+    include *
+    style cloud.web.* {
+      color green
+    }
+  }
+
+  view of mobileApp {
+    include *
+    style cloud.ui.* {
+      color amber
+    }    
+  }
+}
+
+views {
+  // Styles from previous block are not applied here
+  // ...
+}
+```
+
+<Aside title="Ordem">
+Os estilos são aplicados na ordem em que são definidos.  
+Primeiro são aplicados os estilos locais do bloco `views` e depois os da `view`.
+</Aside>
+
+:::caution
+As [sobrescritas](/pt-br/dsl/views/predicates/#com-sobrescritas) (`with { ... }` em `include`) são sempre aplicadas por último, depois de todos os estilos.
+:::
+
+## Estilos globais compartilhados
+
+Estilos podem ser compartilhados globalmente.  
+Estilos globais devem ter um nome e ser definidos no bloco `global`:
+
+```likec4  {4,9,15,25,33-34}
+global {
+  // Format:
+  //  style <name> <targets> { ... }
+  style mute_all * {
+    color muted
+    opacity 10%
+  }
+
+  style applications
+    singlePageApplication._,
+    mobileApp._ {
+      color secondary
+    } 
+
+  style mute_deprecated
+    element.tag = #deprecated {
+      color muted
+    }  
+}
+
+views {
+  view of singlePageApplication {  
+    // Styles are applied in the order they are defined
+    // 1. Apply global style
+    global style mute_all
+
+    // 2. Then this
+    style cloud.* {
+      color green
+    }
+
+    // 3. and 4.
+    global style applications
+    global style mute_deprecated    
+  }  
+}
+```
+
+## Grupos de estilos compartilhados
+
+Estilos globais podem ser agrupados:
+
+```likec4 {3,18}
+global {
+  // Define style group
+  styleGroup common_styles {
+    style singlePageApplication, mobileApp {
+      color secondary
+    }
+    style element.tag = #deprecated {
+      color muted
+    }
+  }
+}
+
+views {  
+  view mobileApp of mobileApp {
+    include *
+
+    // Apply styles from group
+    global style common_styles
+
+    // Override
+    style mobileApp {
+      color primary
+    }
+  }
+}
+```
+
+:::tip
+Estilos globais e grupos podem ser usados como estilos locais de `views`:
+
+```likec4
+global {
+  style mute_all * { color muted }
+  styleGroup theme1 { //...
+  }
+  styleGroup theme2 { //...
+  }
+}
+
+// All views within this block have styles from 'theme1'
+views {
+  global style theme1
+  view view1 { //... 
+  }
+}
+
+// All views have 'mute_all' style and all from 'theme2'
+views {
+  global style mute_all
+  global style theme2
+  view view2 { //... 
+  }
+}
+```
+:::

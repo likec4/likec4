@@ -2,7 +2,7 @@
 
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import postcssPanda from '@pandacss/dev/postcss'
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { tanstackRouter } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
@@ -18,6 +18,12 @@ const main = defineCommand({
       type: 'positional',
       valueHint: 'dir',
       description: 'likec4 source directory',
+      required: false,
+    },
+    customization: {
+      type: 'string',
+      valueHint: 'file',
+      description: 'file with UI customizations (default export of defineCustomComponents)',
       required: false,
     },
     verbose: {
@@ -53,46 +59,48 @@ const main = defineCommand({
         allowedHosts: true,
       },
       resolve: {
+        tsconfigPaths: true,
         conditions: ['sources', 'import', 'default'],
         alias: {
           // Local paths for dev
-          'likec4/react': resolve('../react/dist/index.mjs'),
-          '@likec4/diagram/adhoc-editor': resolve('../diagram/src/adhoc-editor/index.ts'),
+          // Virtual modules import `likec4/*`, tsconfig paths do not apply to them
+          'likec4/react': resolve('shims/react.ts'),
+          'likec4/model': resolve('shims/model.ts'),
+          'likec4/vite-plugin/internal': resolve('shims/vite-plugin.ts'),
           '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
           '@likec4/diagram': resolve('../diagram/src/index.ts'),
-          'likec4/vite-plugin/internal': resolve('../vite-plugin/src/internal.ts'),
         },
       },
       plugins: [
-        TanStackRouterVite(),
-        react({
-          compiler: true,
-        }),
         LikeC4VitePlugin({
           workspace,
+          customization: context.args.customization ? resolve(context.args.customization) : undefined,
           ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',
         }),
+        tanstackRouter(),
+        react({
+          compiler: true,
+          exclude: [/\.d\.[cm]?ts$/],
+        }),
       ],
-    }).then((server) => server.listen())
+    })
 
+    await server.listen()
+
+    // await server.waitForRequestsIdle()
     console.log('')
     server.printUrls()
     console.log('')
 
-    await new Promise<void>((resolve, reject) => {
-      process.on('SIGINT', () => {
-        console.info('Received SIGINT, stopping server...')
-        server.close().then(() => {
-          console.info('Server stopped')
-          resolve()
-        }).catch((error) => {
-          console.error('Error stopping server:', error)
-          reject(error)
-        })
+    process.on('SIGINT', () => {
+      server.close().then(() => {
+        process.exit(0)
+      }).catch((error) => {
+        console.error('Error stopping server:', error)
+        process.exit(1)
       })
     })
-    process.exit(0)
   },
 })
 

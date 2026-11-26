@@ -18,6 +18,8 @@ Homogeneity: Playwright specs use `test.describe` + `test()`/`test.beforeEach`; 
 - [x] Playground: Export all triggers .drawio download.
 - [x] Playground: editor (Monaco) menu shows Export to DrawIO.
 - [x] CLI: `likec4 export drawio` produces file with `<mxfile` (Vitest in `e2e/src/likec4-cli-export-drawio.spec.ts`).
+- [x] CLI: app config (`likec4.app.config.ts`): options from the file, flags win, `--no-app-config`, unknown options fail, `codegen webcomponent` (Vitest in `e2e/src/likec4-cli-app-config.spec.ts`; workspace `e2e/fixtures/app-config`).
+- [x] Static site: UI customization from the app config: replaced `ElementShape`, wrapped `LikeC4Diagram` (`tests/app-config-customization.spec.ts`; second web server of the main config, port 5176).
 - [x] CLI: `likec4 diff list`, `diff apply --dry-run` and `safe-delete` in a workspace with several projects (Vitest in `e2e/src/likec4-cli-diff.spec.ts`).
 
 ## Pending (optional)

@@ -1,7 +1,7 @@
 import { nonNullable } from '@likec4/core'
 import type * as t from '@likec4/core/types'
 import { useSelector as useXstateSelector } from '@xstate/react'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual as eq } from 'fast-equals'
 import { deriveToggledFeatures, isComparingLayouts } from '../likec4diagram/state/machine.setup'
 import type {
   DiagramActorSnapshot,
@@ -11,6 +11,7 @@ import { useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'
 
 export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
+  viewId: string
   isEnabled: false
   hasEditor: boolean
   isEditable: false
@@ -19,6 +20,7 @@ export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   canApplyLatest: boolean
   layout: t.LayoutType
 } | {
+  viewId: string
   isEnabled: true
   hasEditor: boolean
   isEditable: boolean
@@ -32,6 +34,7 @@ export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   const drifts = context.view.drifts ?? null
   if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
     return ({
+      viewId: context.view.id,
       hasEditor,
       isEnabled: false as const,
       isEditable: false as const,
@@ -47,6 +50,7 @@ export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   const isEditable = !enableReadOnly && hasEditor
 
   return ({
+    viewId: context.view.id,
     hasEditor,
     isEnabled: true as const,
     isEditable,
@@ -96,7 +100,7 @@ export function useDiagramCompareLayout(): [
   DiagramCompareLayoutOps,
 ] {
   const actorRef = useDiagramActorRef()
-  const state = useXstateSelector(actorRef, selectCompareLayoutState, shallowEqual)
+  const state = useXstateSelector(actorRef, selectCompareLayoutState, eq)
 
   const switchLayout = useCallbackRef((layoutType: t.LayoutType) => {
     if (!state.isEnabled) {

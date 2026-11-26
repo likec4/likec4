@@ -22,6 +22,12 @@ const nodeName = (node: Node): string => {
 
 const toSingleQuotes = (str: string): string => str.replace(/\\?"/g, `'`)
 
+/**
+ * Text for a Mermaid markdown string (`"\`...\`"`): a double quote or a backtick inside would end the string,
+ * so both become single quotes.
+ */
+const toMarkdownStringText = (str: string): string => toSingleQuotes(str).replaceAll('`', `'`)
+
 const mmdshape = ({ shape, title }: Node): string => {
   const label = `label: ${JSON.stringify(title)}`
   switch (shape) {
@@ -66,7 +72,7 @@ const mmdshape = ({ shape, title }: Node): string => {
  * @example mmdArrow('solid', 'calls') // ' -- "`calls`" --> '
  */
 const mmdArrow = (line: RelationshipLineType, label: string | null): string => {
-  const text = label ? `"\`${toSingleQuotes(label)}\`"` : null
+  const text = label ? `"\`${toMarkdownStringText(label)}\`"` : null
   switch (true) {
     case line === 'solid': {
       return text ? ` -- ${text} --> ` : ' --> '
@@ -149,15 +155,26 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const styles = viewmodel.$model.$styles
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
+  // Different ids can end up with the same name, e.g. `order-service` and `order_service`
+  // are both `Order_service`. Mermaid would merge such nodes, so add a numeric suffix.
+  const usedNames = new Set<string>()
+  const uniqueName = (name: string): string => {
+    let unique = name
+    for (let i = 2; usedNames.has(unique); i++) {
+      unique = `${name}${i}`
+    }
+    usedNames.add(unique)
+    return unique
+  }
 
   const printNode = (node: Node, parentName?: string): CompositeGeneratorNode => {
     const name = nodeName(node)
-    const fqnName = (parentName ? parentName + '.' : '') + name
+    const fqnName = uniqueName((parentName ? parentName + '.' : '') + name)
     names.set(node.id, fqnName)
 
     const baseNode = new CompositeGeneratorNode()
     if (node.children.length > 0) {
-      const label = toSingleQuotes(node.title)
+      const label = toMarkdownStringText(node.title)
       baseNode
         .append('subgraph ', fqnName, '["`', label, '`"]', NL)
         .indent({

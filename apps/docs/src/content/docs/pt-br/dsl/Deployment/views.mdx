@@ -2,8 +2,8 @@
 title: Visões de deployment
 description: Como visualizar deployments com o LikeC4
 sidebar: 
-  # label: Deployment views
-  order: 12
+  label: Visões
+  order: 21
 ---
 
 import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -44,28 +44,30 @@ views {
 As visões de deployment são baseadas nos mesmos [predicados](/pt-br/dsl/views/predicates) das visões do modelo.  
 Porém, elas fazem referência a nós e instâncias de deployment.
 
-<Aside type='caution' title='Em desenvolvimento'>
-  Os recursos a seguir ainda não são suportados ou não funcionam como esperado:
- 
-  - expressões `with` (exceto `navigateTo` em nós e instâncias de deployment)
-  - estilos e predicados compartilhados
-  - navegador de relacionamentos e popups de detalhes de elementos e relacionamentos (funcionam com o modelo lógico)
+<Aside type='caution' title='Limitações'>
+  As visões de deployment diferem das visões do modelo:
+
+  - Expressões `with` em elementos suportam apenas `navigateTo`. As demais propriedades são ignoradas, e um `with` de elemento sem `navigateTo` não inclui nada. Use [regras `style`](/pt-br/dsl/views/styles#predicados-de-estilo) para alterar a aparência.
+  - Estilos compartilhados do bloco `views`, estilos globais e grupos globais de predicados não são suportados.
+  - O navegador de relacionamentos e o popup de detalhes de relacionamentos funcionam com o modelo lógico.
+    O navegador de relacionamentos está disponível para instâncias implantadas e mostra os relacionamentos do elemento lógico;
+    relacionamentos definidos no modelo de deployment não aparecem no popup de detalhes de relacionamentos.
 
   ```likec4
   deployment view prod {
     include *                                   // funciona
-    include * where tag is #next                // funciona (veja os detalhes abaixo)
+    include * where tag is #next                // funciona (veja Filtragem abaixo)
     include server with {
-      navigateTo server_deployment              // funciona (veja os detalhes abaixo)
+      navigateTo server_deployment              // funciona (veja Navegação abaixo)
     }
-    include * with { color: red }               // não funciona
+    include server with { color red }           // ignorado, apenas navigateTo é suportado
+    style server { color red }                  // funciona
 
     include * -> *                              // funciona
-    include * -> * where tag is #next           // funciona
-    include * -> * where source.tag is #next    // funciona (veja os detalhes abaixo)
-    include * -> * with { color: red }          // não funciona
+    include * -> * where source.tag is #next    // funciona (veja Filtragem abaixo)
+    include * -> * with { color red }           // funciona
 
-    global style applications                   // não funciona    
+    global style applications                   // não suportado
   }
   ```
 </Aside>
@@ -106,17 +108,29 @@ Quando uma condição sobre um elemento é verificada, aplicam-se as seguintes r
 - tags não são herdadas de nós ou elementos pais.
 
 ```likec4
+specification {
+  element system
+  element component
+  deploymentNode environment
+  deploymentNode zone
+  tag next
+  tag alpha
+  tag beta
+  tag gamma
+  tag sigma
+  tag delta
+}
 model {
-  element cloud {
-    element frontend {
+  cloud = system {
+    frontend = component {
       #next
       -> backend "rel1"
     }
-    element backend {
+    backend = component {
       #next
       -> db "rel2"
     }
-    element db
+    db = component
   }
 }
 deployment {
@@ -124,15 +138,15 @@ deployment {
     #alpha
     zone eu { // Resulting tags: #beta
       #beta
-      instanceOf frontend { // Resulting tags: #next, #gamma
+      instanceOf cloud.frontend { // Resulting tags: #next, #gamma
           #gamma
       }
-      instanceOf backend { // Resulting tags: #next, #sigma
+      instanceOf cloud.backend { // Resulting tags: #next, #sigma
           #sigma
       }
       eu -> prod.db "rel3"
     }
-    instanceOf db { // Resulting tags: #delta
+    instanceOf cloud.db { // Resulting tags: #delta
       #delta
     }
   }
@@ -147,8 +161,8 @@ views {
       where source.tag is #beta // includes relation "rel3"
     include prod.eu -> prod.db
       where source.tag is #sigma // does not include any relations
-    include eu.* -> prod.db
-      where source.tag is #sigma // includes relations "rel2"
+    include prod.eu.* -> prod.db
+      where source.tag is #sigma // includes relation "rel2"
   }
 }
 ```
@@ -179,6 +193,48 @@ views {
   }
 }
 ```
+
+### Grupos
+
+Use `group` para desenhar um contorno em volta de nós ou instâncias de deployment, sem alterar o modelo de deployment:
+
+```likec4
+deployment view production {
+  group 'European zones' {
+    color amber
+    border solid
+    opacity 20%
+
+    include prod.eu.zone1, prod.eu.zone2
+  }
+}
+```
+
+Grupos podem ser anônimos ou aninhados, e podem conter predicados `include` e `exclude` de deployment.
+Eles seguem as mesmas [regras de ordenação dos grupos de elementos](/pt-br/dsl/views/predicates#grupos).
+Diferentemente dos grupos de elementos, os grupos de deployment são inseridos dentro do pai de deployment visível que compartilham,
+incluindo ancestrais adicionados por `includeAncestors true`:
+
+```likec4
+deployment view production {
+  include prod
+  group 'Layer 2' {
+    include prod.app1, prod.app2
+  }
+  group 'Layer 3' {
+    include prod.api
+  }
+}
+```
+
+Aqui, os dois grupos ficam dentro de `prod`, e as instâncias selecionadas ficam dentro de seus grupos.
+Os membros devem compartilhar o mesmo pai de deployment. Selecionar nós com pais diferentes é reportado como
+erro, mesmo que esses pais não estejam visíveis ou compartilhem um ancestral comum. Nesse caso, use grupos separados
+dentro de cada contêiner de deployment. Isso também se aplica a endpoints de relacionamentos e a seleções dentro de grupos aninhados.
+Se um pai e seus descendentes forem selecionados no mesmo grupo, o grupo envolve o pai e preserva
+sua hierarquia de deployment; o pai é considerado o membro ao verificar a exigência de pai compartilhado.
+
+Grupos de predicados e estilos compartilhados não são suportados dentro de grupos de deployment.
 
 ### Incluir ancestrais
 
@@ -234,16 +290,11 @@ deployment {
 }
 
 views {
-  view index {
-    title 'Landscape'
-    include *
-  }
-
   deployment view ancestors_test {
-    includeAncestors: true
+    includeAncestors true
 
-    include hyp1.tomcat1.svc1
-    include hyp2.tomcat2.svc2
+    include hyp1.vm.tomcat1.svc1
+    include hyp2.vm.tomcat2.svc2
   }
 }
 ```

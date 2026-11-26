@@ -1,9 +1,10 @@
 import { css } from '@likec4/styles/css'
-import { container } from '@likec4/styles/patterns'
+import { styled } from '@likec4/styles/jsx'
+import { container, hstack } from '@likec4/styles/patterns'
 
 export { focusable } from './_shared.css'
 
-const whenContainerIsNarrow = `@container likec4-tree (max-width: 450px)`
+export const whenContainerIsNarrow = `@container likec4-tree (max-width: 450px)`
 
 export const treeNode = css({
   outline: 'none',
@@ -33,45 +34,21 @@ export const elementExpandIcon = css({
   color: 'text.dimmed',
 })
 
-export const elementTitleAndId = css({
-  [whenContainerIsNarrow]: {
-    flexDirection: 'column-reverse',
-    alignItems: 'flex-start',
-    gap: '0.5',
-  },
-})
-
-// export const elementTitle = css(title)
-export const elementId = css({
-  // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: 'xxs',
-  lineHeight: 'sm',
-  display: 'block',
-  fontWeight: 'medium',
-  whiteSpace: 'nowrap',
-  padding: '[1px 5px]',
-  borderRadius: 'sm',
-  background: `mantine.dark[9]/30`,
-  _light: {
-    background: `mantine.gray[3]/20`,
-  },
+export const ElementTitleAndId = styled('div', {
+  base: hstack.raw({
+    flexWrap: 'nowrap',
+    gap: 'xs',
+    [whenContainerIsNarrow]: {
+      flexDirection: 'column-reverse',
+      alignItems: 'flex-start',
+      gap: '0.5',
+    },
+  }),
 })
 
 export const elementIcon = css({
   ['--likec4-icon-size']: '24px',
   [whenContainerIsNarrow]: {
     ['--likec4-icon-size']: '18px',
-  },
-})
-
-export const elementViewsCount = css({
-  flex: '[0]',
-  // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: 'xxs',
-  fontWeight: 'medium',
-  whiteSpace: 'nowrap',
-  lineHeight: '[1.1]',
-  [whenContainerIsNarrow]: {
-    display: 'none',
   },
 })

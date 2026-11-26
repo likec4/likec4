@@ -583,6 +583,8 @@ export function layoutRelationshipsView(
     }
   })
 
+  const scopedEdges = scope ? [...scope.edges()] : []
+
   return {
     subjectExistsInScope: !scope || scope.includesElement(subject.id),
     bounds: {
@@ -611,6 +613,17 @@ export function layoutRelationshipsView(
         navigateTo,
       } = nonNullable(find(edges, e => e.name === ename))
       const onlyRelation = only(relations)
+      const scopedEdgesForGroup = scopedEdges.filter(edge => relations.some(r => edge.includesRelation(r.id)))
+      const commonScopedStyle = <T>(values: T[]) => {
+        const [value] = values
+        return values.length > 0 && values.every(v => v === value)
+          ? { found: true as const, value }
+          : { found: false as const }
+      }
+      const color = commonScopedStyle(scopedEdgesForGroup.map(edge => edge.color))
+      const line = commonScopedStyle(scopedEdgesForGroup.map(edge => edge.line))
+      const head = commonScopedStyle(scopedEdgesForGroup.map(edge => edge.head))
+      const tail = commonScopedStyle(scopedEdgesForGroup.map(edge => edge.tail))
       // dagre sets the center of the label
       const labelX: unknown = edge['x']
       const labelY: unknown = edge['y']
@@ -631,12 +644,12 @@ export function layoutRelationshipsView(
           height: label.height,
         },
         navigateTo,
-        color: onlyRelation?.color ?? 'gray',
+        color: color.found ? color.value ?? onlyRelation?.color ?? 'gray' : onlyRelation?.color ?? 'gray',
         existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
         points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
-        line: onlyRelation?.line ?? 'dashed',
-        head: onlyRelation?.head,
-        tail: onlyRelation?.tail,
+        line: line.found ? line.value ?? onlyRelation?.line ?? 'dashed' : onlyRelation?.line ?? 'dashed',
+        head: head.found ? head.value : onlyRelation?.head,
+        tail: tail.found ? tail.value : scopedEdgesForGroup.length === 0 ? onlyRelation?.tail : undefined,
         relations: relations.map(r => r.id),
         parent: null,
       }))

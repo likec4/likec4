@@ -57,9 +57,9 @@ export const colors = defineSemanticTokens.colors({
       dark: 'rgba(0,0,0,0.88)',
     }),
     warning: value({
-      description: 'Warning text color',
-      value: orange[6],
-      dark: orange[5],
+      description: 'Warning text color · orange leaned toward bright text, ≥4.5:1 on default and washed surfaces',
+      value: `color-mix(in oklab, ${orange[8]} 70%, ${black})`,
+      dark: `color-mix(in oklab, ${orange[8]} 70%, ${white})`,
     }),
   },
 
