@@ -492,8 +492,17 @@ ViewRuleStyle:
 ViewRuleGlobalStyle:
   'global' 'style' style=[GlobalStyleId:Id];
 
+ViewRuleRelationshipStyle:
+  'style' targets+=RelationshipStyleTarget (',' targets+=RelationshipStyleTarget)* '{'
+    props+=RelationshipStyleProperty*
+  '}';
+
+RelationshipStyleTarget:
+  {infer RelationshipTagExpression} 'relationship.tag' IsEqual tag=TagRef |
+  {infer RelationshipKindExpression} 'relationship.kind' IsEqual kind=[RelationshipKind:Id];
+
 ViewRuleStyleOrGlobalRef:
-  ViewRuleStyle | ViewRuleGlobalStyle;
+  ViewRuleStyle | ViewRuleRelationshipStyle | ViewRuleGlobalStyle;
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection (

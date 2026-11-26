@@ -71,6 +71,16 @@ export const viewRuleStyle = z
   })
   .transform(v => v as AnyViewRuleStyle<FqnExpr>)
 
+export const viewRuleRelationshipStyle = z.object({
+  relationshipStyle: z.object({
+    where: schemas.whereOperator,
+    color: common.color.optional(),
+    line: common.line.optional(),
+    head: common.arrow.optional(),
+    tail: common.arrow.optional(),
+  }),
+})
+
 export const viewRuleGlobalStyle = z.object({ styleId: z.string() })
   .transform(v => v as ViewRuleGlobalStyle)
 export const viewRuleGlobalPredicate = z.object({ predicateId: z.string() })
@@ -138,6 +148,7 @@ export const elementViewRule = z
     viewRulePredicate,
     viewRuleAutoLayout,
     viewRuleStyle,
+    viewRuleRelationshipStyle,
     viewRuleGlobalStyle,
     viewRuleGlobalPredicate,
     viewRuleRank,

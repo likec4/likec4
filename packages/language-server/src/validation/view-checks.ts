@@ -48,6 +48,18 @@ export const viewRuleRankChecks = (_services: LikeC4Services): ValidationCheck<a
   })
 }
 
+export const viewRuleRelationshipStyleChecks = (
+  _services: LikeC4Services,
+): ValidationCheck<ast.ViewRuleRelationshipStyle> => {
+  return tryOrLog((el, accept) => {
+    if (AstUtils.hasContainerOfType(el, ast.isDynamicView)) {
+      accept('error', 'Relationship styles are not supported in dynamic views', {
+        node: el,
+      })
+    }
+  })
+}
+
 function areSame(a: ast.FqnRef | undefined, b: ast.FqnRef | undefined): boolean {
   if (!a && !b) return true
   if (!a || !b) return false
