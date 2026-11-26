@@ -27,7 +27,20 @@ Parameters are:
 - direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
 - rank distance: optional, a positive number - the space between levels (ranks) of the layout.
 - node distance: optional, a positive number - the space between elements on the same level.
+- compound distance: optional, a positive number - the space between a top-level compound and the elements or compounds next to it on the same level.
+  A compound is an element shown with its children, a deployment node with its children, or a group.
 - edge routing: optional, possible values are `spline` or `ortho`. See [Edge routing](#edge-routing).
+
+The compound distance applies only to top-level compounds; compounds nested inside another compound keep their spacing.
+Without it, the space between compounds follows from the node distance between their elements.
+The node distance still applies when the compound distance is set, so a small compound distance may not change the layout.
+
+```likec4
+view {
+  include *
+  autoLayout TopBottom 120 110 150
+}
+```
 
 <Aside>
 Manual changes are supported in VSCode extension, but functionality is limited.  

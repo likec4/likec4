@@ -54,7 +54,7 @@ style ELEMENT_EXPRESSION, ... {
   // Apply style properties to elements matching the expressions
 }
 global style STYLE_GROUP_IDENTIFIER
-autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep] [nodeSep] [spline|ortho]
+autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep [nodeSep [compoundSep]]] [spline|ortho]
 ```
 
 See [Predicates](./predicates.md) for more information on predicates and expressions.
