@@ -130,6 +130,21 @@ void describe('check-agent-skills', () => {
     expectPass(createFixture())
   })
 
+  void it('accepts the skills .gitignore written by pnpm', () => {
+    expectPass(createFixture(root => {
+      writeFixtureFile(root, '.claude/skills/.gitignore', '# pnpm\n/ai-core\n# pnpm end\n')
+    }))
+  })
+
+  void it('rejects unexpected tracked files in Claude skills', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(root, '.claude/skills/README.md', 'not a skill\n')
+      }),
+      /Unexpected tracked Claude skill adapter: \.claude\/skills\/README\.md/,
+    )
+  })
+
   void it('rejects missing Claude skill adapters', () => {
     expectFail(
       createFixture(root => {

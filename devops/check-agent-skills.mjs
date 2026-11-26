@@ -145,7 +145,14 @@ const validateSkillScript = (relativePath, expectedHelpFragments) => {
   }
 }
 
-const trackedClaudeSkillEntries = [...tracked.keys()].filter(file => file.startsWith('.claude/skills/'))
+/**
+ * pnpm writes this file on install to ignore skills it links from dependencies.
+ */
+const pnpmSkillsGitignore = '.claude/skills/.gitignore'
+
+const trackedClaudeSkillEntries = [...tracked.keys()].filter(file =>
+  file.startsWith('.claude/skills/') && file !== pnpmSkillsGitignore
+)
 const unexpectedClaudeSkillEntries = trackedClaudeSkillEntries.filter(file => !expectedClaudeSkillLinks.has(file))
 
 if (unexpectedClaudeSkillEntries.length > 0) {
