@@ -19,6 +19,9 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
         },
       },
     },
+    define: {
+      'process.env.NODE_ENV': '"production"',
+    },
     env: {
       NODE_ENV: 'production',
     },
@@ -41,7 +44,6 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
     checks: {
       bundlerTimings: false,
     },
-    ...config,
   }
 
   if (Array.isArray(config)) {

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/lsp",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "description": "Standalone LikeC4 Language Server for editor integrations",
   "keywords": [
     "likec4",
@@ -44,6 +44,7 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
+    "chokidar": "catalog:externals",
     "fdir": "catalog:externals",
     "jiti": "catalog:externals",
     "picomatch": "catalog:externals",

@@ -120,7 +120,7 @@ export class RichText implements BaseRichText {
     source: RichTextOrEmpty | MarkdownOrString | string | null | undefined,
     resolveRef?: MarkdownRefTitleResolver | undefined,
   ): RichTextOrEmpty {
-    if (source === null || source === undefined || source === RichText.EMPTY) {
+    if (source === null || source === undefined || source === emptyTxt || source === RichText.EMPTY) {
       return RichText.EMPTY
     }
     if (resolveRef) {
@@ -214,7 +214,7 @@ export class RichText implements BaseRichText {
     if ('txt' in source) {
       return source.txt
     }
-    return memoizeProp(this, symb_text, () => markdownToText(source.md!))
+    return memoizeProp(this, symb_text, () => markdownToText(source.md))
   }
 
   /**
@@ -249,19 +249,17 @@ export class RichText implements BaseRichText {
     if ('txt' in source) {
       return source.txt
     }
-    return memoizeProp(this, symb_html, () => markdownToHtml(source.md!))
+    return memoizeProp(this, symb_html, () => markdownToHtml(source.md))
   }
 
   equals(other: unknown): boolean {
     if (this === other) return true
-    if (!(other instanceof RichText)) return false
-    if (this.isEmpty && other.isEmpty) return true
-    if (this.isEmpty !== other.isEmpty || this.isMarkdown !== other.isMarkdown) return false
-
-    if (this.isMarkdown) {
-      return this.$source?.md === other.$source?.md
-    }
-    return this.$source?.txt === other.$source?.txt
+    if (
+      !isRichText(other) ||
+      this.isEmpty !== other.isEmpty ||
+      this.isMarkdown !== other.isMarkdown
+    ) return false
+    return this.md === other.md
   }
 }
 
@@ -274,7 +272,7 @@ function getMarkdown(source: RichTextOrEmpty | MarkdownOrString | string): strin
   }
   let md: string | undefined
   if (isRichText(source)) {
-    md = source.nonEmpty && source.isMarkdown ? source.md : undefined
+    md = source.isMarkdown ? source.$source.md : undefined
   } else {
     md = hasProp(source, 'md') ? source.md : undefined
   }
@@ -331,11 +329,11 @@ class RichTextWithRefs extends RichText {
   }
 
   override get text(): string {
-    return memoizeProp(this, symb_text, () => markdownToText(this.md, this.resolveRef))
+    return memoizeProp(this, symb_text, () => markdownToText(this.$source.md, this.resolveRef))
   }
 
   override get html(): string {
-    return memoizeProp(this, symb_html, () => markdownToHtml(this.md, this.resolveRef))
+    return memoizeProp(this, symb_html, () => markdownToHtml(this.$source.md, this.resolveRef))
   }
 
   override equals(other: unknown): boolean {

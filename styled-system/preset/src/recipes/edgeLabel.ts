@@ -70,6 +70,7 @@ export const edgeLabel = defineRecipe({
       fontSize: px(M.label.fontSize),
       lineHeight: String(M.label.lineHeight),
       margin: '0',
+      lineClamp: M.label.maxLines,
     },
     technology: {
       textAlign: 'center',

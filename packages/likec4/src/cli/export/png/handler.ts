@@ -5,309 +5,25 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type DiagramView, type NonEmptyArray, invariant } from '@likec4/core'
-import { fromWorkspace } from '@likec4/language-services/node'
+import { invariant } from '@likec4/core'
 import { resolve } from 'node:path'
-import { hrtime } from 'node:process'
-import picomatch from 'picomatch'
-import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
-import { joinURL, withTrailingSlash } from 'ufo'
-import type { ViteDevServer } from 'vite'
 import type { Argv } from 'yargs'
-import { resolveAppConfig } from '../../../app-config'
-import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
-import { resolveServerUrl } from '../../../vite/printServerUrls'
-import { relativeToCwd } from '../../../vite/utils'
-import { viteDev } from '../../../vite/vite-dev'
+import { createLikeC4Logger } from '../../../logger'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { appConfig, customization, path, project, useDotBin, withoutDefault } from '../../options'
-import { takeScreenshot } from './takeScreenshot'
+import {
+  type ImageExportArgs,
+  concurrencyOption,
+  notationPanelOptions,
+  resolveImageExportConfig,
+  runExport,
+} from '../image/runExport'
 
-/** CLI args for export png command (single type for handler and runExportPng). */
-export type PngExportArgs = {
-  /** The directory where c4 files are located. */
-  path: string
-  /** Output directory (defaults to workspace when undefined). */
-  output: string | undefined
-  project: string | undefined
-  /** If 'relative' PNG are exported keeping the same directory structure as source files. */
-  outputType: 'relative' | 'flat'
-  /** If set, use this served url instead of starting a new server. */
-  serverUrl?: string | undefined
-  theme?: 'light' | 'dark'
-  useDotBin: boolean
-  timeoutMs?: number
-  maxAttempts?: number
-  /** Continue if export fails for some views. */
-  ignore?: boolean
-  filter?: string[] | undefined
-  /** Enable/disable chromium sandbox (see Playwright docs). */
-  chromiumSandbox?: boolean
-  /** Use sequence layout for dynamic views. */
-  sequence?: boolean | undefined
-  /** Image format: 'png' or 'jpeg'. Defaults to 'png'. */
-  format?: 'png' | 'jpeg'
-  /** JPEG quality (1-100). Only used when format is 'jpeg'. Defaults to 80. */
-  quality?: number
-  /** Include view notation in exported images. */
-  notation?: boolean
-  /** Include view description in exported images. */
-  description?: boolean
-  /** Absolute path to the file with UI customizations, applied when the server is started by the export. */
-  customization?: string | undefined
-}
-
-/**
- * Resolves the workspace, graphviz and the file with UI customizations for the image export:
- * flags of the CLI, then the app config.
- *
- * The color scheme of the app config is not used: `--theme` of the export is the scheme of the images.
- */
-export async function resolveImageExportConfig(
-  args: {
-    'app-config'?: string | boolean | undefined
-    path?: string | undefined
-    'use-dot'?: boolean | undefined
-    customization?: string | undefined
-  },
-  logger: ViteLogger,
-): Promise<Pick<PngExportArgs, 'path' | 'useDotBin' | 'customization'>> {
-  const config = await resolveAppConfig({
-    appConfig: args['app-config'],
-    path: args.path,
-    useDot: args['use-dot'],
-    customization: args.customization,
-  })
-  if (config.configFile) {
-    logger.info(`${k.cyan('app config')} ${k.dim(relativeToCwd(config.configFile))}`)
-  }
-  return {
-    path: config.workspace,
-    useDotBin: config.graphviz === 'binary',
-    customization: config.customization,
-  }
-}
-
-/** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
-export async function exportViewsToPNG(
-  {
-    logger,
-    serverUrl,
-    theme = 'light',
-    timeoutMs = 15_000,
-    views,
-    output,
-    outputType = 'relative',
-    maxAttempts = 3,
-    chromiumSandbox = false,
-    sequence = false,
-    format = 'png',
-    quality,
-    notation = false,
-    description = false,
-  }: {
-    logger: ViteLogger
-    serverUrl: string
-    theme?: 'light' | 'dark'
-    timeoutMs?: number
-    views: NonEmptyArray<DiagramView>
-    output: string
-    outputType?: 'relative' | 'flat'
-    maxAttempts?: number
-    chromiumSandbox?: boolean
-    sequence?: boolean
-    format?: 'png' | 'jpeg'
-    quality?: number | undefined
-    notation?: boolean
-    description?: boolean
-  },
-) {
-  logger.info(`${k.dim('output')} ${output}`)
-  logger.info(`${k.dim('base url')} ${serverUrl}\n`)
-  const { chromium } = await import('playwright')
-  const chromePath = chromium.executablePath()
-  logger.info(k.cyan('Start chromium') + ' ' + k.dim(chromePath))
-  const browser = await chromium.launch({
-    chromiumSandbox,
-    headless: true,
-  })
-  logger.info(k.cyan(`Color scheme: `) + theme + '\n')
-  const browserContext = await browser.newContext({
-    deviceScaleFactor: 2,
-    colorScheme: theme,
-    baseURL: serverUrl,
-    bypassCSP: true,
-    ignoreHTTPSErrors: true,
-    isMobile: false,
-  })
-  browserContext.setDefaultNavigationTimeout(timeoutMs)
-  browserContext.setDefaultTimeout(timeoutMs)
-  try {
-    return await takeScreenshot({
-      browserContext,
-      views,
-      output,
-      outputType,
-      logger,
-      maxAttempts,
-      dynamicVariant: sequence ? 'sequence' : 'diagram',
-      timeout: timeoutMs,
-      theme,
-      format,
-      quality,
-      notation,
-      description,
-    })
-  } finally {
-    logger.info(k.cyan(`close chromium`))
-    await browserContext.close()
-    await browser.close()
-  }
-}
-
-/** Run the PNG export workflow: init workspace, start server if needed, export views (align with drawio/json). */
-export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Promise<void> {
-  const {
-    path: workspacePath,
-    useDotBin,
-    project,
-    theme = 'light',
-    output: outputArg,
-    outputType,
-    serverUrl,
-    ignore = false,
-    timeoutMs = 15_000,
-    maxAttempts = 3,
-    filter,
-    sequence = false,
-    chromiumSandbox = false,
-    format = 'png',
-    quality,
-    notation = false,
-    description = false,
-    customization,
-  } = args
-
-  await using likec4 = await fromWorkspace(workspacePath, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-
-  const output = outputArg ?? likec4.workspace
-  let server: ViteDevServer | undefined
-  let resolvedServerUrl = serverUrl
-
-  const projects = [...likec4.languageServices.projects()]
-  if (project) {
-    if (!projects.some(p => p.id === project)) {
-      logger.error(`project not found: ${project}`)
-      throw new Error(`project not found: ${project}`)
-    }
-  }
-
-  try {
-    if (!resolvedServerUrl) {
-      logger.info(k.cyan(`start preview server`))
-      server = await viteDev({
-        languageServices: likec4,
-        buildWebcomponent: false,
-        openBrowser: false,
-        hmr: false,
-        customization,
-      })
-      resolvedServerUrl = resolveServerUrl(server)
-      if (!resolvedServerUrl) {
-        logger.error('Vite server is not ready, no resolvedUrls')
-        throw new Error('Vite server is not ready, no resolvedUrls')
-      }
-    }
-
-    for (const prj of projects) {
-      if (project && prj.id !== project) {
-        continue
-      }
-      if (projects.length > 1) {
-        logger.info(k.dim('---------'))
-        logger.info(`${k.dim('project:')} ${prj.id}`)
-        logger.info(`${k.dim('folder:')} ${prj.folder.fsPath}`)
-      }
-      const model = await likec4.layoutedModel(prj.id)
-      let views: DiagramView[] = [...model.views()].map(vm => vm.$layouted)
-
-      if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
-        const matcher = picomatch(filter)
-        logger.info(`${k.cyan('filter')} ${k.dim(JSON.stringify(filter))}`)
-        views = views.filter((v: DiagramView) => {
-          if (matcher(v.id)) {
-            logger.info(`${k.green('include')} ${v.id} ✅`)
-            return true
-          }
-          logger.info(`${k.gray('skip')} ${k.dim(v.id)}`)
-          return false
-        })
-      }
-
-      if (!hasAtLeast(views, 1)) {
-        logger.warn('no views found')
-        continue
-      }
-
-      const _serverUrl = projects.length > 1
-        ? withTrailingSlash(joinURL(resolvedServerUrl, 'project', prj.id))
-        : resolvedServerUrl
-      const _output = projects.length > 1 ? joinURL(output, prj.id) : output
-
-      const startTakeScreenshot = hrtime()
-      const succeed = await exportViewsToPNG({
-        logger,
-        serverUrl: _serverUrl,
-        theme,
-        timeoutMs,
-        views,
-        output: _output,
-        outputType,
-        maxAttempts,
-        sequence,
-        chromiumSandbox,
-        format,
-        quality,
-        notation,
-        description,
-      })
-      const { pretty } = inMillis(startTakeScreenshot)
-
-      if (succeed.length > 0) {
-        logger.info(k.green(`exported ${succeed.length} views in ${pretty}`) + '\n')
-      }
-      if (succeed.length !== views.length) {
-        if (ignore && succeed.length > 0) {
-          logger.info(
-            k.dim('ignore') + ' ' + k.red(`failed ${views.length - succeed.length} out of ${views.length} views`),
-          )
-        } else {
-          logger.error(k.red(`failed ${views.length - succeed.length} out of ${views.length} views`))
-        }
-      }
-
-      if (succeed.length !== views.length && (succeed.length === 0 || !ignore)) {
-        throw new Error(`Failed ${views.length - succeed.length} out of ${views.length} views`)
-      }
-    }
-  } finally {
-    if (server) {
-      logger.info(k.cyan(`stop server`))
-      await server.close().catch(e => {
-        logger.error(e)
-      })
-    }
-  }
-}
-
-/** CLI entry: create logger and delegate to runExportPng (align with drawio/json handlers). */
-export async function pngHandler(args: PngExportArgs): Promise<void> {
+/** CLI entry: create logger and delegate to runExport (align with drawio/json handlers). */
+export async function pngHandler(args: ImageExportArgs): Promise<void> {
   const logger = createLikeC4Logger('c4:export')
-  await runExportPng(args, logger)
+  await runExport({ ...args, format: 'png' }, logger)
 }
 
 /** Registers the `export png` subcommand with yargs (path, outdir, project, theme, etc.). */
@@ -381,6 +97,7 @@ export function pngCmd(yargs: Argv) {
             default: 3,
             nargs: 1,
           },
+          ...concurrencyOption,
           'server-url': {
             type: 'string',
             desc: 'use this url instead of starting new likec4 server',
@@ -396,6 +113,7 @@ export function pngCmd(yargs: Argv) {
             desc: 'include view notation in exported PNG files',
             default: false,
           },
+          ...notationPanelOptions,
           'description': {
             boolean: true,
             desc: 'include view description in exported PNG files',
@@ -418,6 +136,7 @@ export function pngCmd(yargs: Argv) {
     handler: async args => {
       invariant(args.timeout >= 1, 'timeout must be >= 1')
       invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
+      invariant(Number.isInteger(args.concurrency) && args.concurrency >= 1, 'concurrency must be a positive integer')
       await ensureReact()
       await ensurePlaywright()
       const theme = args.theme ?? (args.dark ? 'dark' : 'light')
@@ -428,6 +147,7 @@ export function pngCmd(yargs: Argv) {
           project: args.project,
           timeoutMs: args.timeout * 1000,
           maxAttempts: args['max-attempts'],
+          concurrency: args.concurrency,
           ignore: args.ignore === true,
           outputType: args.flat ? 'flat' : 'relative',
           serverUrl: args['server-url'],
@@ -436,8 +156,10 @@ export function pngCmd(yargs: Argv) {
           sequence: args.seq,
           chromiumSandbox: args['chromium-sandbox'],
           notation: args.notation,
+          notationPosition: args['notation-position'],
+          notationText: args['notation-text'],
           description: args.description,
-        } satisfies PngExportArgs,
+        } satisfies ImageExportArgs,
       )
     },
   })

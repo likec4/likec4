@@ -21,9 +21,9 @@ import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } fr
 import type { AILayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, Disposable, interruptAndCheck } from 'langium'
-import { isTruthy, values } from 'remeda'
+import { isPlainObject, isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
-import { type Storage, createStorage, prefixStorage } from 'unstorage'
+import { type Storage, prefixStorage } from 'unstorage'
 import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
@@ -132,16 +132,15 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
   constructor(private services: LikeC4Services) {
     super()
     this.ModelBuilder = services.likec4.ModelBuilder
-    this.#storage = createStorage()
+    this.#storage = prefixStorage(services.shared.workspace.Unstorage, 'views')
 
     this.onDispose(
-      this.#storage,
       Disposable.create(() => {
         this.#projectStorages.clear()
       }),
       services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
         viewsLogger.info`force clean cache`
-        this.#storage.clear()
+        clearStorage(this.#storage).catch(err => viewsLogger.warn(loggable(err)))
       }),
       services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
         if (!this.#projectStorages.has(projectId)) {
@@ -437,10 +436,9 @@ class ProjectStorage {
 
   async get(task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
     const key = cacheKey(task)
-    const cached = await this.#storage.get(key)
-    if (cached) {
-      this.#logger.trace`cache hit for ${task.view.id}`
-      return mergeWithCachedLayout(task.view, cached)
+    const fromCache = await this.#fromCache(key, task)
+    if (fromCache) {
+      return fromCache
     }
     this.#logger.trace`cache miss for ${task.view.id}`
     return undefined
@@ -448,18 +446,41 @@ class ProjectStorage {
 
   async getOrExecute(task: LayoutTaskParams): Promise<GraphvizOut> {
     const key = cacheKey(task)
-    const cached = await this.#storage.get(key)
-    if (cached) {
-      this.#logger.trace`cache hit for ${task.view.id}`
-      return mergeWithCachedLayout(task.view, cached)
+    const fromCache = await this.#fromCache(key, task)
+    if (fromCache) {
+      return fromCache
     }
     this.#logger.trace`cache miss for ${task.view.id}`
     const m0 = performanceMark()
     const result = await this.#layouter(task)
     this.#logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
-    await this.#storage.set(key, result)
+    this.#storage.set(key, result).catch(err => {
+      this.#logger.warn(err)
+    })
     this.resetViewError(task.view)
     return result
+  }
+
+  /**
+   * Returns the cached layout merged with the current view.
+   * Malformed entries (e.g. a damaged cache file) are removed and treated as a cache miss.
+   */
+  async #fromCache(key: string, task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
+    const cached = await this.#storage.get(key)
+    if (!cached) {
+      return undefined
+    }
+    if (isCachedLayout(cached)) {
+      try {
+        const result = mergeWithCachedLayout(task.view, cached)
+        this.#logger.trace`cache hit for ${task.view.id}`
+        return result
+      } catch (error) {
+        this.#logger.warn(`invalid cache entry for {view}`, { view: task.view.id, error })
+      }
+    }
+    await this.#storage.remove(key).catch(err => this.#logger.warn(loggable(err)))
+    return undefined
   }
 
   remember = <A extends GraphvizOut | undefined>(task: LayoutTaskParams, result: A): A => {
@@ -501,13 +522,34 @@ class ProjectStorage {
    */
   clearAll() {
     this.#logger.trace`clear caches`
-    this.#storage.clear()
+    clearStorage(this.#storage).catch(err => this.#logger.warn(loggable(err)))
   }
 
   private resetViewError(view: ComputedView | ViewId) {
     const id = typeof view === 'string' ? view : view.id
     this.#storage.del(`error:${id}`)
   }
+}
+
+/**
+ * Removes all keys of the (possibly prefixed) storage.
+ * `clear()` of a prefixed storage does not reach the driver mounted at the root.
+ */
+async function clearStorage(storage: Storage<any>): Promise<void> {
+  const keys = await storage.keys()
+  await Promise.all(keys.map(key => storage.remove(key)))
+}
+
+/**
+ * Guards against malformed cache entries (e.g. a partially written file),
+ * these are treated as a cache miss.
+ */
+function isCachedLayout(value: unknown): value is GraphvizOut {
+  return isPlainObject(value)
+    && typeof value['dot'] === 'string'
+    && isPlainObject(value['diagram'])
+    && Array.isArray(value['diagram']['nodes'])
+    && Array.isArray(value['diagram']['edges'])
 }
 
 function cacheKey(task: LayoutTaskParams) {

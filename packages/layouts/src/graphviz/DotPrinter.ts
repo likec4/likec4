@@ -2,6 +2,7 @@ import type { LikeC4Styles } from '@likec4/core/styles'
 import type {
   AnyFqn,
   ComputedNode,
+  ComputedRankConstraint,
   ComputedView,
   DeploymentFqn,
   EdgeId,
@@ -20,8 +21,8 @@ import {
   nameFromFqn,
   nonNullable,
 } from '@likec4/core/utils'
-import { Graph } from '@likec4/core/utils/graphology'
 import { createLogger } from '@likec4/log'
+import Graph from 'graphology'
 
 import {
   concat,
@@ -62,6 +63,7 @@ export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 const FontName = 'Arial'
 
 const logger = createLogger('dot')
+const rankLogger = createLogger('dot.rank')
 
 type ViewToPrint = Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout' | 'routing'>
 type NodeOf<V extends ViewToPrint> = V['nodes'][number]
@@ -292,6 +294,29 @@ export abstract class DotPrinter<V extends ViewToPrint> {
         indentSize: 2,
       },
     }) as DotSource
+  }
+
+  /**
+   * Adds a rank subgraph per constraint. Compound nodes are clusters, Graphviz can't rank them, so they are skipped.
+   */
+  protected applyExplicitRankBlocks(ranks: ReadonlyArray<ComputedRankConstraint>): this {
+    let applied = 0
+    for (const constraint of ranks) {
+      const nodes = [...new Set(constraint.nodes)]
+        .map(id => this.getGraphNode(id))
+        .filter((node): node is NodeModel => Boolean(node))
+      if (nodes.length === 0) {
+        continue
+      }
+      const rankSubgraph = this.G.createSubgraph({ [_.rank]: constraint.type })
+      nodes.forEach(node => rankSubgraph.node(node.id))
+      applied += 1
+      rankLogger.trace`rank ${constraint.type} => ${nodes.map(node => node.id).join(', ')}`
+    }
+    if (applied > 0) {
+      this.G.set('likec4_rankBlocks' as any, applied)
+    }
+    return this
   }
 
   protected enableNewRankIfNeeded(): this {

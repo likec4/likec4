@@ -12,12 +12,18 @@ import type { Argv } from 'yargs'
 import { createLikeC4Logger } from '../../../logger'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { appConfig, customization, path, project, useDotBin, withoutDefault } from '../../options'
-import { type PngExportArgs, resolveImageExportConfig, runExportPng } from '../png/handler'
+import {
+  type ImageExportArgs,
+  concurrencyOption,
+  notationPanelOptions,
+  resolveImageExportConfig,
+  runExport,
+} from '../image/runExport'
 
-/** CLI entry: create logger and delegate to runExportPng with format=jpeg. */
-export async function jpgHandler(args: PngExportArgs): Promise<void> {
+/** CLI entry: create logger and delegate to runExport with format=jpeg. */
+export async function jpgHandler(args: ImageExportArgs): Promise<void> {
   const logger = createLikeC4Logger('c4:export')
-  await runExportPng({ ...args, format: 'jpeg' }, logger)
+  await runExport({ ...args, format: 'jpeg' }, logger)
 }
 
 const DEFAULT_JPEG_QUALITY = 80
@@ -100,6 +106,7 @@ export function jpgCmd(yargs: Argv) {
             default: 3,
             nargs: 1,
           },
+          ...concurrencyOption,
           'server-url': {
             type: 'string',
             desc: 'use this url instead of starting new likec4 server',
@@ -115,6 +122,7 @@ export function jpgCmd(yargs: Argv) {
             desc: 'include view notation in exported JPEG files',
             default: false,
           },
+          ...notationPanelOptions,
           'description': {
             boolean: true,
             desc: 'include view description in exported JPEG files',
@@ -138,6 +146,7 @@ export function jpgCmd(yargs: Argv) {
       invariant(args.quality >= 1 && args.quality <= 100, 'quality must be between 1 and 100')
       invariant(args.timeout >= 1, 'timeout must be >= 1')
       invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
+      invariant(Number.isInteger(args.concurrency) && args.concurrency >= 1, 'concurrency must be a positive integer')
       await ensureReact()
       await ensurePlaywright()
       const theme = args.theme ?? (args.dark ? 'dark' : 'light')
@@ -148,6 +157,7 @@ export function jpgCmd(yargs: Argv) {
           project: args.project,
           timeoutMs: args.timeout * 1000,
           maxAttempts: args['max-attempts'],
+          concurrency: args.concurrency,
           ignore: args.ignore === true,
           outputType: args.flat ? 'flat' : 'relative',
           serverUrl: args['server-url'],
@@ -158,8 +168,10 @@ export function jpgCmd(yargs: Argv) {
           format: 'jpeg',
           quality: args.quality,
           notation: args.notation,
+          notationPosition: args['notation-position'],
+          notationText: args['notation-text'],
           description: args.description,
-        } satisfies PngExportArgs,
+        } satisfies ImageExportArgs,
       )
     },
   })

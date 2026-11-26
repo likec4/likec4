@@ -52,6 +52,8 @@
         'caniuse-lite',
         'zx',
         'autoprefixer',
+        '/^postcss/',
+        'memfs',
         '@typescript/native-preview',
         '@fontsource-variable/**',
         '@fontsource/**',

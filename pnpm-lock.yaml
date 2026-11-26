@@ -7,153 +7,172 @@ importers:
     configDependencies: {}
     packageManagerDependencies:
       pnpm:
-        specifier: 12.14.0
-        version: 12.14.0
+        specifier: 12.23.0
+        version: 12.23.0
 
 packages:
 
-  '@pnpm/exe.android-arm64@12.14.0':
-    resolution: {integrity: sha512-+iSh7x21C3A2hqc+Z0ZmbKTcn6YNlzrXM142PsnQH/dLj0DYxFzoBvc6XAnL/yfQ5nnH2ebBiRj/zVxr61fZbQ==}
+  '@pnpm/exe.android-arm64@12.23.0':
+    resolution: {integrity: sha512-oqZu9yFInENTRA9BKiOnEqOcpr5dNMDbquxq9zKFKJy0nEC385Vw0e4wlsOAlDh90iX94GND6Fc22FVL2O2SmQ==}
     cpu: [arm64]
     os: [android]
 
-  '@pnpm/exe.android-x64@12.14.0':
-    resolution: {integrity: sha512-qT+0LqEr2wBVaxcG2T8cX/R8SSRz2Rvpp8nRR4fh8tnGUZRch87gFmsHUAoSQh7w6j1h0qTjrA384j4xi8frvw==}
+  '@pnpm/exe.android-x64@12.23.0':
+    resolution: {integrity: sha512-fQRjE4Wno8ye0lxhYGmyqdcc6tv+tDGktEmgFzffZ7flp4BG/84VtdXn3i/O4BazgMbNuPdbM75aj7uDZwL7GQ==}
     cpu: [x64]
     os: [android]
 
-  '@pnpm/exe.darwin-arm64@12.14.0':
-    resolution: {integrity: sha512-tnrdUB8ecJoehuKKqi1YHCBVl61xtJ9XVGcx5EviC6fWO4DeGI8GtXrjvJxDBM3nuVjJeWistgsUp/N142x4sw==}
+  '@pnpm/exe.darwin-arm64@12.23.0':
+    resolution: {integrity: sha512-ny5+L92frsfyV3/B3zadYQuU5kBV8o2TXB5WnhBUoJ/9Mz32FVglMr8g1HmUc01yfKkjopZ4rmF1G7vs68JxIg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@pnpm/exe.darwin-x64@12.14.0':
-    resolution: {integrity: sha512-vlBfGkruqQRsEHTW43cPwpYd7QlbIJ//cvpAdb3bVXkI8SgTPoXhCnc05m+ZNiPrrEkBsX/t7KHw9aXpkzPm3Q==}
+  '@pnpm/exe.darwin-x64@12.23.0':
+    resolution: {integrity: sha512-+MNmpJSAzb9yc80d5l4VbZ/3Teh8xtlacATUyTAx6fELUK0xwmgFi05hqzg1sXLdAPij5gcIp82VvrqY5tzPrQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@pnpm/exe.freebsd-x64@12.14.0':
-    resolution: {integrity: sha512-Qg5rxBrGYl6Tfso+EyygPf84fY1Fzy55E/0or+iuYKtnf0vc0MlHJfVIlT7pBukMRntQHRik7hUi0Z4s7AlJsw==}
+  '@pnpm/exe.freebsd-x64@12.23.0':
+    resolution: {integrity: sha512-AGfkooje58I9hh4xdSDyZCPLKvjrjuvlkKTK2gsTtj6wfhVTw1jz33wB1XbERt2/0odJdEfgnBPUIdalRnb7Fw==}
     cpu: [x64]
     os: [freebsd]
 
-  '@pnpm/exe.linux-arm64-musl@12.14.0':
-    resolution: {integrity: sha512-DRIe4yQkXBGA/PhVJdzlbnllxBdAtnMMvTVLLcGpsK5FvJz9kxD2Hyxtn68ovmNkVX06f6p45cQwfm3wx2jn1A==}
+  '@pnpm/exe.linux-arm64-musl@12.23.0':
+    resolution: {integrity: sha512-C09Z3tFnPz7CYiae326dGlJcRUNCBtlJvMc04S9M8YKACebHHyamxCItLAisvGdHVf1BawtU9shV0FngjYxMwA==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-arm64@12.14.0':
-    resolution: {integrity: sha512-7joGShZ44Nk3WpNU+60JoOPjCXlgxhJAq11S2UiVtwCUDgTer1yTPPfxGW8pxaD6046actYLIYDbZNlubHWs0A==}
+  '@pnpm/exe.linux-arm64@12.23.0':
+    resolution: {integrity: sha512-RLby8T0CIWAbljrbmjaX6S3PYhMHnLbUp+IDcOmZIY1/+wy8hJoQpjMPZlV4VJIGl8lZKUXtxJcLJ2XZ1z2SVw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-ppc64@12.14.0':
-    resolution: {integrity: sha512-gSoryn7ySdXd//gjgf3MvvA8ZerJayaSbuMZMtAWq4vb2/wlVEgpl0Kvqt54y58TRj533Qjq2txKgnxd4JyoAQ==}
+  '@pnpm/exe.linux-loong64@12.23.0':
+    resolution: {integrity: sha512-XytxNoKD9/PcugxRHmBptRNDxUYwBtQZwBauJ3lKXFJ3sqHPZSjjFxIMX4HTWQn7FqCVnQlF+tbewjUnvQz0dQ==}
+    cpu: [loong64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-ppc64@12.23.0':
+    resolution: {integrity: sha512-1h9+mBpdmlFA5LW6fAfd5UnLgHakNkEsS1R67mEXY1J6WLLnZcWFJs7Cbde0BD034CRTUa99MaILAuSs2ERf7Q==}
     cpu: [ppc64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-riscv64@12.14.0':
-    resolution: {integrity: sha512-EMjew1H9WqQ7pL+tYqCPwiuB+0PeCiJRV7fyWeuFw0wwYUajFBjcaPO3IGAVu9sdmJDU+e+HYv/Zey6aKae0Vw==}
+  '@pnpm/exe.linux-riscv64@12.23.0':
+    resolution: {integrity: sha512-SlPz2UxUshIxgyBRKT0PHncYr2pIoFOxf6WR68HCkhGmASGljYlYYwRVfefgoIPM603x4Fcge9/B1Z3aIq1bSQ==}
     cpu: [riscv64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-s390x@12.14.0':
-    resolution: {integrity: sha512-shYOj/SFoXD35fHe0pWr2JofwSXulC0BnEIXLj2QokDi0EF//AfKsui35yKIkTEl+s2VJybc3PO4iJNhKIj5Qw==}
+  '@pnpm/exe.linux-s390x@12.23.0':
+    resolution: {integrity: sha512-Hk8jKY0i9sjyKPJFYC71lu7Mq5ahb5sWT2zCqNxzzBCrivvCqv5GVfZurLETC5TsSusE9TRWFpynLgG+iaXmSA==}
     cpu: [s390x]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-x64-musl@12.14.0':
-    resolution: {integrity: sha512-btZiZ2Ot0llKK1ndSfA5i3IRX7/S0VrmzseNH/BJ4c+Cady+S81H6vvU1zByggHMyqQhC8OgxO5PiIY7D9bH0Q==}
+  '@pnpm/exe.linux-x64-musl@12.23.0':
+    resolution: {integrity: sha512-7+9bD4LBQ5r+7nLnIhDgMnvMm7a7cfc28NogU3NY1sM0+0Jz7K+IwxZb4BJDY/AN1s3F26TgZ3az/bjeCshmXA==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-x64@12.14.0':
-    resolution: {integrity: sha512-F6K8e/jWxiuEYJaQtRRUG9ynBSTEHa+t7Lf86MKuOO5UA7WVVMbi+oB8nY6iKW++ncWS2yG6T9faXZGxqNsfoQ==}
+  '@pnpm/exe.linux-x64@12.23.0':
+    resolution: {integrity: sha512-vu/N1nUJxLA0IIumbxL/rR6leGA+++SQY0XL+5KPJ1O2kyvzJoLQYL1ibLGO7TRqsZ90wclboEdhIIWvr3Qsig==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.win32-arm64@12.14.0':
-    resolution: {integrity: sha512-DOjlkVB6TtTKeAAe0hNZXn5S7YqESmo1Z6SGbR4BZNQ4isRg31XVHjX2RFTbY8gnZq68IwzyLmPqlEjMmYxofg==}
+  '@pnpm/exe.netbsd-x64@12.23.0':
+    resolution: {integrity: sha512-c85UPtAJfPR5+ghXS8UGRQlgxwqvz2PFaPaEzIVwUdBU+5DB4X2iuMAMlMXWS6hJ/OjqhKM6tpwyEc4Kkz40Fg==}
+    cpu: [x64]
+    os: [netbsd]
+
+  '@pnpm/exe.win32-arm64@12.23.0':
+    resolution: {integrity: sha512-lx0B8HPaUEG/ovIC0PmA6HhMhXh6ud0pAWVTDNxZvAfAzuGm0RM78SCT/oBY80lbJnwA9al4sTUroqozZK9hVA==}
     cpu: [arm64]
     os: [win32]
 
-  '@pnpm/exe.win32-x64@12.14.0':
-    resolution: {integrity: sha512-/LSX6mew/sLf08XqcjemuklNKf1K/Ftpgj4//hK/HKzI2dKbmxDB27a/2OaQ5a0O3/3OFzlssXDziZsi+yVBwQ==}
+  '@pnpm/exe.win32-x64@12.23.0':
+    resolution: {integrity: sha512-OnbBaQWQcw31m5APFNKcM8kdmM6H7k8MoaOnA2m1LsWAHX7AZKB5cdJfNwhHGBfkURcwWk1bnMXBdllujMiCFw==}
     cpu: [x64]
     os: [win32]
 
-  pnpm@12.14.0:
-    resolution: {integrity: sha512-wYum2HmT09Fky16JSPMrLAbuhUSH4GzY2GeBNC+z5btGNDZwNHEehoArqpw3vqkGzhkprQjXCITJfYAd8TOJpg==}
-    engines: {node: '>=18.*'}
+  pnpm@12.23.0:
+    resolution: {integrity: sha512-AtqU/68TP0YHQyKv5VL5DUC19xriWa77zNrMUIWx1hfpjWXgEx9XSLm2dEWXjuUFXX1ZpHPx7vDVBIVP781ZdQ==}
+    engines: {node: '>=18'}
     hasBin: true
 
 snapshots:
 
-  '@pnpm/exe.android-arm64@12.14.0':
+  '@pnpm/exe.android-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.android-x64@12.14.0':
+  '@pnpm/exe.android-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.darwin-arm64@12.14.0':
+  '@pnpm/exe.darwin-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.darwin-x64@12.14.0':
+  '@pnpm/exe.darwin-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.freebsd-x64@12.14.0':
+  '@pnpm/exe.freebsd-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-arm64-musl@12.14.0':
+  '@pnpm/exe.linux-arm64-musl@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-arm64@12.14.0':
+  '@pnpm/exe.linux-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-ppc64@12.14.0':
+  '@pnpm/exe.linux-loong64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-riscv64@12.14.0':
+  '@pnpm/exe.linux-ppc64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-s390x@12.14.0':
+  '@pnpm/exe.linux-riscv64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-x64-musl@12.14.0':
+  '@pnpm/exe.linux-s390x@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-x64@12.14.0':
+  '@pnpm/exe.linux-x64-musl@12.23.0':
     optional: true
 
-  '@pnpm/exe.win32-arm64@12.14.0':
+  '@pnpm/exe.linux-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.win32-x64@12.14.0':
+  '@pnpm/exe.netbsd-x64@12.23.0':
     optional: true
 
-  pnpm@12.14.0:
+  '@pnpm/exe.win32-arm64@12.23.0':
+    optional: true
+
+  '@pnpm/exe.win32-x64@12.23.0':
+    optional: true
+
+  pnpm@12.23.0:
     optionalDependencies:
-      '@pnpm/exe.android-arm64': 12.14.0
-      '@pnpm/exe.android-x64': 12.14.0
-      '@pnpm/exe.darwin-arm64': 12.14.0
-      '@pnpm/exe.darwin-x64': 12.14.0
-      '@pnpm/exe.freebsd-x64': 12.14.0
-      '@pnpm/exe.linux-arm64': 12.14.0
-      '@pnpm/exe.linux-arm64-musl': 12.14.0
-      '@pnpm/exe.linux-ppc64': 12.14.0
-      '@pnpm/exe.linux-riscv64': 12.14.0
-      '@pnpm/exe.linux-s390x': 12.14.0
-      '@pnpm/exe.linux-x64': 12.14.0
-      '@pnpm/exe.linux-x64-musl': 12.14.0
-      '@pnpm/exe.win32-arm64': 12.14.0
-      '@pnpm/exe.win32-x64': 12.14.0
+      '@pnpm/exe.android-arm64': 12.23.0
+      '@pnpm/exe.android-x64': 12.23.0
+      '@pnpm/exe.darwin-arm64': 12.23.0
+      '@pnpm/exe.darwin-x64': 12.23.0
+      '@pnpm/exe.freebsd-x64': 12.23.0
+      '@pnpm/exe.linux-arm64': 12.23.0
+      '@pnpm/exe.linux-arm64-musl': 12.23.0
+      '@pnpm/exe.linux-loong64': 12.23.0
+      '@pnpm/exe.linux-ppc64': 12.23.0
+      '@pnpm/exe.linux-riscv64': 12.23.0
+      '@pnpm/exe.linux-s390x': 12.23.0
+      '@pnpm/exe.linux-x64': 12.23.0
+      '@pnpm/exe.linux-x64-musl': 12.23.0
+      '@pnpm/exe.netbsd-x64': 12.23.0
+      '@pnpm/exe.win32-arm64': 12.23.0
+      '@pnpm/exe.win32-x64': 12.23.0
 
 ---
 lockfileVersion: '9.0'
@@ -258,8 +277,8 @@ catalogs:
       specifier: ^4.3.2
       version: 4.3.2
     postcss:
-      specifier: 8.5.30
-      version: 8.5.30
+      specifier: 8.5.33
+      version: 8.5.33
     postcss-import:
       specifier: ^17.0.0
       version: 17.0.0
@@ -358,9 +377,6 @@ catalogs:
     esbuild:
       specifier: 0.28.2
       version: 0.28.2
-    esbuild-node-externals:
-      specifier: 2.0.0
-      version: 2.0.0
   externals:
     '@hpcc-js/wasm-graphviz':
       specifier: 1.29.2
@@ -394,8 +410,8 @@ catalogs:
       specifier: ^0.3.5
       version: 0.3.5
     '@hono/node-server':
-      specifier: ^2.1.6
-      version: 2.1.6
+      specifier: ^2.1.8
+      version: 2.1.8
     '@hono/oauth-providers':
       specifier: ^0.9.1
       version: 0.9.1
@@ -403,8 +419,8 @@ catalogs:
       specifier: ^0.9.1
       version: 0.9.1
     hono:
-      specifier: ^4.13.13
-      version: 4.13.13
+      specifier: ^4.13.18
+      version: 4.13.18
     hono-sessions:
       specifier: ^0.8.1
       version: 0.8.1
@@ -485,6 +501,9 @@ catalogs:
     '@tanstack/react-router':
       specifier: 1.170.46
       version: 1.170.46
+    '@tanstack/react-virtual':
+      specifier: ^3.14.26
+      version: 3.14.26
     '@tanstack/router-cli':
       specifier: 1.167.46
       version: 1.167.46
@@ -532,12 +551,9 @@ catalogs:
     defu:
       specifier: ^6.1.7
       version: 6.1.7
-    esm-env:
-      specifier: ^1.2.2
-      version: 1.2.2
     fast-equals:
-      specifier: ^6.2.1
-      version: 6.2.1
+      specifier: ^6.2.2
+      version: 6.2.2
     fuse.js:
       specifier: ^7.5.0
       version: 7.5.0
@@ -709,7 +725,7 @@ importers:
         version: link:devops
       '@vitest/ui':
         specifier: catalog:vitest
-        version: 4.1.12(vitest@4.1.12)
+        version: 4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
       dprint:
         specifier: 'catalog:'
         version: 0.64.3
@@ -892,10 +908,10 @@ importers:
         version: 37.3.11
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.9.1(hono@4.13.13)
+        version: 0.9.1(hono@4.13.18)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.9.1(hono@4.13.13)(zod@4.6.7)
+        version: 0.9.1(hono@4.13.18)(zod@4.6.7)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -994,13 +1010,13 @@ importers:
         version: 1.3.0
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       hono:
         specifier: catalog:hono
-        version: 4.13.13
+        version: 4.13.18
       hono-sessions:
         specifier: catalog:hono
-        version: 0.8.1(hono@4.13.13)
+        version: 0.8.1(hono@4.13.18)
       import-meta-resolve:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1024,7 +1040,7 @@ importers:
         version: 1.5.5
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -1189,12 +1205,21 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      defu:
+        specifier: catalog:utils
+        version: 6.1.7
       json5:
         specifier: catalog:utils
         version: 2.2.3
+      remeda:
+        specifier: catalog:utils
+        version: 2.52.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.4
       zod:
         specifier: catalog:externals
         version: 4.6.7
@@ -1208,18 +1233,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
-      defu:
-        specifier: catalog:utils
-        version: 6.1.7
       jiti:
         specifier: catalog:externals
         version: 2.7.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
-      remeda:
-        specifier: catalog:utils
-        version: 2.52.0
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -1232,9 +1251,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
-      ufo:
-        specifier: catalog:utils
-        version: 1.6.4
       vitest:
         specifier: catalog:vitest
         version: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -1324,11 +1340,11 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       micromark-util-types:
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^2.0.3
+        version: 2.0.3
       mnemonist:
-        specifier: 0.40.6
-        version: 0.40.6
+        specifier: 0.40.8
+        version: 0.40.8
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.1
@@ -1419,6 +1435,9 @@ importers:
       '@react-hookz/web':
         specifier: catalog:react
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tabler/icons-react':
+        specifier: catalog:react
+        version: 3.49.0(react@19.3.1)
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.3)
@@ -1448,7 +1467,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       fuse.js:
         specifier: catalog:utils
         version: 7.5.0
@@ -1495,12 +1514,9 @@ importers:
       '@statelyai/inspect':
         specifier: ^0.7.2
         version: 0.7.2(xstate@5.33.3)
-      '@tabler/icons-react':
-        specifier: catalog:react
-        version: 3.49.0(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/bezier-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -1530,10 +1546,10 @@ importers:
         version: 1.88.0(oxlint-tsgolint@7.0.2004)
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       postcss-import:
         specifier: catalog:css
-        version: 17.0.0(postcss@8.5.30)
+        version: 17.0.0(postcss@8.5.33)
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -1678,7 +1694,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
@@ -1911,7 +1927,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       fontkit:
         specifier: 'catalog:'
         version: 2.0.4
@@ -1973,6 +1989,12 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      graphology:
+        specifier: 'catalog:'
+        version: 0.26.0(graphology-types@0.24.8)
+      graphology-types:
+        specifier: 'catalog:'
+        version: 0.24.8
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -2031,12 +2053,12 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2119,6 +2141,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2140,9 +2165,6 @@ importers:
       '@likec4/leanix-bridge':
         specifier: workspace:*
         version: link:../leanix-bridge
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/mcp':
         specifier: workspace:*
         version: link:../mcp
@@ -2170,6 +2192,9 @@ importers:
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.2(typescript@6.0.3)
+      '@rolldown/plugin-node-polyfills':
+        specifier: catalog:tsdown
+        version: 1.0.4
       '@tanstack/ai':
         specifier: catalog:ai
         version: 0.69.0(zod@4.6.7)
@@ -2193,7 +2218,7 @@ importers:
         version: 17.0.35
       autoprefixer:
         specifier: ^10.6.2
-        version: 10.6.2(postcss@8.5.30)
+        version: 10.6.2(postcss@8.5.33)
       birpc:
         specifier: catalog:vite
         version: 4.2.0
@@ -2209,15 +2234,9 @@ importers:
       defu:
         specifier: catalog:utils
         version: 6.1.7
-      esbuild-node-externals:
-        specifier: catalog:esbuild
-        version: 2.0.0(esbuild@0.28.2)
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       get-port:
         specifier: ^7.2.0
         version: 7.2.0
@@ -2248,6 +2267,9 @@ importers:
       p-limit:
         specifier: catalog:utils
         version: 7.3.3
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.1
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0
@@ -2256,7 +2278,7 @@ importers:
         version: 5.0.0
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       pretty-ms:
         specifier: ^9.3.1
         version: 9.3.1
@@ -2326,9 +2348,6 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2360,24 +2379,15 @@ importers:
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
         version: 5.3.0
-      '@likec4/config':
+      '@likec4/core':
         specifier: workspace:*
-        version: link:../config
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
-      '@likec4/icons':
-        specifier: workspace:*
-        version: link:../icons
-      '@likec4/layouts':
-        specifier: workspace:*
-        version: link:../layouts
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/styles':
         specifier: workspace:*
         version: link:../../styled-system/styles
@@ -2414,6 +2424,9 @@ importers:
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tanstack/react-virtual':
+        specifier: catalog:tanstack
+        version: 3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/router-cli':
         specifier: catalog:tanstack
         version: 1.167.46(supports-color@10.1.0)
@@ -2422,7 +2435,7 @@ importers:
         version: 1.167.48(@tanstack/react-router@1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.60.1)(supports-color@10.1.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
@@ -2444,6 +2457,9 @@ importers:
       '@xstate/store':
         specifier: catalog:xstate
         version: 4.3.0(xstate@5.33.3)
+      '@xstate/store-react':
+        specifier: catalog:xstate
+        version: 2.1.0(react@19.3.1)(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2452,7 +2468,7 @@ importers:
         version: 0.0.84
       autoprefixer:
         specifier: ^10.6.2
-        version: 10.6.2(postcss@8.5.30)
+        version: 10.6.2(postcss@8.5.33)
       citty:
         specifier: catalog:utils
         version: 0.2.2
@@ -2464,7 +2480,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       html-to-image:
         specifier: 1.11.11
         version: 1.11.11
@@ -2488,7 +2504,7 @@ importers:
         version: 7.3.3
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
@@ -2580,6 +2596,9 @@ importers:
 
   packages/lsp:
     dependencies:
+      chokidar:
+        specifier: catalog:externals
+        version: 5.0.0
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
@@ -2631,10 +2650,10 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)
+        version: 0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5))(hono@4.13.18)(zod@4.6.7)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 2.1.6(hono@4.13.13)
+        version: 2.1.8(hono@4.13.18)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -2652,7 +2671,7 @@ importers:
         version: 6.4.0(picomatch@4.0.7)
       hono:
         specifier: catalog:hono
-        version: 4.13.13
+        version: 4.13.18
       jiti:
         specifier: catalog:externals
         version: 2.7.0
@@ -2728,7 +2747,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitest/ui':
         specifier: catalog:vitest
-        version: 4.1.12(vitest@4.1.12)
+        version: 4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
       citty:
         specifier: catalog:utils
         version: 0.2.2
@@ -2777,9 +2796,6 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2811,6 +2827,9 @@ importers:
       '@dagrejs/dagre':
         specifier: 'catalog:'
         version: 1.1.8
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2841,9 +2860,12 @@ importers:
       '@react-hookz/web':
         specifier: catalog:react
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tabler/icons-react':
+        specifier: catalog:react
+        version: 3.49.0(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/d3-zoom':
         specifier: ^3.0.9
         version: 3.0.9
@@ -2888,7 +2910,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -2900,10 +2922,10 @@ importers:
         version: 1.88.0(oxlint-tsgolint@7.0.2004)
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       postcss-import:
         specifier: catalog:css
-        version: 17.0.0(postcss@8.5.30)
+        version: 17.0.0(postcss@8.5.33)
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
@@ -2990,6 +3012,9 @@ importers:
       p-debounce:
         specifier: catalog:utils
         version: 5.1.1
+      p-limit:
+        specifier: catalog:utils
+        version: 7.3.3
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0
@@ -3062,7 +3087,7 @@ importers:
         version: 4.2.0
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -3154,15 +3179,15 @@ importers:
       '@vscode/extension-telemetry':
         specifier: ^1.5.2
         version: 1.5.2(tslib@2.8.1)
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       langium:
         specifier: catalog:langium
         version: 4.4.0
+      nano-spawn:
+        specifier: catalog:externals
+        version: 2.1.0
       nanoid:
         specifier: catalog:utils
         version: 6.0.2
@@ -3172,6 +3197,9 @@ importers:
       p-timeout:
         specifier: catalog:utils
         version: 7.0.2
+      package-manager-detector:
+        specifier: catalog:utils
+        version: 1.9.0
       pathe:
         specifier: catalog:utils
         version: 2.0.3
@@ -3286,9 +3314,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
-      '@types/object-hash':
-        specifier: ^3.0.6
-        version: 3.0.6
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -3312,7 +3337,7 @@ importers:
         version: 0.0.84
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -3321,10 +3346,10 @@ importers:
         version: 0.156.0
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       postcss-import:
         specifier: catalog:css
-        version: 17.0.0(postcss@8.5.30)
+        version: 17.0.0(postcss@8.5.33)
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -3440,7 +3465,7 @@ importers:
         version: 2.1.0
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -4703,8 +4728,8 @@ packages:
       hono-rate-limiter: ^0.5.4
       zod: ^3.25.0 || ^4.0.0
 
-  '@hono/node-server@2.1.6':
-    resolution: {integrity: sha512-p/KH9MnfNcsm3sR6x4lNgm5j+QN4Et8srKredl9DZfXiyZ1UQ3aQ2YVpFLbqktYN5JI+DB+VZFKM2PqE5hLKjQ==}
+  '@hono/node-server@2.1.8':
+    resolution: {integrity: sha512-jdf7FHh6A1lzjpHHQUgxsg2GeER2vMetnAOfeActzcoli6jamlK+NAwL6Dsr5Fl3BS3tYUQzCdtZjU8Qxv7bEA==}
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4 || ^5.0.0-0
@@ -6398,6 +6423,12 @@ packages:
       react: 19.3.1
       react-dom: 19.3.1
 
+  '@tanstack/react-virtual@3.14.26':
+    resolution: {integrity: sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A==}
+    peerDependencies:
+      react: 19.3.1
+      react-dom: 19.3.1
+
   '@tanstack/router-cli@1.167.46':
     resolution: {integrity: sha512-jCeaoYeLctgwdGE4TzoEtzvN+jjQEB/q1N2EZoXKa5v8t5JQJOf+o3oJve/rUOB7NZnXEB6dCC+faWvXNKMSNQ==}
     engines: {node: '>=20.19'}
@@ -6442,6 +6473,9 @@ packages:
 
   '@tanstack/store@0.11.2':
     resolution: {integrity: sha512-sJ4mjol8uQsHV0gOJzzjwXfh2Fwm+Sz0+8deqiTm4jGbMdjzNSW+xZCFm0kUa870uhd8yi+DpKnZb5Kc4apa0Q==}
+
+  '@tanstack/virtual-core@3.19.11':
+    resolution: {integrity: sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A==}
 
   '@tanstack/virtual-file-routes@1.162.0':
     resolution: {integrity: sha512-uhOeFyxLcU41HzvrxsGpiWdcMbScY1EDgbZ5K7DVRMYInbLYWAC0EA/kx9wXAoSM8q82bUG2hRl8+EAjE6XAbA==}
@@ -6611,9 +6645,6 @@ packages:
 
   '@types/node@24.12.4':
     resolution: {integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==}
-
-  '@types/object-hash@3.0.6':
-    resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
 
   '@types/pako@2.0.4':
     resolution: {integrity: sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==}
@@ -6975,6 +7006,11 @@ packages:
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
@@ -7755,12 +7791,6 @@ packages:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
 
-  esbuild-node-externals@2.0.0:
-    resolution: {integrity: sha512-AzLWGYBC2MGvo37iAPv17yVe/r2iOfEZnCEBACR+5HkSrOOnRnVf8+33pJU5VCg7brzGtiSsBLqIp5hxYfItsw==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      esbuild: 0.12 - 0.28
-
   esbuild@0.25.12:
     resolution: {integrity: sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==}
     engines: {node: '>=18'}
@@ -7781,9 +7811,6 @@ packages:
   escape-string-regexp@5.0.0:
     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
     engines: {node: '>=12'}
-
-  esm-env@1.2.2:
-    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
 
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
@@ -7843,8 +7870,8 @@ packages:
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
-  fast-equals@6.2.1:
-    resolution: {integrity: sha512-s7KFkLPAAbIDGTh+nVYhjTiwKGvgMXAUG5vwzg8vQKj7NSRZ4eEGExBQ4rq9V90fTYVWd1cb/Wr4ffCNBmLQMQ==}
+  fast-equals@6.2.2:
+    resolution: {integrity: sha512-n+XqoarWCgcar0O3om3DeNYx6xTuLWGTUF1bRZ9iuO00tsPepzP1L4V7rqtxxZ4PEya34UCESReimFvxmEVwIA==}
     engines: {node: '>=6.0.0'}
 
   fast-glob@3.3.3:
@@ -8205,8 +8232,8 @@ packages:
     peerDependencies:
       hono: ^4.0.0
 
-  hono@4.13.13:
-    resolution: {integrity: sha512-CQ46U0ZkAGmbT/4UxdzzGJpacP2IeKgY4a5/tOI9AABbpOMfK739wfDXmv1usCk+3RkKj1hQy4/fjhiwa2xlrA==}
+  hono@4.13.18:
+    resolution: {integrity: sha512-H9q/E1XizaWstJxUW881dmLxEj+t/TrGGnyxINkm4+sK0qUwsMtFdo2BWI9Vs3cIS19MU6b6iCijoUoEf4f3DA==}
     engines: {node: '>=16.9.0'}
 
   hookable@6.1.2:
@@ -8988,8 +9015,8 @@ packages:
   micromark-util-symbol@2.0.1:
     resolution: {integrity: sha512-vs5t8Apaud9N28kgCrRUdEed4UJ+wWNvicHLPxCa9ENlYuAY31M0ETy5y1vA33YoNPDFTghEbnh6efaE8h4x0Q==}
 
-  micromark-util-types@2.0.2:
-    resolution: {integrity: sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA==}
+  micromark-util-types@2.0.3:
+    resolution: {integrity: sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg==}
 
   micromark@4.0.2:
     resolution: {integrity: sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA==}
@@ -9063,8 +9090,8 @@ packages:
   mnemonist@0.39.8:
     resolution: {integrity: sha512-vyWo2K3fjrUw8YeeZ1zF0fy6Mu59RHokURlld8ymdUPjMlD9EC9ov1/YPqTgqRvUN9nTr3Gqfz29LYAmu0PHPQ==}
 
-  mnemonist@0.40.6:
-    resolution: {integrity: sha512-c4mbin5HCz77Srw1L3nwThCH/0hLVYuY3oMF2plP2tKfp/gqzSgHP63qRUOpL8jutYWNNCr49LUlKSt7exkaww==}
+  mnemonist@0.40.8:
+    resolution: {integrity: sha512-tebbu8e/W45Nz7USfGcmnHUiOcNsXa9Mow8eb0UPwOk3gu6grw0/2+SefXBJCgDQpE9mdn7dNUMJBra9mcRUVw==}
 
   monaco-languageclient@11.0.2:
     resolution: {integrity: sha512-wMwWYHSXVHtD+L9MCCkapOW1zXM+zjS8zBsRQCw6PTSTty2ah4vbrm4aL/+mCmBykuYv8KJ6q+/tJLgNtBEfrw==}
@@ -9551,12 +9578,12 @@ packages:
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
-  postcss@8.5.30:
-    resolution: {integrity: sha512-zkd+e9S1AQHhmaBKye9zlFHWjOwVgqXl1q3ECYy8561K7qxR2cREf/STLskulBFd78k6AOFeA+ff1TtEzk9bAA==}
-    engines: {node: ^10 || ^12 || >=14}
-
   postcss@8.5.31:
     resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postcss@8.5.33:
+    resolution: {integrity: sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   prettier@3.2.5:
@@ -11143,18 +11170,22 @@ packages:
   yuku-ast@0.19.0:
     resolution: {integrity: sha512-PyCsiScaelhxBGzL8dyeJkLqvRZycoh78R31Vrt/WqYrm0hMFoKwIw/X7Dx5mBKLWAMlV9I9HEyBOHnj2gZVyw==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-codegen@0.19.0:
     resolution: {integrity: sha512-uymAKHjDuaP4BEpkXC/BSLz4DUEF5oArZ5AuD3888nb2miChjWSgpPdojEJxm3pjpXkgUaCRJQyNAbnMN33wHg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-core@0.19.0:
     resolution: {integrity: sha512-kYK9e1XdfirNhkipzW0wmMcSWcVF/CWnuugodfVYRCUwvoBefweL9HzB96OiKEhsx78V5WbUxbJqlizMX869Qg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-parser@0.19.0:
     resolution: {integrity: sha512-XrBh9ZiQK5mJVRxZBAvD6LwRyAYrK3MFtH3+onyuxFL5hFD44EC3QOmIC1FjTj6H2MMwq46/NAI+NZxLZPZgxg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   zod-to-json-schema@3.25.1:
     resolution: {integrity: sha512-pM/SU9d3YAggzi6MtR4h7ruuQlqKtad8e9S0fmxcMi+ueAK5Korys/aWcV9LIIHTVbj01NdzxcnXSN+O74ZIVA==}
@@ -12362,8 +12393,8 @@ snapshots:
       hast-util-to-html: 9.0.5
       hast-util-to-text: 4.0.2
       hastscript: 9.0.1
-      postcss: 8.5.30
-      postcss-nested: 7.0.2(postcss@8.5.30)
+      postcss: 8.5.33
+      postcss-nested: 7.0.2(postcss@8.5.33)
       unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.2
 
@@ -12428,25 +12459,25 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)':
+  '@hono/mcp@0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5))(hono@4.13.18)(zod@4.6.7)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.32.2(supports-color@10.1.0)(zod@4.6.7)
-      hono: 4.13.13
-      hono-rate-limiter: 0.5.4(hono@4.13.13)(unstorage@1.17.5)
+      hono: 4.13.18
+      hono-rate-limiter: 0.5.4(hono@4.13.18)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
       zod: 4.6.7
 
-  '@hono/node-server@2.1.6(hono@4.13.13)':
+  '@hono/node-server@2.1.8(hono@4.13.18)':
     dependencies:
-      hono: 4.13.13
+      hono: 4.13.18
 
-  '@hono/oauth-providers@0.9.1(hono@4.13.13)':
+  '@hono/oauth-providers@0.9.1(hono@4.13.18)':
     dependencies:
-      hono: 4.13.13
+      hono: 4.13.18
 
-  '@hono/zod-validator@0.9.1(hono@4.13.13)(zod@4.6.7)':
+  '@hono/zod-validator@0.9.1(hono@4.13.18)(zod@4.6.7)':
     dependencies:
-      hono: 4.13.13
+      hono: 4.13.18
       zod: 4.6.7
 
   '@hpcc-js/wasm-graphviz@1.29.2': {}
@@ -13020,7 +13051,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7)':
     dependencies:
-      '@hono/node-server': 2.1.6(hono@4.13.13)
+      '@hono/node-server': 2.1.8(hono@4.13.18)
       ajv: 8.20.0
       ajv-formats: 3.0.1
       content-type: 1.0.5
@@ -13030,7 +13061,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1(supports-color@10.1.0)
       express-rate-limit: 8.3.1(express@5.2.1(supports-color@10.1.0))
-      hono: 4.13.13
+      hono: 4.13.18
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -14006,6 +14037,12 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
 
+  '@tanstack/react-virtual@3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@tanstack/virtual-core': 3.19.11
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
   '@tanstack/router-cli@1.167.46(supports-color@10.1.0)':
     dependencies:
       '@tanstack/router-generator': 1.167.46(supports-color@10.1.0)
@@ -14091,6 +14128,8 @@ snapshots:
 
   '@tanstack/store@0.11.2': {}
 
+  '@tanstack/virtual-core@3.19.11': {}
+
   '@tanstack/virtual-file-routes@1.162.0': {}
 
   '@ts-graphviz/adapter@3.0.6':
@@ -14114,34 +14153,20 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
+  '@tsdown/css@0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
     dependencies:
       lightningcss: 1.33.0
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.30)(tsx@4.23.15)(yaml@2.9.1)
+      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(yaml@2.9.1)
       rolldown: 1.2.16
       tsdown: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
     optionalDependencies:
-      postcss: 8.5.30
-      postcss-import: 17.0.0(postcss@8.5.30)
+      postcss: 8.5.33
+      postcss-import: 17.0.0(postcss@8.5.33)
     transitivePeerDependencies:
+      - '@typescript/native-preview'
       - jiti
       - tsx
       - yaml
-
-  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.31))(postcss@8.5.31)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
-    dependencies:
-      lightningcss: 1.33.0
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.31)(tsx@4.23.15)(yaml@2.9.1)
-      rolldown: 1.2.16
-      tsdown: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
-    optionalDependencies:
-      postcss: 8.5.31
-      postcss-import: 17.0.0(postcss@8.5.31)
-    transitivePeerDependencies:
-      - jiti
-      - tsx
-      - yaml
-    optional: true
 
   '@turbo/darwin-64@2.11.9':
     optional: true
@@ -14265,8 +14290,6 @@ snapshots:
   '@types/node@24.12.4':
     dependencies:
       undici-types: 7.16.0
-
-  '@types/object-hash@3.0.6': {}
 
   '@types/pako@2.0.4': {}
 
@@ -14413,7 +14436,21 @@ snapshots:
 
   '@vitest/spy@4.1.12': {}
 
-  '@vitest/ui@4.1.12(vitest@4.1.12)':
+  '@vitest/ui@4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)':
+    dependencies:
+      '@vitest/utils': 4.1.12
+      fflate: 0.8.3
+      flatted: 3.4.4
+      pathe: 2.0.3
+      sirv: 3.0.2
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.2.0
+      vitest: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@types/node'
+      - vite
+
+  '@vitest/ui@4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)':
     dependencies:
       '@vitest/utils': 4.1.12
       fflate: 0.8.3
@@ -14423,6 +14460,9 @@ snapshots:
       tinyglobby: 0.2.17
       tinyrainbow: 3.2.0
       vitest: 4.1.12(@types/node@24.12.4)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@types/node'
+      - vite
 
   '@vitest/utils@4.1.12':
     dependencies:
@@ -14522,7 +14562,7 @@ snapshots:
       '@vue/shared': 3.5.25
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.30
+      postcss: 8.5.33
       source-map-js: 1.2.2
 
   '@vue/compiler-ssr@3.5.25':
@@ -14825,13 +14865,13 @@ snapshots:
       stubborn-fs: 2.0.0
       when-exit: 2.1.4
 
-  autoprefixer@10.6.2(postcss@8.5.30):
+  autoprefixer@10.6.2(postcss@8.5.33):
     dependencies:
       browserslist: 4.29.4
       caniuse-lite: 1.0.30001823
       fraction.js: 5.3.4
       picocolors: 1.1.1
-      postcss: 8.5.30
+      postcss: 8.5.33
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.7:
@@ -15515,11 +15555,6 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
 
-  esbuild-node-externals@2.0.0(esbuild@0.28.2):
-    dependencies:
-      empathic: 2.1.0
-      esbuild: 0.28.2
-
   esbuild@0.25.12:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.25.12
@@ -15583,8 +15618,6 @@ snapshots:
   escape-html@1.0.3: {}
 
   escape-string-regexp@5.0.0: {}
-
-  esm-env@1.2.2: {}
 
   estree-walker@2.0.2: {}
 
@@ -15664,7 +15697,7 @@ snapshots:
 
   fast-deep-equal@3.1.3: {}
 
-  fast-equals@6.2.1: {}
+  fast-equals@6.2.2: {}
 
   fast-glob@3.3.3:
     dependencies:
@@ -16123,19 +16156,19 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.5.4(hono@4.13.13)(unstorage@1.17.5):
+  hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5):
     dependencies:
-      hono: 4.13.13
+      hono: 4.13.18
     optionalDependencies:
       unstorage: 1.17.5
 
-  hono-sessions@0.8.1(hono@4.13.13):
+  hono-sessions@0.8.1(hono@4.13.18):
     dependencies:
-      hono: 4.13.13
+      hono: 4.13.18
       iron-webcrypto: 1.2.1
       ohash: 2.0.12
 
-  hono@4.13.13: {}
+  hono@4.13.18: {}
 
   hookable@6.1.2: {}
 
@@ -16654,7 +16687,7 @@ snapshots:
       micromark-util-decode-string: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
       unist-util-stringify-position: 4.0.0
     transitivePeerDependencies:
       - supports-color
@@ -16821,7 +16854,7 @@ snapshots:
       micromark-util-resolve-all: 2.0.1
       micromark-util-subtokenize: 2.1.0
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-directive@4.0.0:
     dependencies:
@@ -16830,7 +16863,7 @@ snapshots:
       micromark-factory-whitespace: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
       parse-entities: 4.0.2
 
   micromark-extension-gfm-autolink-literal@2.1.0:
@@ -16838,7 +16871,7 @@ snapshots:
       micromark-util-character: 2.1.1
       micromark-util-sanitize-uri: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-footnote@2.1.0:
     dependencies:
@@ -16849,7 +16882,7 @@ snapshots:
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-sanitize-uri: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-strikethrough@2.1.0:
     dependencies:
@@ -16858,7 +16891,7 @@ snapshots:
       micromark-util-classify-character: 2.0.1
       micromark-util-resolve-all: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-table@2.1.1:
     dependencies:
@@ -16866,11 +16899,11 @@ snapshots:
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-tagfilter@2.0.0:
     dependencies:
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-task-list-item@2.1.0:
     dependencies:
@@ -16878,7 +16911,7 @@ snapshots:
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm@3.0.0:
     dependencies:
@@ -16889,44 +16922,44 @@ snapshots:
       micromark-extension-gfm-tagfilter: 2.0.0
       micromark-extension-gfm-task-list-item: 2.1.0
       micromark-util-combine-extensions: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-destination@2.0.1:
     dependencies:
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-label@2.0.1:
     dependencies:
       devlop: 1.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-space@2.0.1:
     dependencies:
       micromark-util-character: 2.1.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-title@2.0.1:
     dependencies:
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-whitespace@2.0.1:
     dependencies:
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-character@2.1.1:
     dependencies:
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-chunked@2.0.1:
     dependencies:
@@ -16936,12 +16969,12 @@ snapshots:
     dependencies:
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-combine-extensions@2.0.1:
     dependencies:
       micromark-util-chunked: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-decode-numeric-character-reference@2.0.2:
     dependencies:
@@ -16964,7 +16997,7 @@ snapshots:
 
   micromark-util-resolve-all@2.0.1:
     dependencies:
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-sanitize-uri@2.0.1:
     dependencies:
@@ -16977,11 +17010,11 @@ snapshots:
       devlop: 1.1.0
       micromark-util-chunked: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-symbol@2.0.1: {}
 
-  micromark-util-types@2.0.2: {}
+  micromark-util-types@2.0.3: {}
 
   micromark@4.0.2(supports-color@10.1.0):
     dependencies:
@@ -17001,7 +17034,7 @@ snapshots:
       micromark-util-sanitize-uri: 2.0.1
       micromark-util-subtokenize: 2.1.0
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
     transitivePeerDependencies:
       - supports-color
 
@@ -17109,7 +17142,7 @@ snapshots:
     dependencies:
       obliterator: 2.0.5
 
-  mnemonist@0.40.6:
+  mnemonist@0.40.8:
     dependencies:
       obliterator: 2.0.5
 
@@ -17578,39 +17611,21 @@ snapshots:
     dependencies:
       postcss: 8.5.31
 
-  postcss-import@17.0.0(postcss@8.5.30):
+  postcss-import@17.0.0(postcss@8.5.33):
     dependencies:
-      postcss: 8.5.30
+      postcss: 8.5.33
       postcss-value-parser: 4.2.0
       read-cache: 1.0.2
       resolve: 1.22.12
 
-  postcss-import@17.0.0(postcss@8.5.31):
-    dependencies:
-      postcss: 8.5.31
-      postcss-value-parser: 4.2.0
-      read-cache: 1.0.2
-      resolve: 1.22.12
-    optional: true
-
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.30)(tsx@4.23.15)(yaml@2.9.1):
+  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(yaml@2.9.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.7.0
-      postcss: 8.5.30
+      postcss: 8.5.33
       tsx: 4.23.15
       yaml: 2.9.1
-
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.31)(tsx@4.23.15)(yaml@2.9.1):
-    dependencies:
-      lilconfig: 3.1.3
-    optionalDependencies:
-      jiti: 2.7.0
-      postcss: 8.5.31
-      tsx: 4.23.15
-      yaml: 2.9.1
-    optional: true
 
   postcss-minify-selectors@7.0.5(postcss@8.5.31):
     dependencies:
@@ -17618,14 +17633,14 @@ snapshots:
       postcss: 8.5.31
       postcss-selector-parser: 7.1.1
 
-  postcss-nested@7.0.2(postcss@8.5.30):
-    dependencies:
-      postcss: 8.5.30
-      postcss-selector-parser: 7.1.1
-
   postcss-nested@7.0.2(postcss@8.5.31):
     dependencies:
       postcss: 8.5.31
+      postcss-selector-parser: 7.1.1
+
+  postcss-nested@7.0.2(postcss@8.5.33):
+    dependencies:
+      postcss: 8.5.33
       postcss-selector-parser: 7.1.1
 
   postcss-normalize-whitespace@7.0.1(postcss@8.5.31):
@@ -17640,13 +17655,13 @@ snapshots:
 
   postcss-value-parser@4.2.0: {}
 
-  postcss@8.5.30:
+  postcss@8.5.31:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
-  postcss@8.5.31:
+  postcss@8.5.33:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -17936,7 +17951,7 @@ snapshots:
     dependencies:
       '@types/mdast': 4.0.4
       mdast-util-from-markdown: 2.1.0(supports-color@10.1.0)
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
@@ -18678,7 +18693,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.5.0
     optionalDependencies:
-      '@tsdown/css': 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.31))(postcss@8.5.31)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+      '@tsdown/css': 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       tsx: 4.23.15
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -19038,7 +19053,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.30
+      postcss: 8.5.33
       rolldown: 1.2.16
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -19053,7 +19068,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.30
+      postcss: 8.5.33
       rolldown: 1.2.16
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -19092,7 +19107,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.20.5
-      '@vitest/ui': 4.1.12(vitest@4.1.12)
+      '@vitest/ui': 4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
     transitivePeerDependencies:
       - msw
 
@@ -19120,7 +19135,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.12.4
-      '@vitest/ui': 4.1.12(vitest@4.1.12)
+      '@vitest/ui': 4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
     transitivePeerDependencies:
       - msw
 

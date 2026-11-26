@@ -7,6 +7,7 @@ import { groupBy, isNonNullish, isTruthy, mapValues, prop, unique, values } from
 import type { Writable } from 'type-fest'
 import type {
   ParsedAstDiff,
+  ParsedAstDynamicView,
   ParsedAstElement,
   ParsedAstExtend,
   ParsedAstRelation,
@@ -27,6 +28,11 @@ export interface BuildDiffsParams {
    * Relations of the model before any diff is applied
    */
   relations: Readonly<Record<string, c4.Relationship>>
+  /**
+   * View ids that already exist in the model. A diff cannot introduce those ids.
+   */
+  existingViewIds: ReadonlySet<string>
+  toModelView: (view: ParsedAstDynamicView, docUri: string) => c4.ParsedDynamicView | null
 }
 
 function mergeOverlay(
@@ -60,6 +66,8 @@ export function buildDiffs({
   toModelRelation,
   elements,
   relations,
+  existingViewIds,
+  toModelView,
 }: BuildDiffsParams): Record<c4.DiffId, c4.ModelDiff> | undefined {
   const parsedDiffs = docs.flatMap(doc => doc.c4Diffs)
   if (parsedDiffs.length === 0) {
@@ -102,6 +110,17 @@ export function buildDiffs({
       }
     }
 
+    const views: Record<string, c4.ParsedDynamicView> = {}
+    for (const part of parts) {
+      for (const view of part.views) {
+        const modelView = toModelView(view, part.docUri)
+        if (!modelView || existingViewIds.has(modelView.id) || modelView.id in views) {
+          continue
+        }
+        views[modelView.id] = modelView
+      }
+    }
+
     return {
       id,
       title: parts.map(p => p.title).find(isNonNullish) ?? null,
@@ -122,6 +141,7 @@ export function buildDiffs({
       modify: {
         elements: modify,
       },
+      views,
     }
   }
 

@@ -65,13 +65,10 @@ export function CustomizationProvider({
   components,
   children,
 }: PropsWithChildren<CustomizationProviderProps>) {
-  const stable = useStableComponents(components)
+  // const stable = useStableComponents(components)
   return (
     <CustomizationContext.Provider
-      value={useMemo(
-        () => stable ? { components: stable } : null,
-        [stable],
-      )}>
+      value={components ? { components } : null}>
       {children}
     </CustomizationContext.Provider>
   )

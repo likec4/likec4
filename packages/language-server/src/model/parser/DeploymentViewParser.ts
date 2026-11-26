@@ -79,6 +79,9 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       if (ast.isDeploymentViewRuleStyle(astRule)) {
         return this.parseDeploymentViewRuleStyle(astRule)
       }
+      if (ast.isViewRuleRank(astRule)) {
+        return this.parseDeploymentViewRuleRank(astRule)
+      }
       nonexhaustive(astRule)
     }
 
@@ -108,6 +111,13 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         iterator = iterator.prev
       }
       return astRule.isInclude ? { include: exprs } : { exclude: exprs }
+    }
+
+    parseDeploymentViewRuleRank(astRule: ast.ViewRuleRank): c4.DeploymentViewRuleRank {
+      return {
+        rank: astRule.value ?? 'same',
+        targets: this.parseFqnExpressions(astRule.targets),
+      }
     }
 
     parseDeploymentViewRuleStyle(astRule: ast.DeploymentViewRuleStyle): c4.DeploymentViewRuleStyle {

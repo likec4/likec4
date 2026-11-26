@@ -2,7 +2,7 @@ import { map, prop } from 'remeda'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
 import { Builder } from '../../../builder'
 import { LikeC4Model } from '../../../model'
-import type { ParsedDeploymentView as DeploymentView } from '../../../types'
+import type { DeploymentViewRule, ParsedDeploymentView as DeploymentView } from '../../../types'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeDeploymentView } from '../compute'
 
@@ -208,6 +208,16 @@ export type Types = typeof builder['Types']
 export { $exclude, $include, $includeAncestors }
 
 export function computeView(...rules: DeploymentRulesBuilderOp<Types>[]) {
+  return computeViewWithRules([], ...rules)
+}
+
+/**
+ * Same as {@link computeView}, with parsed rules appended for rules the builder can't express
+ */
+export function computeViewWithRules(
+  parsedRules: DeploymentViewRule<any>[],
+  ...rules: DeploymentRulesBuilderOp<Types>[]
+) {
   const modelsource = builder.clone()
     .with(
       views(
@@ -216,8 +226,10 @@ export function computeView(...rules: DeploymentRulesBuilderOp<Types>[]) {
     ).build()
 
   const model = LikeC4Model.fromParsed(modelsource)
+  const parsed = modelsource.views.index as DeploymentView<any>
+  const withParsedRules = { ...parsed, rules: [...parsed.rules, ...parsedRules] } as DeploymentView<any>
 
-  const view = withReadableEdges(computeDeploymentView(model, modelsource.views.index as DeploymentView<any>))
+  const view = withReadableEdges(computeDeploymentView(model, withParsedRules))
 
   return Object.assign(view, {
     nodeIds: map(view.nodes, prop('id')) as string[],

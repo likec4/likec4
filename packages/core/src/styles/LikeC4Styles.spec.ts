@@ -84,19 +84,6 @@ describe('LikeC4Styles', () => {
         theme: {
           colors: {},
         },
-        defaults: {
-          shape: 'rectangle',
-        },
-      }
-      const result = LikeC4Styles.from(stylesConfig)
-      expect(result).toBe(LikeC4Styles.DEFAULT)
-    })
-
-    it('should return DEFAULT when merged config equals default style', ({ expect }) => {
-      const stylesConfig: LikeC4ProjectStylesConfig = {
-        theme: {
-          colors: {},
-        },
         defaults: {},
       }
       const result = LikeC4Styles.from(stylesConfig)
@@ -130,10 +117,9 @@ describe('LikeC4Styles', () => {
       const customColors: CustomColorDefinitions = {
         customRed: computeColorValues('#FF0000'),
       }
-      const styles1 = LikeC4Styles.from(undefined, customColors)
-      const styles2 = LikeC4Styles.from(undefined, customColors)
-      expect(styles2).not.toBe(styles1)
-      expect(styles1.equals(styles2)).toBe(true)
+      const styles1 = LikeC4Styles.from(undefined, structuredClone(customColors))
+      const styles2 = LikeC4Styles.from(undefined, structuredClone(customColors))
+      expect(styles2).toBe(styles1)
     })
 
     it('should return false for instances with different custom colors', ({ expect }) => {
@@ -189,7 +175,7 @@ describe('LikeC4Styles', () => {
         customCss,
       }
       const config2: LikeC4ProjectStylesConfig = {
-        customCss,
+        customCss: { ...customCss },
       }
       const styles1 = LikeC4Styles.from(config1, customColors)
       const styles2 = LikeC4Styles.from(config2, customColors)

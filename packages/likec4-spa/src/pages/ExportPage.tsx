@@ -15,13 +15,16 @@ import type { CSSProperties } from 'react'
 import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 import {
-  computeExportPageLayout,
+  type ExportNotationText,
+  DEFAULT_EXPORT_NOTATION_POSITION,
+  DEFAULT_EXPORT_NOTATION_TEXT,
   EXPORT_DESCRIPTION_BODY_TOP_GAP,
   EXPORT_DESCRIPTION_BOTTOM_PADDING,
   EXPORT_DESCRIPTION_INSET,
   EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT,
   EXPORT_DESCRIPTION_TOP_PADDING,
-  EXPORT_NOTATION_ITEM_HEIGHT,
+  exportNotationShortTitle,
+  exportPageGrid,
 } from './export-layout'
 import { isExportSearchFlagEnabled } from './export-page-params'
 
@@ -139,6 +142,8 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     quality,
     dynamic,
     notation = false,
+    notationPosition = DEFAULT_EXPORT_NOTATION_POSITION,
+    notationText = DEFAULT_EXPORT_NOTATION_TEXT,
   } = useSearch({
     strict: false,
   })
@@ -156,11 +161,12 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   const viewTitle = diagram.title ?? diagram.id
   const notationEntries = diagram.notation?.nodes ?? []
   const showNotation = isExportSearchFlagEnabled(notation) && notationEntries.length > 0
-  const layout = computeExportPageLayout({
+  // The browser sizes the canvas around the panels; the CLI screenshots it at that size
+  const grid = exportPageGrid({
     bounds,
     padding,
-    description: showDescription ? { title: viewTitle, text: viewDescription.text } : null,
-    notationEntries: showNotation ? notationEntries.length : 0,
+    description: showDescription,
+    notationPosition: showNotation ? notationPosition : null,
   })
 
   const downloadDiagram = () => {
@@ -201,27 +207,13 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
         zIndex: '[2]',
       }}
       style={{
-        marginRight: 'auto',
-        marginBottom: 'auto',
-        minWidth: layout.width,
-        width: layout.width,
-        minHeight: layout.height,
-        height: layout.height,
+        ...grid.page,
         background: isJpeg ? 'var(--mantine-color-body)' : 'transparent',
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <Box
         data-testid="export-diagram-area"
-        css={{
-          position: 'absolute',
-          overflow: 'hidden',
-        }}
-        style={{
-          top: layout.diagram.top,
-          left: layout.diagram.left,
-          width: layout.diagram.width,
-          height: layout.height - layout.diagram.top,
-        }}>
+        style={grid.diagram}>
         <LikeC4Diagram
           view={diagram}
           fitView={false}
@@ -266,17 +258,18 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
           }}
         />
       </Box>
-      {layout.description && (
+      {grid.description && (
         <ExportDescriptionPanel
           title={viewTitle}
           description={viewDescription}
-          layout={layout.description}
+          gridStyle={grid.description}
         />
       )}
-      {layout.notation && (
+      {grid.notation && (
         <ExportNotationPanel
           entries={notationEntries}
-          layout={layout.notation}
+          gridStyle={grid.notation}
+          text={notationText}
         />
       )}
     </Box>
@@ -285,21 +278,24 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
 
 /**
  * Renders the optional Markdown description panel above the exported diagram.
+ * The panel takes the height of its content, between the minimum and maximum of the grid style;
+ * a longer description is cut off at the maximum.
  */
 function ExportDescriptionPanel({
   title,
   description,
-  layout,
+  gridStyle,
 }: Readonly<{
   title: string
   description: RichTextOrEmpty
-  layout: NonNullable<ReturnType<typeof computeExportPageLayout>['description']>
+  gridStyle: CSSProperties
 }>) {
   const panelStyle: CSSProperties = {
-    ...layout,
-    position: 'absolute',
-    boxSizing: 'border-box',
+    ...gridStyle,
+    display: 'flex',
+    flexDirection: 'column',
     overflow: 'hidden',
+    paddingBottom: EXPORT_DESCRIPTION_BOTTOM_PADDING,
     border: '1px solid var(--mantine-color-default-border)',
     borderRadius: 6,
     background: 'var(--mantine-color-body)',
@@ -307,6 +303,7 @@ function ExportDescriptionPanel({
     color: 'var(--mantine-color-text)',
   }
   const titleStyle: CSSProperties = {
+    flexShrink: 0,
     paddingTop: EXPORT_DESCRIPTION_TOP_PADDING,
     paddingBottom: EXPORT_DESCRIPTION_BODY_TOP_GAP,
     paddingLeft: EXPORT_DESCRIPTION_INSET,
@@ -318,16 +315,12 @@ function ExportDescriptionPanel({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }
+  // Shrinks when the panel reaches its maximum height, the bottom padding of the panel stays
   const descriptionStyle: CSSProperties = {
-    maxHeight: layout.height
-      - EXPORT_DESCRIPTION_TOP_PADDING
-      - EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT
-      - EXPORT_DESCRIPTION_BODY_TOP_GAP
-      - EXPORT_DESCRIPTION_BOTTOM_PADDING,
+    minHeight: 0,
     overflow: 'hidden',
     paddingLeft: EXPORT_DESCRIPTION_INSET,
     paddingRight: EXPORT_DESCRIPTION_INSET,
-    paddingBottom: EXPORT_DESCRIPTION_BOTTOM_PADDING,
   }
 
   return (
@@ -348,23 +341,23 @@ function ExportDescriptionPanel({
 
 /**
  * Renders the optional notation panel next to the exported diagram.
+ * The panel takes the height of its content, and the grid makes room for it.
  */
 function ExportNotationPanel({
   entries,
-  layout,
+  gridStyle,
+  text,
 }: Readonly<{
   entries: readonly NodeNotation[]
-  layout: NonNullable<ReturnType<typeof computeExportPageLayout>['notation']>
+  gridStyle: CSSProperties
+  text: ExportNotationText
 }>) {
   const panelStyle: CSSProperties = {
-    ...layout,
-    position: 'absolute',
-    boxSizing: 'border-box',
-    overflow: 'hidden',
+    ...gridStyle,
     border: '1px solid var(--mantine-color-default-border)',
     borderRadius: 6,
-    background: 'var(--mantine-color-body)',
-    boxShadow: '0 4px 18px rgb(0 0 0 / 14%)',
+    // Translucent page colour keeps the text readable whatever a viewer draws behind transparent pixels
+    background: 'color-mix(in srgb, var(--mantine-color-body) 60%, transparent)',
     color: 'var(--mantine-color-text)',
   }
   const headerStyle: CSSProperties = {
@@ -386,8 +379,16 @@ function ExportNotationPanel({
       <Box
         style={{
           padding: 12,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
         }}>
-        {entries.map((entry, index) => <ExportNotationItem key={`${entry.title}-${index}`} entry={entry} />)}
+        {entries.map((entry, index) => (
+          <ExportNotationItem
+            key={`${entry.title}-${index}`}
+            entry={entry}
+            text={text} />
+        ))}
       </Box>
     </Box>
   )
@@ -396,7 +397,7 @@ function ExportNotationPanel({
 /**
  * Renders one notation entry with its representative element shape and labels.
  */
-function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
+function ExportNotationItem({ entry, text }: Readonly<{ entry: NodeNotation; text: ExportNotationText }>) {
   const styles = useLikeC4Styles()
   const elementColors = styles.colors(entry.color).elements
   const colorVars: PaletteCssVars = {
@@ -411,21 +412,19 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
     gridTemplateColumns: '64px 1fr',
     columnGap: 10,
     alignItems: 'center',
-    height: EXPORT_NOTATION_ITEM_HEIGHT,
-    overflow: 'hidden',
+    minHeight: 40,
   }
   const kindsStyle: CSSProperties = {
     display: 'flex',
     flexWrap: 'wrap',
     gap: 3,
     marginBottom: 5,
-    maxHeight: 31,
-    overflow: 'hidden',
   }
+  // Long kind names wrap inside the label column instead of spilling out of the panel
   const kindStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    height: 14,
+    display: 'inline-block',
+    boxSizing: 'border-box',
+    minHeight: 14,
     maxWidth: '100%',
     paddingLeft: 4,
     paddingRight: 4,
@@ -434,18 +433,27 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
     color: 'var(--likec4-palette-hiContrast)',
     fontSize: 9.5,
     fontWeight: 500,
-    lineHeight: 1,
+    lineHeight: '14px',
     textTransform: 'lowercase',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'normal',
+    overflowWrap: 'anywhere',
   }
   const titleStyle: CSSProperties = {
-    overflow: 'hidden',
-    display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: 2,
     fontSize: 13,
     fontWeight: 500,
     lineHeight: 1.2,
+    overflowWrap: 'anywhere',
+  }
+  let title: string
+  switch (text) {
+    case 'kind':
+      title = entry.kinds.join(', ')
+      break
+    case 'full':
+      title = entry.title
+      break
+    default:
+      title = exportNotationShortTitle(entry.title)
   }
 
   return (
@@ -471,18 +479,20 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
         css={{
           minWidth: '0',
         }}>
-        <Box
-          style={kindsStyle}>
-          {entry.kinds.map(kind => (
-            <Box
-              key={kind}
-              as="span"
-              style={kindStyle}>
-              {kind}
-            </Box>
-          ))}
-        </Box>
-        <Box style={titleStyle}>{entry.title}</Box>
+        {text !== 'kind' && (
+          <Box
+            style={kindsStyle}>
+            {entry.kinds.map(kind => (
+              <Box
+                key={kind}
+                as="span"
+                style={kindStyle}>
+                {kind}
+              </Box>
+            ))}
+          </Box>
+        )}
+        <Box style={titleStyle}>{title}</Box>
       </Box>
     </Box>
   )

@@ -4,161 +4,154 @@
 
 import { describe, expect, it } from 'vitest'
 import {
-  computeExportPageLayout,
+  type ExportNotationPosition,
   EXPORT_DESCRIPTION_GAP,
   EXPORT_DESCRIPTION_MAX_HEIGHT,
   EXPORT_DESCRIPTION_MIN_HEIGHT,
   EXPORT_EXTRA_PADDING,
   EXPORT_NOTATION_GAP,
   EXPORT_NOTATION_WIDTH,
-  exportDescriptionHeight,
-  exportNotationHeight,
+  ExportNotationPositions,
+  exportNotationShortTitle,
+  exportPageGrid,
 } from './export-layout'
 
-describe('computeExportPageLayout', () => {
-  const bounds = {
-    x: -100,
-    y: 20,
-    width: 640,
-    height: 360,
-  }
+describe('exportPageGrid', () => {
+  const bounds = { width: 640, height: 360 }
+  const padding = 20
+  const diagramWidth = bounds.width + padding * 2 + EXPORT_EXTRA_PADDING
+  const diagramHeight = bounds.height + padding * 2 + EXPORT_EXTRA_PADDING
+  const notationColumn = EXPORT_NOTATION_GAP + EXPORT_NOTATION_WIDTH + padding
 
-  it('keeps dimensions unchanged when there is no notation', () => {
-    const layout = computeExportPageLayout({
-      bounds,
-      padding: 20,
-      description: null,
-      notationEntries: 0,
-    })
+  it('makes the canvas exactly the diagram area without panels', () => {
+    const grid = exportPageGrid({ bounds, padding, description: false, notationPosition: null })
 
-    expect(layout).toEqual({
-      width: bounds.width + 20 * 2 + EXPORT_EXTRA_PADDING,
-      height: bounds.height + 20 * 2 + EXPORT_EXTRA_PADDING,
+    expect(grid).toEqual({
+      page: {
+        display: 'grid',
+        gridTemplateColumns: `${diagramWidth}px`,
+        gridTemplateRows: 'auto',
+        gridTemplateAreas: '"diagram"',
+      },
       diagram: {
-        left: 0,
-        top: 0,
-        width: bounds.width + 20 * 2 + EXPORT_EXTRA_PADDING,
-        height: bounds.height + 20 * 2 + EXPORT_EXTRA_PADDING,
+        gridArea: 'diagram',
+        position: 'relative',
+        overflow: 'hidden',
+        width: diagramWidth,
+        minHeight: diagramHeight,
       },
       description: null,
       notation: null,
     })
   })
 
-  it('reserves a top description banner outside the diagram area', () => {
-    const description = {
-      title: 'Cloud System',
-      text: 'The overview of the cloud system',
+  it('keeps the diagram area at the view bounds plus padding in every layout', () => {
+    for (const notationPosition of [null, ...ExportNotationPositions]) {
+      for (const description of [false, true]) {
+        const grid = exportPageGrid({ bounds, padding, description, notationPosition })
+        expect(grid.diagram, `${notationPosition} / description ${description}`).toMatchObject({
+          width: diagramWidth,
+          minHeight: diagramHeight,
+        })
+      }
     }
-    const layout = computeExportPageLayout({
-      bounds,
-      padding: 20,
-      description,
-      notationEntries: 0,
-    })
-    const descriptionHeight = exportDescriptionHeight({
-      ...description,
-      width: layout.diagram.width,
-    })
-
-    expect(layout.description).toEqual({
-      left: 0,
-      top: 0,
-      width: layout.diagram.width,
-      height: descriptionHeight,
-    })
-    expect(descriptionHeight).toBe(EXPORT_DESCRIPTION_MIN_HEIGHT)
-    expect(layout.diagram.top).toBe(descriptionHeight + EXPORT_DESCRIPTION_GAP)
-    expect(layout.height).toBe(layout.diagram.top + layout.diagram.height)
   })
 
-  it('grows and caps the description banner based on content length', () => {
-    const layout = computeExportPageLayout({
-      bounds: {
-        ...bounds,
-        width: 160,
-      },
-      padding: 20,
-      description: {
-        title: 'Long description',
-        text: Array.from({ length: 20 }, () => 'This sentence should wrap into several rendered lines.').join(' '),
-      },
-      notationEntries: 0,
-    })
+  it('puts the description above the diagram, across the full width', () => {
+    const grid = exportPageGrid({ bounds, padding, description: true, notationPosition: null })
 
-    expect(layout.description!.height).toBe(EXPORT_DESCRIPTION_MAX_HEIGHT)
-    expect(layout.diagram.top).toBe(EXPORT_DESCRIPTION_MAX_HEIGHT + EXPORT_DESCRIPTION_GAP)
+    expect(grid.page).toMatchObject({
+      gridTemplateRows: 'auto auto',
+      gridTemplateAreas: '"description" "diagram"',
+    })
+    expect(grid.description).toEqual({
+      gridArea: 'description',
+      boxSizing: 'border-box',
+      minHeight: EXPORT_DESCRIPTION_MIN_HEIGHT,
+      maxHeight: EXPORT_DESCRIPTION_MAX_HEIGHT,
+      marginBottom: EXPORT_DESCRIPTION_GAP,
+    })
   })
 
-  it('treats long titles as a single ellipsized line', () => {
-    const descriptionHeight = exportDescriptionHeight({
-      title: 'A very long title that is intentionally much wider than the exported image and must be ellipsized',
-      text: 'Brief',
-      width: 120,
-    })
+  it('lets the description span the notation column too', () => {
+    const grid = exportPageGrid({ bounds, padding, description: true, notationPosition: 'top-left' })
 
-    expect(descriptionHeight).toBe(EXPORT_DESCRIPTION_MIN_HEIGHT)
+    expect(grid.page.gridTemplateAreas).toBe('"description description" "notation diagram"')
   })
 
-  it('reserves a right-side notation column outside the diagram area', () => {
-    const layout = computeExportPageLayout({
-      bounds,
-      padding: 20,
-      description: null,
-      notationEntries: 2,
-    })
+  it.each<[ExportNotationPosition, string, string]>([
+    ['top-left', `${notationColumn}px ${diagramWidth}px`, '"notation diagram"'],
+    ['bottom-left', `${notationColumn}px ${diagramWidth}px`, '"notation diagram"'],
+    ['top-right', `${diagramWidth}px ${notationColumn}px`, '"diagram notation"'],
+    ['bottom-right', `${diagramWidth}px ${notationColumn}px`, '"diagram notation"'],
+  ])('gives a %s notation its own column', (notationPosition, columns, areas) => {
+    const grid = exportPageGrid({ bounds, padding, description: false, notationPosition })
 
-    expect(layout.notation).toEqual({
-      left: layout.diagram.width + EXPORT_NOTATION_GAP,
-      top: 20,
+    expect(grid.page).toMatchObject({
+      gridTemplateColumns: columns,
+      gridTemplateAreas: areas,
+    })
+    expect(grid.notation).toMatchObject({
+      gridArea: 'notation',
       width: EXPORT_NOTATION_WIDTH,
-      height: exportNotationHeight(2),
-    })
-    expect(layout.width).toBe(layout.diagram.width + EXPORT_NOTATION_GAP + EXPORT_NOTATION_WIDTH + 20)
-    expect(layout.notation!.left).toBeGreaterThan(layout.diagram.width)
-  })
-
-  it('places notation below the description banner when both are enabled', () => {
-    const description = {
-      title: 'Checkout Service',
-      text: 'Retrieves user cart, prepares order and orchestrates payments, shipping and notification.',
-    }
-    const layout = computeExportPageLayout({
-      bounds,
-      padding: 20,
-      description,
-      notationEntries: 2,
-    })
-
-    const descriptionHeight = exportDescriptionHeight({
-      ...description,
-      width: layout.width,
-    })
-
-    expect(layout.description).toMatchObject({
-      top: 0,
-      width: layout.width,
-      height: descriptionHeight,
-    })
-    expect(layout.diagram.top).toBe(descriptionHeight + EXPORT_DESCRIPTION_GAP)
-    expect(layout.notation).toMatchObject({
-      top: layout.diagram.top + 20,
-      left: layout.diagram.width + EXPORT_NOTATION_GAP,
     })
   })
 
-  it('grows export height when the notation is taller than the diagram', () => {
-    const layout = computeExportPageLayout({
-      bounds: {
-        ...bounds,
-        height: 50,
-      },
-      padding: 20,
-      description: null,
-      notationEntries: 5,
-    })
+  it.each<[ExportNotationPosition, 'start' | 'end', number]>([
+    ['top-left', 'start', padding],
+    ['top-right', 'start', padding],
+    // bottom edge of the panel meets the bottom edge of the drawn diagram, above the extra padding
+    ['bottom-left', 'end', padding + EXPORT_EXTRA_PADDING],
+    ['bottom-right', 'end', padding + EXPORT_EXTRA_PADDING],
+  ])('aligns a %s notation vertically', (notationPosition, alignSelf, marginBottom) => {
+    const grid = exportPageGrid({ bounds, padding, description: false, notationPosition })
 
-    expect(layout.height).toBe(exportNotationHeight(5) + 20 * 2)
-    expect(layout.height).toBeGreaterThan(layout.diagram.height)
+    expect(grid.notation).toMatchObject({
+      alignSelf,
+      marginTop: padding,
+      marginBottom,
+    })
+  })
+
+  it.each<[ExportNotationPosition, number, number]>([
+    ['top-left', padding, EXPORT_NOTATION_GAP],
+    ['bottom-left', padding, EXPORT_NOTATION_GAP],
+    ['top-right', EXPORT_NOTATION_GAP, padding],
+    ['bottom-right', EXPORT_NOTATION_GAP, padding],
+  ])('keeps the gap to the diagram and the padding to the edge for a %s notation', (
+    notationPosition,
+    marginLeft,
+    marginRight,
+  ) => {
+    const grid = exportPageGrid({ bounds, padding, description: false, notationPosition })
+
+    expect(grid.notation).toMatchObject({ marginLeft, marginRight })
+  })
+
+  it('follows the padding of the export', () => {
+    const grid = exportPageGrid({ bounds, padding: 8, description: false, notationPosition: 'bottom-left' })
+
+    expect(grid.page.gridTemplateColumns).toBe(
+      `${EXPORT_NOTATION_GAP + EXPORT_NOTATION_WIDTH + 8}px ${bounds.width + 8 * 2 + EXPORT_EXTRA_PADDING}px`,
+    )
+    expect(grid.notation).toMatchObject({
+      marginTop: 8,
+      marginBottom: 8 + EXPORT_EXTRA_PADDING,
+      marginLeft: 8,
+    })
+  })
+})
+
+describe('exportNotationShortTitle', () => {
+  it('uses the text before the first colon', () => {
+    expect(exportNotationShortTitle('Database: A specific container type: with details')).toBe('Database')
+  })
+
+  it.each([
+    ['Software system', 'Software system'],
+    [': starts with a colon', ': starts with a colon'],
+    ['  Padded  ', 'Padded'],
+  ])('falls back to the whole text for %j', (title, expected) => {
+    expect(exportNotationShortTitle(title)).toBe(expected)
   })
 })

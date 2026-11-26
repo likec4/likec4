@@ -21,12 +21,15 @@ import {
   invariant,
   isString,
   nonNullable,
+  objectHash,
   onNextTick,
+  stringHash,
 } from '@likec4/core/utils'
 import { loggable, wrapError } from '@likec4/log'
 import {
   type Cancellation,
   type LangiumDocument,
+  type TextDocument,
   Disposable,
   isOperationCancelled,
   URI,
@@ -39,17 +42,17 @@ import {
   filter,
   find,
   hasAtLeast,
-  hasSubObject,
   isEmptyish,
   isNullish,
   isTruthy,
   map,
+  omit,
   pipe,
   prop,
   purry,
   sort,
 } from 'remeda'
-import type { Tagged } from 'type-fest'
+import type { SetOptional, Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
   hasProtocol,
@@ -70,22 +73,31 @@ const logger = mainLogger.getChild('projects')
 // string containing URI with protocol and path
 export type NormalizedUri = Tagged<string, 'NormalizedUri'>
 
-type DocOrUri = LangiumDocument | string | URI
+export type DocOrUri = LangiumDocument | TextDocument | string | URI
+
+function isTextDocument(doc: DocOrUri): doc is TextDocument {
+  return typeof doc === 'object' && 'uri' in doc && 'languageId' in doc && 'getText' in doc &&
+    typeof doc.getText === 'function'
+}
 
 function isLangiumDocument(doc: DocOrUri): doc is LangiumDocument {
   return typeof doc === 'object' && 'uri' in doc && 'textDocument' in doc
 }
 
 function normalizeUri(uri: DocOrUri): NormalizedUri {
-  if (isLangiumDocument(uri)) {
-    return uri.uri.toString() as NormalizedUri
-  }
   if (typeof uri === 'string') {
     if (hasProtocol(uri, { acceptRelative: false, strict: true })) {
       return uri as NormalizedUri
     }
     return URI.file(uri).toString() as NormalizedUri
   }
+  if (isLangiumDocument(uri)) {
+    return uri.uri.toString() as NormalizedUri
+  }
+  if (isTextDocument(uri)) {
+    return uri.uri as NormalizedUri
+  }
+
   return uri.toString() as NormalizedUri
 }
 
@@ -220,6 +232,11 @@ export interface ProjectData extends Project {
    * Normalized include configuration (paths, maxDepth, fileThreshold).
    */
   includeConfig: IncludeConfig
+
+  /**
+   * Hash of the project configuration
+   */
+  hash: string
 }
 
 const compareProjectByFolder = (a: ProjectData, b: ProjectData) => compareUri(a.folderUri, b.folderUri)
@@ -330,6 +347,7 @@ export class ProjectsManager extends ADisposable {
         configUri,
         exclude: DefaultProject.exclude,
         includeConfig: { ...DefaultProject.includeConfig },
+        hash: stringHash(folder || 'default'),
       }
     }
     return nonNullable(this.#projects.find(p => p.id === id), `Project ${id} not found`)
@@ -403,14 +421,11 @@ export class ProjectsManager extends ADisposable {
    * Checks if a document is excluded by workspace-level patterns.
    * These patterns come from VS Code settings and take precedence over project-level excludes.
    */
-  public isExcludedByWorkspace(uri: NormalizedUri | URI): boolean {
+  public isExcludedByWorkspace(uri: DocOrUri): boolean {
     if (!this.#workspaceExclude) {
       return false
     }
-    if (URI.isUri(uri)) {
-      uri = normalizeUri(uri)
-    }
-    return this.#workspaceExclude(uriPathForMatcher(uri))
+    return this.#workspaceExclude(uriPathForMatcher(normalizeUri(uri)))
   }
 
   /**
@@ -653,14 +668,14 @@ export class ProjectsManager extends ADisposable {
     // find project by folder, config file can be renamed
     let project = this.#projects.find(p => p.folder === folder)
     if (!project) {
-      project = {
+      project = withProjectHash({
         id: this.uniqueProjectId(config.name),
         config,
         folder,
         configUri,
         folderUri,
         includeConfig,
-      }
+      })
 
       // add new project and sort
       this.#projects = ensureProjectsOrder([...this.#projects, project])
@@ -674,13 +689,17 @@ export class ProjectsManager extends ADisposable {
         project.id = this.uniqueProjectId(config.name)
         logger.info`add ${project.id}`
       } else {
-        // File might be changed (space, comment, etc.), check if any field is actually changed
-        const hasNotChanged = hasSubObject(project, {
+        // Check if project has structural changes
+        const newHash = computeProjectHash({
+          id: project.id,
           config,
-          folder,
           includeConfig,
-        }) && `${project.configUri}|${project.folderUri}` === `${configUri}|${folderUri}`
-        if (hasNotChanged) {
+          configUri,
+          folder,
+        })
+        if (project.hash === newHash) {
+          // Update reference to config object to avoid stale config
+          project.config = config
           logger.trace`project ${project.id} has no structural changes, skipping reload`
           return project
         }
@@ -694,6 +713,7 @@ export class ProjectsManager extends ADisposable {
       project.folderUri = folderUri
       project.configUri = configUri
       project.includeConfig = includeConfig
+      project.hash = computeProjectHash(project)
     }
 
     // Ignore Errors if any
@@ -848,7 +868,9 @@ export class ProjectsManager extends ADisposable {
     }
     this.clearCaches()
     this.notifyListeners()
-    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
+    if (this.services.workspace.WorkspaceManager.isReady) {
+      await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
+    }
   }
 
   protected uniqueProjectId(name: string): ProjectId {
@@ -1124,5 +1146,26 @@ export class ProjectsManager extends ADisposable {
     this.#reloadAbort.abort()
     this.#reloadAbort = new AbortController()
     this.#pendingReloads.clear()
+  }
+}
+
+function computeProjectHash(
+  project: Pick<ProjectData, 'id' | 'config' | 'includeConfig' | 'folder' | 'configUri'>,
+): string {
+  return objectHash([
+    project.id + project.folder + project.configUri.toString(),
+    omit(project.config, [
+      // These fields are not used for hash calculation
+      'generators',
+      'include', // include is already in includeConfig
+    ]),
+    project.includeConfig,
+  ])
+}
+
+function withProjectHash(project: SetOptional<ProjectData, 'hash'>): ProjectData {
+  return {
+    ...project,
+    hash: computeProjectHash(project),
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/layouts",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "description": "Layout algorithms for LikeC4 views",
   "homepage": "https://likec4.dev",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -99,6 +99,8 @@
     "@types/fontkit": "catalog:",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
+    "graphology": "catalog:",
+    "graphology-types": "catalog:",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",

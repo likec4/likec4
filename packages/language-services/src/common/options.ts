@@ -66,4 +66,10 @@ export type FromWorkspaceOptions = InitOptions & {
    * @default false
    */
   watch?: boolean
+
+  /**
+   * Cache directory for internal generated data (likeC4 views cache, etc.).
+   * If not provided, cache will be stored in memory.
+   */
+  cacheDir?: string | undefined
 }

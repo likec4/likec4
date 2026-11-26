@@ -201,6 +201,25 @@ test('parse DrawIO to LikeC4 - bridge-managed likec4Id yields stable FQN identit
   expect(result).not.toContain('Backend_1')
 })
 
+test('edge label with html=0: literal angle-bracket text is not stripped', () => {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="test">
+  <diagram name="test">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" vertex="1" parent="0"><mxGeometry width="800" height="600" as="geometry" /></mxCell>
+        <mxCell id="2" value="A" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="80" height="40" as="geometry" /></mxCell>
+        <mxCell id="3" value="B" style="shape=rectangle;" vertex="1" parent="1"><mxGeometry x="200" y="0" width="80" height="40" as="geometry" /></mxCell>
+        <mxCell id="4" value="Map&lt;K, V&gt;" style="rounded=1;html=0;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>`
+  const result = parseDrawioToLikeC4(xml)
+  expect(result).toContain('\'Map<K, V>\'')
+})
+
 const drawioTwoTabs = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile>
   <diagram name="overview">

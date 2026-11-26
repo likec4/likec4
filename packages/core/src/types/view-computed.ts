@@ -160,6 +160,7 @@ export interface ComputedElementView<A extends AnyAux = AnyAux> extends BaseComp
 
 export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'deployment'
+  readonly ranks?: ComputedRankConstraint[]
 }
 
 export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {

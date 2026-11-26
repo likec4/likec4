@@ -4,7 +4,7 @@ import { constants } from 'node:fs'
 import { access } from 'node:fs/promises'
 import { resolve } from 'pathe'
 import { logGenerating } from '../logger'
-import { type ProjectData, type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectData, type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 
 /**
  * Absolute paths of the files in `styles.customCss`.
@@ -53,9 +53,7 @@ export let {
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = updateModel
-    }
+    import.meta.hot.data.$update ??= updateModel
     const update = md.$likec4data?.get()
     if (update) {
       import.meta.hot.data.$update(update)
@@ -68,13 +66,15 @@ if (import.meta.hot) {
 }
 
 export const projectModelModule: ProjectVirtualModule = {
-  ...generateMatches('model'),
+  name: 'model',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('model', project.id)
     const model = await likec4.layoutedModel(project.id)
     return {
       code: projectModelCode(model, await customCssFiles(project)),
       moduleType: 'js',
+      moduleSideEffects: false,
     }
   },
 }

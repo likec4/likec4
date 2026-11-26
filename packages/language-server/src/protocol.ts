@@ -212,28 +212,6 @@ export namespace FetchProjects {
 }
 
 /**
- * Request from the client to register a project.
- */
-export namespace RegisterProject {
-  export type Params = {
-    folderUri: URI
-    config: LikeC4ProjectJsonConfig
-    configUri?: never
-  } | {
-    configUri: URI
-    folderUri?: never
-    config?: never
-  }
-
-  export type Res = {
-    id: ProjectId
-  }
-
-  export const req = new RequestType<Params, Res, void>('likec4/register-project')
-  export type Req = typeof req
-}
-
-/**
  * Request to build documents.
  */
 export namespace BuildDocuments {

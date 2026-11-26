@@ -32,9 +32,7 @@ const rewriteRootSelector = {
 }
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-  ],
+  entry: 'src/index.ts',
   platform: 'browser',
   inputOptions: {
     onLog(level, log, defaultHandler) {
@@ -66,26 +64,33 @@ export default defineConfig({
   deps: {
     onlyBundle: false,
     neverBundle: [
-      /^@likec4\/core/,
+      /^likec4(\/|$)/,
       'immer',
       'type-fest',
       /^react(\/|$)/,
       /^react-dom(\/|$)/,
     ],
-    resolveDepSubpath: true,
   },
   plugins: [
-    react({
-      compiler: true,
-      exclude: [/\.d\.[cm]?ts$/],
-    }),
     viteAliasPlugin({
       entries: [
+        {
+          find: /^@likec4\/core(\/.*)?$/,
+          replacement: 'likec4/core$1',
+        },
+        {
+          find: /^@likec4\/layouts(\/.*)?$/,
+          replacement: 'likec4/layouts$1',
+        },
         {
           find: /@likec4\/styles\/(.*)/,
           replacement: join(process.cwd(), 'styled-system', '$1', 'index.mjs'),
         },
       ],
+    }),
+    react({
+      compiler: true,
+      exclude: [/\.d\.[cm]?ts$/],
     }),
   ],
   hooks: {
@@ -97,8 +102,5 @@ export default defineConfig({
         cwd: process.cwd(),
       })
     },
-  },
-  checks: {
-    bundlerTimings: false,
   },
 })

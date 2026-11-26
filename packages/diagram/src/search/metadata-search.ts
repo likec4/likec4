@@ -1,3 +1,5 @@
+import { entries, keys } from 'remeda'
+
 export const METADATA_SEARCH_PREFIX = 'meta:'
 
 /**
@@ -29,15 +31,15 @@ export function matchesMetadataSearch(
 ): boolean {
   const query = normalizedSearch.slice(METADATA_SEARCH_PREFIX.length)
   if (query === '') {
-    return Object.keys(metadata).length > 0
+    return keys(metadata).length > 0
   }
   const eq = query.indexOf('=')
   if (eq < 0) {
-    return Object.keys(metadata).some(key => key.toLowerCase().includes(query))
+    return keys(metadata).some(key => key.toLowerCase().includes(query))
   }
   const searchKey = query.slice(0, eq).trim()
   const searchValue = query.slice(eq + 1).trim()
-  return Object.entries(metadata).some(([key, value]) =>
+  return entries(metadata).some(([key, value]) =>
     key.toLowerCase() === searchKey
     && (searchValue === '' || metadataValues(value).some(v => v.toLowerCase().includes(searchValue)))
   )

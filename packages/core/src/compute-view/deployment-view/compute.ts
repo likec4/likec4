@@ -28,6 +28,7 @@ import {
   applyDeploymentNavigateTo,
   applyDeploymentViewRuleStyles,
   buildNodes,
+  collectDeploymentRankConstraints,
   deploymentElementExprToPredicate,
   deploymentExpressionToPredicate,
   toComputedEdges,
@@ -232,6 +233,7 @@ export function computeDeploymentView<M extends AnyAux>(
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
 
   const elementNotations = buildElementNotations(nodes)
+  const ranks = collectDeploymentRankConstraints(flatRules, nodes)
 
   return calcViewLayoutHash({
     ...withResolvedRouting(view, likec4model.$styles.defaults.view.routing),
@@ -260,5 +262,6 @@ export function computeDeploymentView<M extends AnyAux>(
         nodes: elementNotations,
       },
     }),
+    ...(ranks.length > 0 && { ranks }),
   })
 }

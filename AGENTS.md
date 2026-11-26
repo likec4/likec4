@@ -34,14 +34,10 @@ ask if drift behavior is unclear. Read model and API rules before downstream typ
 
 ## Build, Test, and Development Commands
 
-- `pnpm install` installs dependencies and requires Node `>=22.22.3`.
 - `pnpm generate` pre-generates sources; always run after checkout, big merges, refactors, and when generated files are missing.
 - `pnpm build` builds packages except docs and playground.
 - `pnpm typecheck` validates TypeScript; run it after `pnpm generate`.
 - `pnpm test` runs Vitest suites. Use `pnpm test --no-typecheck` when only runtime tests are needed.
-- `pnpm lint` runs oxlint.
-- `pnpm lint:fix` applies oxlint fixes.
-- `pnpm fmt` formats with dprint.
 - `pnpm test:e2e` runs Playwright tests from the isolated `e2e` workspace and takes longer than unit tests.
 - `pnpm check:agent-instructions` validates that this file remains canonical and that instruction and skill adapters do not drift.
 - `pnpm check:react-bundle-deps` validates that `@likec4/spa`, `@likec4/react` and `likec4` declare the same runtime dependencies; see the webapp rules.
@@ -67,7 +63,6 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 
 - TypeScript-first repository; use explicit types.
 - Avoid `any` and avoid casts with `as` unless there is no safer alternative.
-- Formatting is handled by dprint with 120-column lines, single quotes, and no semicolons.
 - Use oxlint for linting; keep imports sorted and type-only imports grouped first.
 - Use JSDoc to document public classes and methods.
 - Favor `switch (true)` over if-else chains.
@@ -75,10 +70,7 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 
 ## Testing Guidelines
 
-- Unit and integration tests use Vitest.
-- Test files are named `*.spec.ts` and live alongside sources or in `__tests__` folders.
 - Snapshots are stored in `__snapshots__` folders and should be updated deliberately.
-- Cover new features with relevant tests and keep test names descriptive.
 - Always run relevant tests before committing.
 
 ## Commit, Pull Request, and Changeset Guidelines
@@ -109,8 +101,7 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 - VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`. Do not add `.github/copilot-instructions.md`; any future adapter must be generated from `AGENTS.md` and added together with drift validation.
 - The `.cursor/` directory is gitignored. Contributors may add local `.cursor/rules/` files for personal use, but do not commit them.
 - Repo-local developer workflow skills live in `.agents/skills/`.
-- The public LikeC4 DSL skill lives in `skills/likec4-dsl/`.
+- The public LikeC4 skills live in `skills/`: `likec4-dsl` for DSL syntax and `code-to-likec4` for generating a model from code.
 - Claude Code discovers project skills from `.claude/skills/`; keep each tracked `.claude/skills/*` entry as a per-skill symlink to one canonical skill directory.
 - Do not duplicate skill bodies into `.claude/skills/`; add or update the symlink adapter and `devops/check-agent-skills.mjs` together.
 - Use `.tool-versions` for expected Node and pnpm versions.
-- Pre-commit hooks use `nano-staged` to run dprint on staged files.

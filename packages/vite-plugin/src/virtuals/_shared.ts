@@ -44,16 +44,80 @@ export type SharedVirtualModuleOptions =
       isAIAvailable: false
       ai: undefined
     } | {
-      isAIAvailable: false
+      isAIAvailable: true
       ai: AIOptions
     }
   )
 
+/**
+ * Prefix of public module ids, e.g. `likec4:model` or `likec4:model/<projectId>`
+ */
+const ID_PREFIX = 'likec4:'
+/**
+ * Prefix of resolved ids, following the Vite convention for virtual modules
+ * @see https://vite.dev/guide/api-plugin#virtual-modules-convention
+ */
+const VIRTUAL_ID_PREFIX = '\0' + ID_PREFIX
+const VIRTUAL_ID_SUFFIX = '.js'
+
+export interface ParsedModuleId {
+  /**
+   * Module name, e.g. `model` in `likec4:model/<projectId>`
+   */
+  name: string
+  /**
+   * Project id for project scoped modules, `null` for global modules
+   */
+  projectId: ProjectId | null
+}
+
+/**
+ * Resolved id of the virtual module, e.g. `\0likec4:model/<projectId>.js`
+ */
+export function toVirtualId(name: string, projectId?: ProjectId | null): string {
+  return VIRTUAL_ID_PREFIX + (projectId ? `${name}/${projectId}` : name) + VIRTUAL_ID_SUFFIX
+}
+
+/**
+ * Parses public (`likec4:<name>[/<projectId>]`) or resolved (`\0likec4:<name>[/<projectId>].js`) module id.
+ * Returns `null` if the id does not belong to LikeC4 virtual modules.
+ */
+export function parseModuleId(id: string): ParsedModuleId | null {
+  let rest: string
+  switch (true) {
+    case id.startsWith(VIRTUAL_ID_PREFIX) && id.endsWith(VIRTUAL_ID_SUFFIX): {
+      rest = id.slice(VIRTUAL_ID_PREFIX.length, -VIRTUAL_ID_SUFFIX.length)
+      break
+    }
+    case id.startsWith(ID_PREFIX): {
+      rest = id.slice(ID_PREFIX.length)
+      break
+    }
+    default:
+      return null
+  }
+  const separator = rest.indexOf('/')
+  if (separator === -1) {
+    return rest ? { name: rest, projectId: null } : null
+  }
+  const name = rest.slice(0, separator)
+  const projectId = rest.slice(separator + 1)
+  if (!name || !projectId) {
+    return null
+  }
+  return { name, projectId: projectId as ProjectId }
+}
+
+/**
+ * Global virtual module, imported as `likec4:<name>`
+ */
 export interface VirtualModule {
-  id: string
-  virtualId: string
+  name: string
+  /**
+   * Reload the module when projects change
+   */
+  hmr?: boolean
   load(
-    this: Rolldown.MinimalPluginContext,
     opts: SharedVirtualModuleOptions & {
       projects: NonEmptyArray<ProjectData>
     },
@@ -61,38 +125,34 @@ export interface VirtualModule {
 }
 
 /**
- * Project scoped virtual module
+ * Project scoped virtual module, imported as `likec4:<name>/<projectId>`
  */
 export interface ProjectVirtualModule {
+  name: string
+  /**
+   * Reload the module when the project model changes
+   */
+  hmr?: boolean
   exportFormat?: WebappExportFormat
-  matches: (id: string) => ProjectId | null
-  virtualId: (projectId: ProjectId) => string
   load(
-    this: Rolldown.MinimalPluginContext,
     opts: SharedVirtualModuleOptions & {
       project: ProjectData
     },
   ): Promise<VirtualModuleLoadResult>
 }
 
-export function generateMatches(moduleId: string, extension = '.js') {
-  return {
-    matches: (id: string): ProjectId | null => {
-      let { module, projectId } = id.match(/likec4:plugin\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
-        id.match(/likec4:(?<module>.+)\/(?<projectId>.+)$/)?.groups ?? {}
-      if (!module || !projectId) {
-        return null
-      }
-      if (module.endsWith(extension)) {
-        module = module.slice(0, -extension.length)
-      }
-      if (module === moduleId) {
-        return projectId as ProjectId
-      }
-      return null
-    },
-    virtualId: (projectId: ProjectId): string => joinURL(`likec4:plugin`, projectId, moduleId) + extension,
+/**
+ * Indexes modules by name, throws on duplicates
+ */
+export function indexByName<M extends { name: string }>(modules: ReadonlyArray<M>): ReadonlyMap<string, M> {
+  const index = new Map<string, M>()
+  for (const module of modules) {
+    if (index.has(module.name)) {
+      throw new Error(`Duplicate LikeC4 virtual module: ${module.name}`)
+    }
+    index.set(module.name, module)
   }
+  return index
 }
 
 export function generateCombinedProjects(
@@ -101,8 +161,8 @@ export function generateCombinedProjects(
   exportFormat?: WebappExportFormat,
 ): VirtualModule {
   return {
-    id: `likec4:${moduleId}`,
-    virtualId: 'likec4:plugin/' + moduleId + '.js',
+    name: moduleId,
+    hmr: true,
     async load({ projects }) {
       logGenerating(moduleId)
 
@@ -112,10 +172,8 @@ export function generateCombinedProjects(
 
       const cases = enabledProjects.map(({ id }) => {
         const idLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))
-        const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
-          JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
-        )
-        return `${idLiteral}: async () => await import(${pkgLiteral})`
+        const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(joinURL(`likec4:${moduleId}`, id)))
+        return `${idLiteral}: () => import(${pkgLiteral})`
       })
       const disabledExportMessageLiteral = exportFormat
         ? hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(`Project does not enable ${exportFormat} export: `))
@@ -128,35 +186,49 @@ export let ${registryName} = {
 ${cases.join(',\n')}
 }      
 
-export async function ${fnName}(projectId) {
+const cachedPromises = new Map()
+export function ${fnName}(projectId) {
+  if (cachedPromises.has(projectId)) {
+    return cachedPromises.get(projectId)
+  }
   let fn = ${registryName}[projectId]
   if (!fn) {
     const projects = Object.keys(${registryName})
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     ${
         exportFormat
-          ? `throw new Error(${disabledExportMessageLiteral} + projectId)`
+          ? `return Promise.reject(new Error(${disabledExportMessageLiteral} + projectId))`
           : `
     if (projects.length === 0) {
-      throw new Error('No projects found, invalid state')
+      return Promise.reject(new Error('No projects found, invalid state'))
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
-    fn = ${registryName}[projectId]
+    return ${fnName}(projectId)
     `
       }
   }
-  return await fn()
+  const promise = fn()
+  cachedPromises.set(projectId, promise)
+  return promise
 }
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
     if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = ${registryName}
+      import.meta.hot.data.$update = (update) => {
+        for (const [key, value] of Object.entries(update)) {
+          if (cachedPromises.has(key)) {
+            // Remove from cache to force reload
+            cachedPromises.delete(key)
+          }
+          ${registryName}[key] = value
+        }
+      }
     }
     const update = md.${registryName}
     if (update) {
-      Object.assign(import.meta.hot.data.$update, update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }    

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/vscode-preview",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -33,7 +33,6 @@
     "@tabler/icons-react": "catalog:react",
     "@tanstack/react-query": "catalog:tanstack",
     "@types/node": "catalog:",
-    "@types/object-hash": "^3.0.6",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@types/vscode": "catalog:vscode",

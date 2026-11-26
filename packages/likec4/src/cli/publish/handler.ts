@@ -11,7 +11,7 @@ import { env } from 'std-env'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import type { LikeC4Model } from '../../model'
-import { ensureProject } from '../utils'
+import { ensureProject, workspaceProjects } from '../utils'
 import { collectAssets } from './assets'
 import { createGitRunner, readGitProvenance } from './git'
 import { buildPublishPayload } from './payload'
@@ -20,17 +20,6 @@ const ENV_TOKEN = 'LIKEC4_PUBLISH_TOKEN'
 const ENV_CLOUD_URL = 'LIKEC4_CLOUD_URL'
 const DEFAULT_CLOUD_URL = 'https://likec4.app'
 const PUBLISH_ENDPOINT = '/api/publish'
-
-/**
- * Id of the synthetic project the language server always appends to
- * `projectsManager.all` (`ProjectsManager.DefaultProjectId`).
- *
- * It is not re-exported from `@likec4/language-server`, so it is mirrored here. The value is
- * safe to pin: `likec4.config.json` validation rejects `"default"` as a project name, so a
- * real project can never claim this id. If it ever drifted, the failure would be loud (a
- * duplicate `workspacePath`), not silent — see {@link selectProjects}.
- */
-const SYNTHETIC_DEFAULT_PROJECT_ID = 'default'
 
 /**
  * ky defaults to a 10s timeout, which is far too short for a multi-MB upload.
@@ -163,38 +152,11 @@ function explainResolvedSymlinks(err: unknown, resolved: ReadonlyMap<string, str
 
 /**
  * Every project of the workspace that should be published, with its folder.
- *
- * `projectsManager.all` is the authoritative list of registered projects, but it always
- * appends a synthetic `default` entry pointing at the workspace root. That entry has to be
- * dropped when real projects exist, otherwise it collides with a root project on the `"."`
- * payload key, or contributes an empty model.
- *
- * It must **not** be dropped unconditionally:
- * - a workspace with no `likec4.config.json` at all has `all === ['default']`, and there the
- *   default entry *is* the real project;
- * - `default` also owns any stray sources that sit outside every configured project.
- *
- * `languageServices.projects()` cannot be the base list either. It is grouped by document
- * *ownership*, so a project that pulls all of its sources in through `include.paths` and owns
- * no `.c4` file of its own never appears in it - even though it renders real diagrams. It is
- * only consulted here to decide whether the synthetic `default` entry carries any content.
+ * Keeping the synthetic `default` project out matters here: it would collide with a root
+ * project on the `"."` payload key, see {@link workspaceProjects}.
  */
-function selectProjects(
-  likec4: LikeC4Instance,
-  logger: { debug: (msg: string) => void },
-): Array<{ id: ProjectId; folder: string }> {
-  const all = [...new Set(likec4.projectsManager.all)]
-  const ownsDocuments = new Set<string>(likec4.languageServices.projects().map(p => p.id))
-  const selected = all.filter(id =>
-    id !== SYNTHETIC_DEFAULT_PROJECT_ID
-    || ownsDocuments.has(id)
-    || all.length === 1
-  )
-  const dropped = all.filter(id => !selected.includes(id))
-  if (dropped.length > 0) {
-    logger.debug(`skipping synthetic empty project(s): ${dropped.join(', ')}`)
-  }
-  return selected.map(id => ({
+function selectProjects(likec4: LikeC4Instance): Array<{ id: ProjectId; folder: string }> {
+  return workspaceProjects(likec4).map(id => ({
     id,
     folder: likec4.projectsManager.getProject(id).folderUri.fsPath,
   }))
@@ -304,7 +266,7 @@ export async function publishHandler(params: PublishHandlerParams): Promise<void
     selected = [{ id: projectId, folder: projectFolder }]
     logger.info(`${k.dim('project:')} ${k.green(projectId)}`)
   } else {
-    selected = selectProjects(likec4, logger)
+    selected = selectProjects(likec4)
     logger.info(`${k.dim('workspace:')} Found ${selected.length} projects`)
   }
 

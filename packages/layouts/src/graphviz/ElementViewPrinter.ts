@@ -1,6 +1,5 @@
 import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn, HexColor } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
-import { createLogger } from '@likec4/log'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
@@ -8,15 +7,13 @@ import { edgelabel } from './dot-labels'
 import { DotPrinter } from './DotPrinter'
 import { isCompound, toArrowType } from './utils'
 
-const rankLogger = createLogger('dot.rank')
-
 export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedElementView<A>> {
   protected override postBuild(): void {
     // Assign groups to improve layout
     this
       .assignGroups()
       .tileNodesWithoutEdges()
-      .applyExplicitRankBlocks()
+      .applyExplicitRankBlocks(this.view.ranks ?? [])
       .enableNewRankIfNeeded()
   }
 
@@ -73,30 +70,6 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
           }
         })
       })
-    }
-    return this
-  }
-
-  private applyExplicitRankBlocks(): this {
-    const ranks = this.view.ranks ?? []
-    if (ranks.length === 0) {
-      return this
-    }
-    let applied = 0
-    for (const constraint of ranks) {
-      const nodes = [...new Set(constraint.nodes)]
-        .map(id => this.getGraphNode(id))
-        .filter((node): node is NodeModel => Boolean(node))
-      if (nodes.length === 0) {
-        continue
-      }
-      const rankSubgraph = this.G.createSubgraph({ [_.rank]: constraint.type })
-      nodes.forEach(node => rankSubgraph.node(node.id))
-      applied += 1
-      rankLogger.trace`rank ${constraint.type} => ${nodes.map(node => node.id).join(', ')}`
-    }
-    if (applied > 0) {
-      this.G.set('likec4_rankBlocks' as any, applied)
     }
     return this
   }

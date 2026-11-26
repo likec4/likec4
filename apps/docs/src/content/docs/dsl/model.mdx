@@ -391,8 +391,9 @@ model {
 Provides the public API.
 ```
 
-The file must be inside the project folder; a path that points outside of it, or to another
-scheme, is reported as an error. `description` and `descriptionFile` on the same element are an
+The file must be inside the workspace (the folder open in the editor, or the path given to the CLI),
+so it can also live in another project of the same workspace; a path that points outside of it, or
+to another scheme, is reported as an error. `description` and `descriptionFile` on the same element are an
 error too - use one of them.
 
 ## Structuring Model

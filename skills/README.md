@@ -8,9 +8,10 @@ Skills are auto-discovered by agents when working in this repository. They provi
 
 ## Available Skills
 
-| Skill                       | Description                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| [likec4-dsl](./likec4-dsl/) | LikeC4 DSL syntax reference — auto-triggers when editing `.c4`/`.likec4` files |
+| Skill                               | Description                                                                             |
+| ----------------------------------- | --------------------------------------------------------------------------------------- |
+| [likec4-dsl](./likec4-dsl/)         | LikeC4 DSL syntax reference — auto-triggers when editing `.c4`/`.likec4` files          |
+| [code-to-likec4](./code-to-likec4/) | Scans a TypeScript/JavaScript or Python codebase and generates a validated LikeC4 model |
 
 ## Installing Skills
 

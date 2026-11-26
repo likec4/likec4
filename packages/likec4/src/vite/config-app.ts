@@ -76,7 +76,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     resolve: {
       alias: {
         ...viteAliases(),
-        'likec4/previews': likec4AssetsDir,
+        // 'likec4/previews': likec4AssetsDir,
       },
       // The customization file is outside of the app root, resolve React from the app
       dedupe: reactDedupe,

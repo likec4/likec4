@@ -1,4 +1,4 @@
-import { anyPass, filter, hasAtLeast, isEmpty, omit, only, partition, pipe } from 'remeda'
+import { anyPass, filter, hasAtLeast, isEmpty, map, omit, only, partition, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import type {
   DeployedInstanceModel,
@@ -10,8 +10,24 @@ import type {
   LikeC4Model,
 } from '../../model'
 import { deploymentConnection } from '../../model'
-import type { AnyAux, aux, ComputedEdge, ComputedNode, DeploymentViewRule, scalar, Unknown } from '../../types'
-import { exact, FqnExpr, isViewRuleStyle, preferSummary, whereOperatorAsPredicate } from '../../types'
+import type {
+  AnyAux,
+  aux,
+  ComputedEdge,
+  ComputedNode,
+  ComputedRankConstraint,
+  DeploymentViewRule,
+  scalar,
+  Unknown,
+} from '../../types'
+import {
+  exact,
+  FqnExpr,
+  isDeploymentViewRuleRank,
+  isViewRuleStyle,
+  preferSummary,
+  whereOperatorAsPredicate,
+} from '../../types'
 import { invariant, nonexhaustive, parentFqn } from '../../utils'
 import { stringHash } from '../../utils/string-hash'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
@@ -472,6 +488,50 @@ export function applyDeploymentViewRuleStyles<A extends AnyAux>(
     )
   }
   return nodes
+}
+
+/**
+ * A logical element ranks its instances only: unlike other rules, deployment nodes without a model ref don't match.
+ */
+function rankTargetToPredicate<A extends AnyAux>(target: FqnExpr<A>): (node: ComputedNode<A>) => boolean {
+  const predicate = deploymentExpressionToPredicate<A, ComputedNode<A>>(target)
+  if (FqnExpr.isModelRef(target)) {
+    return node => node.modelRef != null && predicate(node)
+  }
+  return predicate
+}
+
+/**
+ * Resolves `rank` rules to the nodes of the view, in the same order as the rules.
+ */
+export function collectDeploymentRankConstraints<A extends AnyAux>(
+  rules: DeploymentViewRule<A>[],
+  nodes: ReadonlyArray<ComputedNode<A>>,
+): ComputedRankConstraint[] {
+  const constraints: ComputedRankConstraint[] = []
+  for (const rule of rules) {
+    if (!isDeploymentViewRuleRank(rule)) {
+      continue
+    }
+    const targets = rule.targets.filter(t => !FqnExpr.isElementTagExpr(t) && !FqnExpr.isElementKindExpr(t))
+    if (targets.length === 0) {
+      continue
+    }
+    const isTargeted = anyPass(targets.map(rankTargetToPredicate))
+    const nodesInRank = pipe(
+      nodes,
+      filter(isTargeted),
+      map(n => n.id),
+    )
+    if (!hasAtLeast(nodesInRank, 1)) {
+      continue
+    }
+    constraints.push({
+      type: rule.rank,
+      nodes: nodesInRank,
+    })
+  }
+  return constraints
 }
 
 export function applyDeploymentNavigateTo<A extends AnyAux>(

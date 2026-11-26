@@ -3,8 +3,11 @@ import { ast } from '../ast'
 /**
  * Returns referenced AST Element
  */
-export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef): ast.Element | undefined {
+export function elementRef(node: ast.ElementRef | ast.StrictFqnElementRef | ast.Imported): ast.Element | undefined {
   try {
+    if (ast.isImported(node)) {
+      return node.imported.ref
+    }
     let el = ast.isStrictFqnElementRef(node) ? node.el.ref : node.modelElement.value.ref
     if (el?.$type === 'Imported') {
       el = el.imported.ref

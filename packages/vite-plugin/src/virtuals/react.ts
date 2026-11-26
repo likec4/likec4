@@ -1,33 +1,34 @@
 import { first } from 'remeda'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
+import type { ProjectVirtualModule, VirtualModule } from './_shared'
 
 /**
  * With the customization file configured, the project provider also applies its UI overrides
  */
-const modelProviderCode = (customized: boolean) =>
+const defineLikeC4ModelProvider = (customized: boolean) =>
   customized
     ? `
-import { CustomizationProvider } from 'likec4/react';
-import { useCustomComponents } from 'likec4:customization'
+import { CustomizationContext } from 'likec4:customization'
 
 export function LikeC4ModelProvider({ children }) {
-  const likec4model = useLikeC4Model()
-  const components = useCustomComponents()
-  return (jsx(CustomizationProvider, { components, children: jsx(Provider, { likec4model, children }) }));
+  return (jsx(CustomizationContext, { children: jsx(ModelProvider, { children }) }));
 }`
     : `
-export function LikeC4ModelProvider({ children }) {
-  const likec4model = useLikeC4Model()
-  return (jsx(Provider, { likec4model, children }));
-}`
+export const LikeC4ModelProvider = ModelProvider
+`
 
 export const generateProjectReactCode = (id: string, customized: boolean): string => `
 import { jsx } from "react/jsx-runtime";
 import { LikeC4ModelProvider as Provider, LikeC4View as GenericView, ReactLikeC4 as GenericReactLikeC4 } from 'likec4/react';
 import { IconRenderer as renderIcon } from 'likec4:icons/${id}'
 import { useLikeC4Model } from 'likec4:model/${id}'
-${modelProviderCode(customized)}
+
+function ModelProvider({ children }) {
+  const likec4model = useLikeC4Model()
+  return (jsx(Provider, { likec4model, children }));
+}
+${defineLikeC4ModelProvider(customized)}
+
 export function LikeC4View(props) {
   return (jsx(LikeC4ModelProvider, { children: jsx(GenericView, { renderIcon, ...props }) }));
 }
@@ -48,7 +49,7 @@ export {
 `
 
 export const projectReactModule: ProjectVirtualModule = {
-  ...generateMatches('react'),
+  name: 'react',
   async load({ project, customizationFile }) {
     logGenerating('react', project.id)
     return {
@@ -59,8 +60,8 @@ export const projectReactModule: ProjectVirtualModule = {
 }
 
 export const singleProjectReactModule: VirtualModule = {
-  id: 'likec4:react',
-  virtualId: 'likec4:plugin/react.js',
+  name: 'react',
+  hmr: true,
   async load({ projects }) {
     const project = first(projects)
     logGenerating('react-default-project')

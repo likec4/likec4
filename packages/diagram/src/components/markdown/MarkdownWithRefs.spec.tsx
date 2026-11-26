@@ -1,5 +1,6 @@
 import { Builder } from '@likec4/core/builder'
 import { RichText } from '@likec4/core/types'
+import { unsafePartial } from '@likec4/core/utils'
 import { MantineProvider } from '@mantine/core'
 import { atom } from 'nanostores'
 import type { ReactNode } from 'react'
@@ -38,13 +39,13 @@ const allFeatures: Partial<EnabledFeatures> = {
   enableNavigateTo: true,
 }
 
-const rootContainer: RootContainerContextType = {
+const rootContainer = unsafePartial<RootContainerContextType>({
   id: 'root',
   selector: '#root',
   ref: { current: null },
   $panning: atom(false),
   reducedGraphics: false,
-}
+})
 
 function renderWithoutModel(children: ReactNode) {
   return renderToStaticMarkup(

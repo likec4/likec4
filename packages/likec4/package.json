@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.60.0",
+  "version": "1.61.1",
   "description": "Toolchain for your architecture diagrams",
   "keywords": [
     "likec4",
@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -25,6 +26,94 @@
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
+      }
+    },
+    "./core/builder": {
+      "sources": "./src/core/builder.ts",
+      "default": {
+        "types": "./dist/core/builder.d.mts",
+        "import": "./dist/core/builder.mjs",
+        "default": "./dist/core/builder.mjs"
+      }
+    },
+    "./core/geometry": {
+      "sources": "./src/core/geometry.ts",
+      "default": {
+        "types": "./dist/core/geometry.d.mts",
+        "import": "./dist/core/geometry.mjs",
+        "default": "./dist/core/geometry.mjs"
+      }
+    },
+    "./core/compute-view": {
+      "sources": "./src/core/compute-view.ts",
+      "default": {
+        "types": "./dist/core/compute-view.d.mts",
+        "import": "./dist/core/compute-view.mjs",
+        "default": "./dist/core/compute-view.mjs"
+      }
+    },
+    "./core/model": {
+      "sources": "./src/core/model.ts",
+      "default": {
+        "types": "./dist/core/model.d.mts",
+        "import": "./dist/core/model.mjs",
+        "default": "./dist/core/model.mjs"
+      }
+    },
+    "./core/styles": {
+      "sources": "./src/core/styles.ts",
+      "default": {
+        "types": "./dist/core/styles.d.mts",
+        "import": "./dist/core/styles.mjs",
+        "default": "./dist/core/styles.mjs"
+      }
+    },
+    "./core/types": {
+      "sources": "./src/core/types.ts",
+      "default": {
+        "types": "./dist/core/types.d.mts",
+        "import": "./dist/core/types.mjs",
+        "default": "./dist/core/types.mjs"
+      }
+    },
+    "./core/utils": {
+      "sources": "./src/core/utils.ts",
+      "default": {
+        "types": "./dist/core/utils.d.mts",
+        "import": "./dist/core/utils.mjs",
+        "default": "./dist/core/utils.mjs"
+      }
+    },
+    "./core": {
+      "sources": "./src/core/index.ts",
+      "default": {
+        "types": "./dist/core/index.d.mts",
+        "import": "./dist/core/index.mjs",
+        "default": "./dist/core/index.mjs"
+      }
+    },
+    "./layouts/ai": {
+      "sources": "./src/layouts/ai.ts",
+      "default": {
+        "types": "./dist/layouts/ai.d.mts",
+        "import": "./dist/layouts/ai.mjs",
+        "default": "./dist/layouts/ai.mjs"
+      }
+    },
+    "./layouts/sequence": {
+      "sources": "./src/layouts/sequence.ts",
+      "default": {
+        "types": "./dist/layouts/sequence.d.mts",
+        "import": "./dist/layouts/sequence.mjs",
+        "default": "./dist/layouts/sequence.mjs"
+      }
+    },
+    "./layouts": {
+      "sources": "./src/layouts/index.ts",
+      "default": {
+        "types": "./dist/layouts/index.d.mts",
+        "import": "./dist/layouts/index.mjs",
+        "default": "./dist/layouts/index.mjs"
       }
     },
     "./config/schema.json": "./config/schema.json",
@@ -119,8 +208,8 @@
   "dependencies": {
     "@floating-ui/dom": "catalog:react",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
-    "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@vitejs/plugin-react": "catalog:vite",
@@ -145,6 +234,7 @@
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -152,7 +242,6 @@
     "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/leanix-bridge": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/mcp": "workspace:*",
     "@likec4/react": "workspace:*",
     "@likec4/spa": "workspace:*",
@@ -162,6 +251,7 @@
     "@likec4/vite-plugin": "workspace:*",
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
+    "@rolldown/plugin-node-polyfills": "catalog:tsdown",
     "@tanstack/ai": "catalog:ai",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
@@ -175,8 +265,6 @@
     "clsx": "catalog:react",
     "conf": "^16.0.0",
     "defu": "catalog:utils",
-    "esbuild-node-externals": "catalog:esbuild",
-    "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "get-port": "^7.2.0",
     "is-inside-container": "^1.0.0",
@@ -188,12 +276,11 @@
     "npm-run-all2": "^9.0.4",
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
+    "p-queue": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
     "postcss": "catalog:css",
     "pretty-ms": "^9.3.1",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
@@ -221,9 +308,7 @@
     "@tanstack/ai-gemini": "catalog:ai",
     "@tanstack/ai-ollama": "catalog:ai",
     "@tanstack/ai-openai": "catalog:ai",
-    "@tanstack/ai-openrouter": "catalog:ai",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "@tanstack/ai-openrouter": "catalog:ai"
   },
   "peerDependenciesMeta": {
     "@tanstack/ai": {

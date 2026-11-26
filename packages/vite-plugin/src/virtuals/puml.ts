@@ -9,7 +9,7 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { generatePuml } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 function code(model: LikeC4Model.Computed) {
@@ -56,7 +56,8 @@ function code(model: LikeC4Model.Computed) {
 
 export const projectPumlModule: ProjectVirtualModule = {
   exportFormat: 'puml',
-  ...generateMatches('puml'),
+  name: 'puml',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('puml', project.id)
     const model = await likec4.computedModel(project.id)

@@ -6,23 +6,15 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 declare module 'likec4:projects' {
-  import type { RelationshipBrowserScope, WebappExportFormat } from 'likec4/config'
   import type { ProjectId } from 'likec4/model'
-  type LandingPageConfig =
-    | { redirect: true }
-    | { include: string[] }
-    | { exclude: string[] }
-  export interface Project {
-    id: ProjectId
-    title?: string
-    path: string
-    landingPage?: LandingPageConfig
-    relationshipBrowserDefaultScope: RelationshipBrowserScope
-    exportFormats: readonly WebappExportFormat[]
-  }
+  import type { ProjectData, ReadableAtom } from 'likec4/vite-plugin/internal'
+  export type Project = ProjectData
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]
+  export const $projects: ReadableAtom<readonly [Project, ...Project[]]>
+  export const $projectIds: ReadableAtom<readonly [ProjectId, ...ProjectId[]]>
   export function useLikeC4Projects(): readonly [Project, ...Project[]]
+  export function useLikeC4ProjectIds(): readonly [ProjectId, ...ProjectId[]]
 }
 
 declare module 'likec4:projects-overview' {
@@ -41,13 +33,13 @@ declare module 'likec4:icons' {
 
 declare module 'likec4:model' {
   import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId } from 'likec4/model'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId }
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, ReadableAtom, UnknownLayouted, ViewId }
 
   export function loadModel(projectId: string): Promise<{
-    $likec4data: Atom<LayoutedLikeC4ModelData>
-    $likec4model: Atom<LikeC4Model<UnknownLayouted>>
+    $likec4data: ReadableAtom<LayoutedLikeC4ModelData>
+    $likec4model: ReadableAtom<LikeC4Model<UnknownLayouted>>
     useLikeC4Model: () => LikeC4Model<UnknownLayouted>
     useLikeC4Views: () => ReadonlyArray<DiagramView<UnknownLayouted>>
     useLikeC4View: (viewId: string) => DiagramView<UnknownLayouted> | null
@@ -64,13 +56,13 @@ declare module 'likec4:single-project' {
     UnknownLayouted,
     ViewId,
   } from 'likec4/model'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
   import type { ElementIconRenderer } from 'likec4:icons'
 
   export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId }
 
-  export const $likec4data: Atom<LayoutedLikeC4ModelData>
-  export const $likec4model: Atom<LikeC4Model<UnknownLayouted>>
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData>
+  export const $likec4model: ReadableAtom<LikeC4Model<UnknownLayouted>>
   export function useLikeC4Model(): LikeC4Model<UnknownLayouted>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<UnknownLayouted>>
   export function useLikeC4View(viewId: string): DiagramView<UnknownLayouted> | null
@@ -92,9 +84,9 @@ declare module 'likec4:react' {
   } from 'likec4/model'
   import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export type { Atom, DiagramView, LayoutedView, LikeC4Model, UnknownLayouted }
+  export type { Atom, DiagramView, LayoutedView, LikeC4Model, ReadableAtom, UnknownLayouted }
 
   // This will be used for augmenting the types
   export interface Register {
@@ -104,8 +96,8 @@ declare module 'likec4:react' {
   export type LikeC4ViewId = aux.ViewId<$Types>
 
   // Re-export from likec4:model
-  export const $likec4data: Atom<LayoutedLikeC4ModelData<$Types>>
-  export const $likec4model: Atom<LikeC4Model<$Types>>
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData<$Types>>
+  export const $likec4model: ReadableAtom<LikeC4Model<$Types>>
   export function useLikeC4Model(): LikeC4Model<$Types>
   export function useLikeC4Views(): ReadonlyArray<LayoutedView<$Types>>
   export function useLikeC4View(viewId: LikeC4ViewId): LayoutedView<$Types> | null
@@ -145,7 +137,7 @@ declare module 'likec4:drawio' {
 }
 declare module 'likec4:diffs' {
   import type { DiffSummary, LayoutedView } from 'likec4/model'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
   /**
    * Diffs of the project, with the compare views of the views they change (by diff id, then by view id)
@@ -156,7 +148,7 @@ declare module 'likec4:diffs' {
   }
 
   export function loadDiffs(projectId: string): Promise<{
-    $diffs: Atom<ProjectDiffs>
+    $diffs: ReadableAtom<ProjectDiffs>
   }>
 }
 
@@ -164,9 +156,9 @@ declare module 'likec4:diffs' {
 
 declare module 'likec4:diffs/*' {
   import type { ProjectDiffs } from 'likec4:diffs'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export const $diffs: Atom<ProjectDiffs>
+  export const $diffs: ReadableAtom<ProjectDiffs>
 }
 
 declare module 'likec4:model/*' {
@@ -179,9 +171,9 @@ declare module 'likec4:model/*' {
     UnknownLayouted,
   } from 'likec4/model'
   import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { Atom, ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export type { Atom, DiagramView, LayoutedView, LikeC4Model, UnknownLayouted }
+  export type { Atom, DiagramView, LayoutedView, LikeC4Model, ReadableAtom, UnknownLayouted }
 
   // This will be used for augmenting the types
   export interface Register {
@@ -190,8 +182,8 @@ declare module 'likec4:model/*' {
 
   export type LikeC4ViewId = aux.ViewId<$Types>
 
-  export const $likec4data: Atom<LayoutedLikeC4ModelData<$Types>>
-  export const $likec4model: Atom<LikeC4Model<$Types>>
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData<$Types>>
+  export const $likec4model: ReadableAtom<LikeC4Model<$Types>>
   export function useLikeC4Model(): LikeC4Model<$Types>
   export function useLikeC4Views(): ReadonlyArray<LayoutedView<$Types>>
   export function useLikeC4View(viewId: LikeC4ViewId): LayoutedView<$Types> | null
@@ -216,9 +208,9 @@ declare module 'likec4:react/*' {
   } from 'likec4/model'
   import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
-  export type { Atom, DiagramView, LayoutedView, LikeC4Model, UnknownLayouted }
+  export type { DiagramView, LayoutedView, LikeC4Model, ReadableAtom, UnknownLayouted }
 
   // This will be used for augmenting the types
   export interface Register {
@@ -228,8 +220,8 @@ declare module 'likec4:react/*' {
   export type LikeC4ViewId = aux.ViewId<$Types>
 
   // Re-export from likec4:model
-  export const $likec4data: Atom<LayoutedLikeC4ModelData<$Types>>
-  export const $likec4model: Atom<LikeC4Model<$Types>>
+  export const $likec4data: ReadableAtom<LayoutedLikeC4ModelData<$Types>>
+  export const $likec4model: ReadableAtom<LikeC4Model<$Types>>
   export function useLikeC4Model(): LikeC4Model<$Types>
   export function useLikeC4Views(): ReadonlyArray<LayoutedView<$Types>>
   export function useLikeC4View(viewId: LikeC4ViewId): LayoutedView<$Types> | null
@@ -271,24 +263,23 @@ declare module 'likec4:app-config' {
      */
     Browser: string
   }
-  export let pageTitle: string
-  export let useHashHistory: boolean
-  export let defaultTheme: 'light' | 'dark' | 'auto'
-  export let basepath: string
-  export let isDevelopment: boolean
-  export let krokiD2SvgUrl: string
-  export let krokiPumlSvgUrl: string
+  export const pageTitle: string
+  export const useHashHistory: boolean
+  export const defaultTheme: 'light' | 'dark' | 'auto'
+  export const basepath: string
+  export const isDevelopment: boolean
+  export const krokiD2SvgUrl: string
+  export const krokiPumlSvgUrl: string
 }
 
 declare module 'likec4:customization' {
+  import type { JSX, PropsWithChildren } from 'react'
   import type { CustomComponents } from 'likec4/react'
-  import type { Atom } from 'likec4/vite-plugin/internal'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
   export type { CustomComponents }
 
-  /**
-   * UI overrides from the file set in the `customization` option of the LikeC4 Vite plugin
-   */
-  export const $customComponents: Atom<CustomComponents | undefined>
-  export function useCustomComponents(): CustomComponents | undefined
+  export const ComponentsAtom: ReadableAtom<CustomComponents>
+
+  export function CustomizationContext(props: PropsWithChildren): JSX.Element
 }

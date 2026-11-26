@@ -34,13 +34,34 @@ export function useEditorActorStateHasTag(tag: EditorActorStateTag) {
  */
 export function useEditorIsBusy() {
   const editorActor = useEditorActorRef()
-  const [isBusy, setIsBusy] = useDebouncedState(false, 300)
+  const [isBusy, setIsBusy] = useState(false)
+
   useEffect(() => {
+    let timeout: number | null = null
+    let lastValue: boolean | null = null
+
+    const throttleUpdate = (next: boolean) => {
+      lastValue = next
+      timeout ??= window.setTimeout(() => {
+        setIsBusy(lastValue ?? false)
+        timeout = null
+      }, 250)
+    }
+
     const subscription = editorActor?.select(s => s.hasTag('busy')).subscribe(isBusy => {
-      setIsBusy(isBusy)
+      // First emit - set the initial value immediately, don't debounce
+      if (lastValue === null) {
+        setIsBusy(lastValue = isBusy)
+        return
+      }
+      throttleUpdate(isBusy)
     })
     return () => {
       subscription?.unsubscribe()
+      if (timeout) {
+        clearTimeout(timeout)
+        timeout = null
+      }
       setIsBusy(false)
     }
   }, [editorActor, setIsBusy])

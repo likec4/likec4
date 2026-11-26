@@ -11,6 +11,7 @@ import { useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'
 
 export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
+  viewId: string
   isEnabled: false
   hasEditor: boolean
   isEditable: false
@@ -19,6 +20,7 @@ export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   canApplyLatest: boolean
   layout: t.LayoutType
 } | {
+  viewId: string
   isEnabled: true
   hasEditor: boolean
   isEditable: boolean
@@ -32,6 +34,7 @@ export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   const drifts = context.view.drifts ?? null
   if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
     return ({
+      viewId: context.view.id,
       hasEditor,
       isEnabled: false as const,
       isEditable: false as const,
@@ -47,6 +50,7 @@ export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   const isEditable = !enableReadOnly && hasEditor
 
   return ({
+    viewId: context.view.id,
     hasEditor,
     isEnabled: true as const,
     isEditable,

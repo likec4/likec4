@@ -1,5 +1,11 @@
 # @likec4/icons
 
+## 1.46.5
+
+### Patch Changes
+
+- [#3389](https://github.com/likec4/likec4/pull/3389) [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add Google Material Symbols support through the `md:` icon prefix.
+
 ## 1.46.4
 
 ### Changes

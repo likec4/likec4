@@ -1,14 +1,9 @@
 export type {
-  DescriptionFileContent,
-  DescriptionFileReference,
-  DescriptionFileUpdateEvent,
-  DescriptionFileUpdateListener,
   FileNode,
   FileSystemModuleContext,
   FileSystemProvider,
   FileSystemWatcher,
   FileSystemWatcherModuleContext,
-  LikeC4DescriptionFiles,
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
   ManualLayoutsSnapshot,
@@ -22,6 +17,7 @@ export {
 
 export {
   WithFileSystem,
+  WithUnstorageCache,
 } from './LikeC4FileSystem'
 
 export {
@@ -31,7 +27,3 @@ export {
 export {
   WithLikeC4ManualLayouts,
 } from './LikeC4ManualLayouts'
-
-export {
-  DefaultLikeC4DescriptionFiles,
-} from './LikeC4DescriptionFiles'

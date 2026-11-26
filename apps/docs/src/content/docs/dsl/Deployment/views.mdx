@@ -299,6 +299,31 @@ views {
 ```
 
 
+### Rank constraints
+
+Deployment views accept the same `rank` blocks as [element views](/dsl/views/layout#rank-constraints),
+with deployment nodes and instances as targets:
+
+```likec4
+views {
+  deployment view production {
+    include prod.**
+
+    // the primary database and its read replica on the same level
+    rank same {
+      prod.eu.db,
+      prod.us.dbReplica,
+    }
+  }
+}
+```
+
+- Instances of the same element are placed on the same level by default. An instance listed in a `rank` block is left out of that, so the block decides its level.
+- Unlike element views, the targets of `rank same` can have different parents, for example instances in different zones.
+- A logical element as a target refers to its instances in the view.
+- Deployment nodes that are drawn as containers, with other nodes inside, are ignored.
+- When the targets are inside other nodes, Graphviz can ignore `min`, `max`, `source` and `sink`, the same as for nested elements in element views. `same` works in both cases.
+
 <br/>
 <br/>
   <LinkCard

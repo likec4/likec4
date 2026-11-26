@@ -10,6 +10,7 @@ import type { Fqn } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
+import { searchOverlay } from '@likec4/styles/recipes'
 import {
   type ElementProps,
   type UnstyledButtonProps,
@@ -23,15 +24,13 @@ import {
 } from '@mantine/core'
 import { m } from 'motion/react'
 import { memo, useMemo, useRef } from 'react'
-import { first } from 'remeda'
 import { EmptyBox } from '../../components/EmptyBox'
 import { ViewIcon } from '../../components/ViewIcon'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
 import { METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
-import { buttonsva } from './_shared.css'
-import { centerY, createViewSearch, moveFocusToSearchInput, queryAllFocusable, viewTitleWithFolder } from './utils'
+import { createViewSearch, focusColumn, moveFocusToSearchInput, viewTitleWithFolder } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -79,16 +78,10 @@ export const ViewsColumn = memo(() => {
       data-likec4-search-views
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          const maxY = (e.target as HTMLElement).getBoundingClientRect().y
-          const elementButtons = queryAllFocusable(ref.current, 'elements', '.likec4-element-button')
-          let elementButton = elementButtons.length > 1
-            ? elementButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
-            : null
-          elementButton ??= first(elementButtons)
-
-          if (elementButton) {
+          const target = e.target as HTMLElement
+          const columns = e.key === 'ArrowLeft' ? ['relationships', 'elements'] as const : ['elements'] as const
+          if (focusColumn(target, target.getBoundingClientRect().y, columns)) {
             e.stopPropagation()
-            elementButton.focus()
           }
           return
         }
@@ -118,7 +111,7 @@ export const ViewsColumn = memo(() => {
   )
 })
 
-const btn = buttonsva()
+const btn = searchOverlay()
 
 export function ViewButton(
   { className, view, loop = false, search, focusOnElement, currentViewId, ...props }:
@@ -144,7 +137,7 @@ export function ViewButton(
   return (
     <UnstyledButton
       {...props}
-      className={cx(btn.root, 'group', styles.focusable, styles.viewButton, className)}
+      className={cx(btn.button, 'group', styles.focusable, styles.viewButton, className)}
       data-likec4-view={view.id}
       {...(isCurrentView && !focusOnElement) && { 'data-disabled': true }}
       onClick={(e) => {
@@ -164,12 +157,12 @@ export function ViewButton(
           }
         },
       })}>
-      <ThemeIcon variant="transparent" className={btn.icon!}>
-        <ViewIcon type={view._type} size={16} />
+      <ThemeIcon variant="transparent" className={btn.buttonIcon!}>
+        <ViewIcon view={view} size={16} />
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
-          <Highlight component="div" highlight={search} className={btn.title!} lineClamp={2} title={label}>
+          <Highlight component="div" highlight={search} className={btn.buttonTitle!} lineClamp={2} title={label}>
             {label}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
@@ -177,7 +170,7 @@ export function ViewButton(
         <Highlight
           highlight={view.description.nonEmpty ? search : ''}
           component="div"
-          className={btn.description!}
+          className={btn.buttonDescription!}
           lineClamp={1}>
           {view.description.text || 'No description'}
         </Highlight>

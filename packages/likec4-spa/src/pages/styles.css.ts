@@ -3,8 +3,10 @@ import { css } from '@likec4/styles/css'
 export const svgContainer = css({
   minWidth: '[300px]',
   '& svg': {
-    width: '100%',
-    height: 'auto',
+    _firstOfType: {
+      width: '100%',
+      height: 'auto',
+    },
   },
 })
 

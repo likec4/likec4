@@ -1,4 +1,4 @@
-import { type ComputedDeploymentView, invariant, isDeploymentView } from '@likec4/core'
+import { type ComputedDeploymentView, type NodeId, invariant, isDeploymentView } from '@likec4/core'
 import { Builder } from '@likec4/core/builder'
 import { unsafeComputeView } from '@likec4/core/compute-view'
 import { attribute as _ } from 'ts-graphviz'
@@ -61,6 +61,44 @@ describe('DeploymentViewPrinter', () => {
       )
     )
     .toLikeC4Model()
+
+  describe('rank rules', () => {
+    const view = model.view('index').$view as ComputedDeploymentView
+    const print = (ranks: ComputedDeploymentView['ranks']) =>
+      new DeploymentViewPrinter({ ...view, ...(ranks && { ranks }) }, model.$styles).print()
+
+    // Rank blocks of the printed graph, with the likec4 ids of their nodes
+    const rankBlocks = (dot: string) => {
+      const likec4Ids = new Map(
+        [...dot.matchAll(/^\s*"([^"]+)" \[\s*likec4_id = "([^"]+)"/gm)].map(([, gvId, id]) => [gvId, id]),
+      )
+      return [...dot.matchAll(/subgraph \{\s*rank = "(\w+)";([^}]*)\}/g)].map(([, rank, body]) => ({
+        rank,
+        nodes: [...body!.matchAll(/"([^"]+)";/g)].map(([, gvId]) => likec4Ids.get(gvId!)),
+      }))
+    }
+
+    it('aligns instances of the same element without rank rules', ({ expect }) => {
+      expect(rankBlocks(print(undefined))).toEqual([
+        { rank: 'same', nodes: ['z1.s1.ui', 'z1.s2.ui'] },
+        { rank: 'same', nodes: ['z1.s1.api', 'z1.s2.api'] },
+      ])
+    })
+
+    it('takes ranked instances out of the automatic alignment', ({ expect }) => {
+      const dot = print([{ type: 'min', nodes: ['z1.s1.api'] as NodeId[] }])
+      expect(dot).toContain('likec4_rankBlocks = 1')
+      expect(rankBlocks(dot)).toEqual([
+        { rank: 'same', nodes: ['z1.s1.ui', 'z1.s2.ui'] },
+        { rank: 'min', nodes: ['z1.s1.api'] },
+      ])
+    })
+
+    it('skips deployment nodes with children', ({ expect }) => {
+      const dot = print([{ type: 'same', nodes: ['z1.s1', 'z1.db', 'client'] as NodeId[] }])
+      expect(rankBlocks(dot)).toContainEqual({ rank: 'same', nodes: ['z1.db', 'client'] })
+    })
+  })
 
   it('print deployment view', async ({ expect }) => {
     const computedIndexView = model.view('index').$view as ComputedDeploymentView

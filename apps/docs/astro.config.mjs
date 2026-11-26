@@ -222,19 +222,33 @@ export default defineConfig({
 
   vite: {
     resolve: {
-      alias: {
+      alias: [
         // 'likec4/vite-plugin/internal':
         //   new URL('../../packages/likec4/src/vite-plugin/internal.ts', import.meta.url).pathname,
         // 'likec4/model': new URL('../../packages/likec4/src/model/index.ts', import.meta.url).pathname,
         // Alias to bundled React components, can't use 'development' condition
-        'likec4/react': new URL('../../packages/react/dist/index.mjs', import.meta.url).pathname,
-        '@': new URL('./src', import.meta.url).pathname,
-      },
+        {
+          find: /^likec4\/react$/,
+          replacement: new URL('../../packages/react/dist/index.mjs', import.meta.url).pathname,
+        },
+        // Bundled React components import the core from `likec4/core/*`,
+        // but they are outside of the `likec4` package here
+        {
+          find: /^likec4\/core$/,
+          replacement: new URL('../../packages/likec4/dist/core/index.mjs', import.meta.url).pathname,
+        },
+        {
+          find: /^likec4\/core\/(.+)$/,
+          replacement: new URL('../../packages/likec4/dist/core/', import.meta.url).pathname + '$1.mjs',
+        },
+        { find: '@', replacement: new URL('./src', import.meta.url).pathname },
+      ],
     },
     plugins: [
       LikeC4VitePlugin({
         ai: 'disabled',
         workspace: 'src/components',
+        cacheDir: null,
       }),
       tailwindcss(),
     ],

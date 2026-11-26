@@ -1,11 +1,7 @@
-import { EdgeLabelMetrics } from '@likec4/core/styles'
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
-import { Box } from '@likec4/styles/jsx'
 import { edgeLabel } from '@likec4/styles/recipes'
-import type { HTMLMotionProps } from 'motion/react'
-import * as m from 'motion/react-m'
-import { type ReactNode, forwardRef } from 'react'
+import { type HTMLAttributes, type PropsWithChildren } from 'react'
 import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
@@ -17,43 +13,36 @@ type Data = UndefinedOnPartialDeep<
     | 'technology'
   >
 >
-
-type EdgeLabelProps =
-  & HTMLMotionProps<'div'>
-  & {
-    children?: ReactNode
+type EdgeLabelProps = PropsWithChildren<
+  HTMLAttributes<HTMLDivElement> & {
     edgeProps: BaseEdgePropsWithData<Data>
     isSequenceStep?: boolean
     stepNum?: number
     pointerEvents?: 'all' | 'none'
   }
+>
 
-export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
-  {
-    edgeProps: {
-      id,
-      data: {
-        label,
-        technology,
-        hovered: isHovered = false,
-      },
-      selected = false,
-      selectable = false,
+export function EdgeLabel({
+  edgeProps: {
+    id,
+    data: {
+      label,
+      technology,
     },
-    isSequenceStep: isStepEdge = false,
-    stepNum,
-    pointerEvents = 'all',
-    className,
-    children,
-    ...rest
+    selectable = false,
   },
-  ref,
-) => {
+  isSequenceStep: isStepEdge = false,
+  stepNum,
+  pointerEvents = 'all',
+  className,
+  children,
+  ...rest
+}: EdgeLabelProps) {
   const hasLabel = isTruthy(label) || isTruthy(technology)
 
   return (
-    <m.div
-      ref={ref}
+    <div
+      {...rest}
       className={cx(
         // This class is queried by RelationshipPopover to position near the edge label
         'likec4-edge-label',
@@ -65,34 +54,27 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
         className,
       )}
       data-edge-id={id}
-      animate={{
-        scale: isHovered && !selected ? 1.06 : 1,
-      }}
-      {...rest}
     >
-      {isStepEdge && stepNum && (
-        <Box className={'likec4-edge-label__step-number'}>
+      {isStepEdge && stepNum !== undefined && (
+        <div className={'likec4-edge-label__step-number'}>
           {stepNum}
-        </Box>
+        </div>
       )}
       {hasLabel && (
-        <Box className={'likec4-edge-label__contents'}>
+        <div className={'likec4-edge-label__contents'}>
           {isTruthy(label) && (
-            <Box
-              lineClamp={EdgeLabelMetrics.label.maxLines}
-              className={'likec4-edge-label__text'}>
+            <div className={'likec4-edge-label__text'}>
               {label}
-            </Box>
+            </div>
           )}
           {isTruthy(technology) && (
-            <Box className={'likec4-edge-label__technology'}>
+            <div className={'likec4-edge-label__technology'}>
               {'[ ' + technology + ' ]'}
-            </Box>
+            </div>
           )}
           {children}
-        </Box>
+        </div>
       )}
-    </m.div>
+    </div>
   )
-})
-EdgeLabel.displayName = 'EdgeLabel'
+}

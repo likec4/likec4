@@ -7,9 +7,9 @@
 
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import type { AnyTextAdapter } from '@tanstack/ai'
-import type { LikeC4AppConfig, LikeC4AppOptions } from './app-options'
+import type { LikeC4AppConfig, LikeC4AppOptions, ResolvedLikeC4AppOptions } from './app-options'
 
-export type { LikeC4AppConfig, LikeC4AppOptions }
+export type { LikeC4AppConfig, LikeC4AppOptions, ResolvedLikeC4AppOptions }
 
 export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
   /**
@@ -45,6 +45,11 @@ export type LikeC4WorkspaceOptions = {
    * As alternative you can provide {@link LikeC4LanguageServices} instance via `languageServices` option.
    */
   workspace?: string
+  /**
+   * Cache directory. If not provided, vite cache directory will be used.
+   * Disable caching by setting this option to null.
+   */
+  cacheDir?: string | null | undefined
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.
@@ -87,6 +92,7 @@ export type LikeC4WorkspaceOptions = {
    */
   languageServices: LikeC4LanguageServices
   workspace?: never
+  cacheDir?: never
   printErrors?: never
   throwIfInvalid?: never
   graphviz?: never

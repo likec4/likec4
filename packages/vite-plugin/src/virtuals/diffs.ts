@@ -1,7 +1,7 @@
 import type { DiffSummary, LayoutedView } from '@likec4/core/types'
 import JSON5 from 'json5'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 
 /**
  * Diffs of the project, with the compare views of the views they change (by diff id, then by view id)
@@ -12,18 +12,19 @@ interface ProjectDiffs {
 }
 
 const code = (data: ProjectDiffs) => `
-import { atom } from 'likec4/vite-plugin/internal'
+import { atom, deepEqual } from 'likec4/vite-plugin/internal'
 
 export let $diffs = atom(${JSON5.stringify(data)})
+$diffs.eq = deepEqual
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$diffs) {
-      import.meta.hot.data.$diffs = $diffs
+    import.meta.hot.data.$update ??= (data) => {
+      $diffs.set(data)
     }
     const update = md.$diffs?.get()
     if (update) {
-      import.meta.hot.data.$diffs.set(update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }
@@ -32,7 +33,8 @@ if (import.meta.hot) {
 `
 
 export const projectDiffsModule: ProjectVirtualModule = {
-  ...generateMatches('diffs'),
+  name: 'diffs',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('diffs', project.id)
     const diffs = await likec4.modelDiffs.list(project.id)

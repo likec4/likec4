@@ -404,11 +404,16 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatLinkProperty(node: AstNode) {
     this.on(node, ast.isLinkProperty, (n, f) => {
-      f.keyword('link').append(FormattingOptions.oneSpace)
+      // Only one rule may own the gap after `link`, or `link:` and `link :` keep flipping
+      const colon = f.keyword(':')
+      if (colon.nodes.length === 0) {
+        f.keyword('link').append(FormattingOptions.oneSpace)
+      } else {
+        colon
+          .prepend(FormattingOptions.noSpace)
+          .append(FormattingOptions.oneSpace)
+      }
       f.property('value').append(FormattingOptions.oneSpace)
-      f.keyword(':')
-        .prepend(FormattingOptions.noSpace)
-        .append(FormattingOptions.oneSpace)
 
       f.keyword(';')
         .prepend(FormattingOptions.noSpace)
@@ -451,10 +456,14 @@ export class LikeC4Formatter extends AbstractFormatter {
 
   protected formatMetadataProperty(node: AstNode) {
     this.on(node, ast.isMetadataAttribute, (n, f) => {
-      f.property('key').append(FormattingOptions.oneSpace)
-      f.keyword(':')
-        .prepend(FormattingOptions.noSpace)
-        .append(FormattingOptions.oneSpace)
+      const colon = f.keyword(':')
+      if (colon.nodes.length === 0) {
+        f.property('key').append(FormattingOptions.oneSpace)
+      } else {
+        colon
+          .prepend(FormattingOptions.noSpace)
+          .append(FormattingOptions.oneSpace)
+      }
       f.keyword(';')
         .prepend(FormattingOptions.noSpace)
         .append(FormattingOptions.newLine)

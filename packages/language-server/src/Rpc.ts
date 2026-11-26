@@ -32,7 +32,6 @@ import {
   LayoutView,
   Locate,
   PreviewModelEdit,
-  RegisterProject,
   ReloadProjects,
   RollbackModelEdit,
   ValidateLayout,
@@ -214,19 +213,6 @@ export class Rpc extends ADisposable {
         workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.reloadProjects(cancelToken)
         return
-      }),
-      // ----------
-      connection.onRequest(RegisterProject.req, async (params, cancelToken) => {
-        logger.debug`received request ${'RegisterProject'}`
-        workspace.ManualLayouts.clearCaches()
-        let project
-        if ('configUri' in params) {
-          project = await workspace.ProjectsManager.registerConfigFile(URI.parse(params.configUri), cancelToken)
-        } else {
-          project = await workspace.ProjectsManager.registerProject(params, cancelToken)
-        }
-
-        return { id: project.id }
       }),
       // ----------
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {

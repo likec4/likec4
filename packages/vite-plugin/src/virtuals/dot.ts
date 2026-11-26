@@ -8,7 +8,7 @@
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { mapToObj } from 'remeda'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 function code(
@@ -92,7 +92,8 @@ function code(
 
 export const projectDotSourcesModule: ProjectVirtualModule = {
   exportFormat: 'dot',
-  ...generateMatches('dot'),
+  name: 'dot',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('dot', project.id)
     const views = await likec4.views.viewsAsGraphvizOut(project.id)

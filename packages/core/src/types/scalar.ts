@@ -198,5 +198,5 @@ export function StepPath(...segments: Array<string | number | [number, string] |
     })
   invariant(hasAtLeast(filtered, 1), 'StepPath must have at least one segment')
   const p = filtered.join('.')
-  return (!p.startsWith('step-') ? `step-${p}` : p) as StepPath
+  return isStepPath(p) ? p : `step-${p}` as StepPath
 }
