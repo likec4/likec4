@@ -110,10 +110,5 @@
     "xyflow",
     "zoomable"
   ],
-  "sonarlint.connectedMode.project": {
-    "connectionId": "likec4",
-    "projectKey": "likec4_likec4"
-  },
-  "references.preferredLocation": "peek",
   "dprint.path": "./node_modules/.bin/dprint"
 }

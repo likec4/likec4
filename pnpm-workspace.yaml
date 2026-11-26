@@ -50,7 +50,7 @@ catalog:
   "@types/node": ~22.20.5
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260707.2
-  dprint: ^0.64.3
+  dprint: ^0.65.0
   fontkit: 2.0.4
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
