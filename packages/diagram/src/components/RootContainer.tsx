@@ -62,6 +62,9 @@ function usePanningState(reduceGraphics: boolean) {
       stopPanningTimer.current = window.setTimeout(() => {
         isPanning.current = false
         stopPanningTimer.current = null
+        // The pending start timer is kept on purpose: it publishes `isPanning.current`, not `true`.
+        // If panning resumes before it fires (moveStart -> moveEnd -> moveStart),
+        // the gesture keeps the original activation deadline instead of waiting for a new delay.
         // there was no start panning event and we are still panning - update atom
         if (!startPanningTimer.current) {
           updateAtom()

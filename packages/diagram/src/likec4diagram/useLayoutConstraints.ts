@@ -78,7 +78,7 @@ abstract class Rect {
     const dim = this.dimensions
     const diffWidth = Math.abs(dim.width - this.initial.width)
     const diffHeight = Math.abs(dim.height - this.initial.height)
-    return diffWidth > 2 || diffHeight > 2
+    return diffWidth > 1 || diffHeight > 1
   }
 
   // Position relative to parent
