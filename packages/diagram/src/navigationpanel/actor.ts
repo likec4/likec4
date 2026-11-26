@@ -1,3 +1,9 @@
+import type {
+  Context as NavigationPanelActorContext,
+  Events as NavigationPanelActorEvent,
+  Input as NavigationPanelActorInput,
+  Tags,
+} from './actor.setup'
 import {
   type ActorRef,
   type SnapshotFrom,
@@ -18,12 +24,6 @@ import {
 import {
   actor,
   Context as NavigationPanelActorContextFactory,
-} from './actor.setup'
-import type {
-  Context as NavigationPanelActorContext,
-  Events as NavigationPanelActorEvent,
-  Input as NavigationPanelActorInput,
-  Tags,
 } from './actor.setup'
 
 export type {

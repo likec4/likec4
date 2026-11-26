@@ -1,8 +1,8 @@
 import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
-import { URI } from 'langium'
-import { existsSync } from 'node:fs'
 import type { ViteDevServer } from 'vite'
+import { existsSync } from 'node:fs'
+import { URI } from 'langium'
 
 type LocateParams = Parameters<LikeC4LanguageServices['locate']>[0]
 

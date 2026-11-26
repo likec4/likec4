@@ -1,6 +1,6 @@
+import type { LikeC4Services } from '../module'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
-import type { LikeC4Services } from '../module'
 import { tryOrLog } from './_shared'
 
 // Helper to collect FqnExpr values from FqnExpressions linked list

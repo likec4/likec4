@@ -6,10 +6,10 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { NodeId } from '@likec4/core'
+import type { Types } from '../../types'
 import { CompoundActionButton } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { Types } from '../../types'
 
 type CompoundActionsProps = Types.NodeProps<'compound-deployment' | 'compound-element'>
 

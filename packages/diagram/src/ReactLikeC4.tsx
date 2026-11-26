@@ -1,11 +1,11 @@
 import type * as t from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
 import type { CSSProperties, ReactNode } from 'react'
+import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { cx } from '@likec4/styles/css'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { customizable } from './customization/customizable'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
-import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { ShadowRoot } from './shadowroot'
 import { pickViewBounds } from './utils'
 

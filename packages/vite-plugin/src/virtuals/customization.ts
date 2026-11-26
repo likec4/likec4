@@ -1,5 +1,5 @@
-import { logGenerating } from '../logger'
 import type { VirtualModule } from './_shared'
+import { logGenerating } from '../logger'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 /**

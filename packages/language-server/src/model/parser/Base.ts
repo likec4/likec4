@@ -1,4 +1,6 @@
 import type * as c4 from '@likec4/core'
+import type { LikeC4Services } from '../../module'
+import type { Project } from '../../workspace/ProjectsManager'
 import {
   type MarkdownOrString,
   exact,
@@ -43,11 +45,9 @@ import {
 } from '../../ast'
 import { isBundledIcon } from '../../generated/icons'
 import { serverLogger } from '../../logger'
-import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
 import { type IsInvalidFn, type IsValidFn, checksFromDiagnostics } from '../../validation'
-import type { Project } from '../../workspace/ProjectsManager'
 
 const logger = serverLogger.getChild('parser')
 

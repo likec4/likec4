@@ -5,6 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
+import type { ProjectId } from '@likec4/core/types'
+import type { SetOptional, Tagged } from 'type-fest'
+import type { LikeC4SharedServices } from '../module'
 import {
   type IncludeConfig,
   type LikeC4ProjectConfig,
@@ -12,8 +16,6 @@ import {
   isLikeC4Config,
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
-import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
-import type { ProjectId } from '@likec4/core/types'
 import {
   compareNaturalHierarchically,
   DefaultMap,
@@ -52,7 +54,6 @@ import {
   purry,
   sort,
 } from 'remeda'
-import type { SetOptional, Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
   hasProtocol,
@@ -65,7 +66,6 @@ import {
 import { FileChangeType } from 'vscode-languageserver-protocol'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
 import { ADisposable, safeCall } from '../utils'
 
 const logger = mainLogger.getChild('projects')

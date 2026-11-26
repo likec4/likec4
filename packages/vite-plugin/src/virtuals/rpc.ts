@@ -1,8 +1,7 @@
-import { logGenerating } from '../logger'
 import type { SharedVirtualModuleOptions, VirtualModule } from './_shared'
+import { logGenerating } from '../logger'
 
-const rpcCode = ({ isAIAvailable, ai, rpcEnabled }: SharedVirtualModuleOptions) =>
-  ` 
+const rpcCode = ({ isAIAvailable, ai, rpcEnabled }: SharedVirtualModuleOptions) => ` 
 import { createRpc } from 'likec4/vite-plugin/internal'
 
 export const isRpcAvailable = import.meta.hot && ${rpcEnabled}
@@ -37,8 +36,7 @@ if (import.meta.hot) {
 
 `
 
-const nonRpcCode = () =>
-  ` 
+const nonRpcCode = () => ` 
 export const isRpcAvailable = false
 export const isAIAvailable = false
 export const AIAdapter = undefined

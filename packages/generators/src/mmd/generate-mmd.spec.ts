@@ -1,6 +1,6 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import { computeColorValues, LikeC4Styles } from '@likec4/core/styles'
 import type { aux, ProcessedView } from '@likec4/core/types'
+import { computeColorValues, LikeC4Styles } from '@likec4/core/styles'
 import { test, vi } from 'vitest'
 import {
   fakeComputedView3Levels,

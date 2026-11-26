@@ -1,5 +1,5 @@
-import { UriUtils } from 'langium'
 import path from 'path'
+import { UriUtils } from 'langium'
 import { map, mapToObj, pipe } from 'remeda'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'

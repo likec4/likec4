@@ -1,6 +1,6 @@
+import type { BaseNodeProps } from '../base/types'
 import { deepEqual as eq } from 'fast-equals'
 import { type FunctionComponent, memo } from 'react'
-import type { BaseNodeProps } from '../base/types'
 
 function nodePropsEqual<P extends BaseNodeProps>(prev: Readonly<P>, next: Readonly<P>) {
   return (

@@ -5,7 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { invariant, memoizeProp } from '@likec4/core'
 import type {
   BuildOptions,
   Cancellation,
@@ -13,15 +12,16 @@ import type {
   LangiumDocument,
   LangiumDocumentFactory,
 } from 'langium'
+import type { WorkspaceFolder } from 'vscode-languageserver'
+import type { FileNode, FileSystemProvider } from '../filesystem'
+import type { LikeC4SharedServices } from '../module'
+import { invariant, memoizeProp } from '@likec4/core'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
 import { filter, hasAtLeast, isNot, map, pipe, sort, uniqueBy } from 'remeda'
-import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
-import type { FileNode, FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { serverLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
 import { compareByUri } from '../utils'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {

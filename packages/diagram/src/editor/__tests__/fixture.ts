@@ -1,10 +1,9 @@
 import type { Types } from '@likec4/core/builder'
-import { Builder } from '@likec4/core/builder'
 import type { DiagramEdge, DiagramNode, EdgeId, LayoutedElementView, NodeId } from '@likec4/core/types'
+import type { LiteralUnion } from 'type-fest'
+import { Builder } from '@likec4/core/builder'
 import { type WritableDraft, produce } from 'immer'
 import { filter, indexBy, isTruthy, map, pipe } from 'remeda'
-import type { LiteralUnion } from 'type-fest'
-
 import indexSnapshot from './index-snapshot.json' with { type: 'json' }
 
 /**

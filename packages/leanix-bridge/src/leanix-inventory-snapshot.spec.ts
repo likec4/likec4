@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { LeanixApiClient } from './leanix-api-client'
+import { describe, expect, it } from 'vitest'
 import { fetchLeanixInventorySnapshot } from './leanix-inventory-snapshot'
 
 const FIXED_DATE = '2025-01-15T12:00:00.000Z'

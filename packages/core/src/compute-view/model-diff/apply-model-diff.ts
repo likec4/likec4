@@ -1,5 +1,5 @@
-import { entries, hasAtLeast, pickBy, unique, values } from 'remeda'
 import type { AnyAux, Element, ModelDiff, ModelDiffElementOverlay, ParsedLikeC4ModelData } from '../../types'
+import { entries, hasAtLeast, pickBy, unique, values } from 'remeda'
 import { FqnRef, isDeployedInstance, isGlobalFqn } from '../../types'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { sanitizeGlobals } from './sanitize'

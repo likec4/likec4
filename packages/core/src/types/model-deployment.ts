@@ -1,8 +1,8 @@
-import { isTruthy } from 'remeda'
 import type * as aux from './_aux'
 import type { AnyAux, Unknown } from './_aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
+import { isTruthy } from 'remeda'
 
 // dprint-ignore
 export interface DeploymentNode<A extends AnyAux = Unknown>

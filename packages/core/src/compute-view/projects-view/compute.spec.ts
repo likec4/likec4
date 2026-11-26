@@ -1,9 +1,9 @@
+import type { NTuple } from '../../types'
+import type { ComputedProjectNode } from './_types'
 import { hasAtLeast } from 'remeda'
 import { describe, it } from 'vitest'
 import { Builder } from '../../builder'
-import type { NTuple } from '../../types'
 import { invariant } from '../../utils'
-import type { ComputedProjectNode } from './_types'
 import { computeProjectsView } from './compute'
 
 const builder = Builder

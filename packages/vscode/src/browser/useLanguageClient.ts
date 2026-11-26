@@ -1,3 +1,4 @@
+import type { LanguageClientOptions } from 'vscode-languageclient/browser'
 import useDocumentSelector from '#useDocumentSelector'
 import {
   defineService,
@@ -7,7 +8,6 @@ import {
   useDisposable,
 } from 'reactive-vscode'
 import * as vscode from 'vscode'
-import type { LanguageClientOptions } from 'vscode-languageclient/browser'
 import { LanguageClient as BrowserLanguageClient } from 'vscode-languageclient/browser'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'

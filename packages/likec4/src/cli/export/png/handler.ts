@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { invariant } from '@likec4/core'
-import { resolve } from 'node:path'
-import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
+import { resolve } from 'node:path'
+import { invariant } from '@likec4/core'
+import k from 'tinyrainbow'
 import { createLikeC4Logger } from '../../../logger'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { appConfig, customization, path, project, useDotBin, withoutDefault } from '../../options'

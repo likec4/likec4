@@ -1,6 +1,6 @@
+import type { LikeC4Model } from '@likec4/core/model'
 import { Builder } from '@likec4/core/builder'
 import { computeProjectsView } from '@likec4/core/compute-view'
-import type { LikeC4Model } from '@likec4/core/model'
 import { invariant } from '@likec4/core/utils'
 import { hasAtLeast } from 'remeda'
 import { describe, it } from 'vitest'

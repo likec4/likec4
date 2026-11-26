@@ -4,15 +4,6 @@ import type {
   RelationshipColorValues,
   ThemeColorValues,
 } from '@likec4/core/styles'
-import {
-  BorderStyles,
-  computeColorValues,
-  ElementShapes,
-  IconPositions,
-  RelationshipArrowTypes,
-  Sizes,
-  ThemeColors,
-} from '@likec4/core/styles'
 import type {
   ColorLiteral,
   CustomColor,
@@ -22,6 +13,15 @@ import type {
   LikeC4ProjectTheme,
   ThemeColor,
 } from '@likec4/core/types'
+import {
+  BorderStyles,
+  computeColorValues,
+  ElementShapes,
+  IconPositions,
+  RelationshipArrowTypes,
+  Sizes,
+  ThemeColors,
+} from '@likec4/core/styles'
 import { exact } from '@likec4/core/types'
 import { isPlainObject } from 'remeda'
 import z from 'zod/v4'

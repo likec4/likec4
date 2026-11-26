@@ -1,9 +1,9 @@
+import type { Types } from '../../types'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import * as m from 'motion/react-m'
 import { DefaultHandles } from '../../../base-primitives'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { Types } from '../../types'
 
 const circle = css({
   flexShrink: 0,

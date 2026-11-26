@@ -1,3 +1,7 @@
+import type { IsEqual, Simplify } from 'type-fest'
+import type { IsAnyOrNever, IterableContainer } from './_common'
+import type { LayoutedDynamicView } from './view-layouted'
+import type { AnyStep } from './view-parsed.dynamic'
 import {
   filter,
   firstBy,
@@ -9,7 +13,6 @@ import {
   pipe,
   purry,
 } from 'remeda'
-import type { IsEqual, Simplify } from 'type-fest'
 import {
   compareNaturalHierarchically,
   DefaultWeakMap,
@@ -17,12 +20,9 @@ import {
   isString,
   nonNullable,
 } from '../utils'
-import type { IsAnyOrNever, IterableContainer } from './_common'
 import * as scalar from './scalar'
 import { isStepPath } from './scalar'
 import { type ProcessedDynamicView, isDynamicViewWithFlow } from './view'
-import type { LayoutedDynamicView } from './view-layouted'
-import type { AnyStep } from './view-parsed.dynamic'
 
 type WithFlowBase<Dict extends {}> = {
   [T in keyof Dict]: Simplify<

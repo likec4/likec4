@@ -1,7 +1,7 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { LikeC4ProjectData } from '../LikeC4ProjectsProvider'
 import { useOptionalLikeC4Model } from '../context/LikeC4ModelContext'
 import { type LikeC4ProjectsContext, useOptionalProjectsContext } from '../context/LikeC4ProjectsContext'
-import type { LikeC4ProjectData } from '../LikeC4ProjectsProvider'
 
 const emptyProjects: ReadonlyArray<LikeC4ProjectData> = []
 function onProjectChange(id: ProjectId) {

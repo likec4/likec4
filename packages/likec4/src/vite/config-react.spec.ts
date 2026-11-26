@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
 import type { LikeC4 } from '../LikeC4'
+import { describe, expect, it, vi } from 'vitest'
 
 const LikeC4VitePlugin = vi.hoisted(() => vi.fn<(options: Record<string, unknown>) => unknown[]>(() => []))
 

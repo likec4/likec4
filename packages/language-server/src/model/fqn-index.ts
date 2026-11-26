@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { LikeC4Services } from '../module'
 import { invariant, nonNullable } from '@likec4/core'
 import { type NonEmptyArray, type ProjectId, Fqn, isAnyOf } from '@likec4/core/types'
 import {
@@ -35,7 +36,6 @@ import {
   isLikeC4LangiumDocument,
 } from '../ast'
 import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
 import { ADisposable, UniqueSingleMap } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 import { type LangiumDocuments, ProjectsManager } from '../workspace'

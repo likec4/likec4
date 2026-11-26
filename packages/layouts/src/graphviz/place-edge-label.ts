@@ -1,5 +1,5 @@
-import { placeLabelsAlongRoutes, polylineToSegments, splineToPolyline } from '@likec4/core/geometry'
 import type { DiagramEdge, DiagramNode } from '@likec4/core/types'
+import { placeLabelsAlongRoutes, polylineToSegments, splineToPolyline } from '@likec4/core/geometry'
 import { isCompound } from './utils'
 
 type EdgeGeometry = Pick<DiagramEdge, 'id' | 'points' | 'labelBBox'>

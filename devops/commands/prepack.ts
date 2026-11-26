@@ -1,8 +1,8 @@
-import { defineCommand } from 'citty'
+import type { PackageJson } from 'type-fest'
 import { glob } from 'node:fs/promises'
+import { defineCommand } from 'citty'
 import Gitignore, { type State as GitignoreState } from 'parse-gitignore'
 import { entries, hasSubObject, isPlainObject, isString } from 'remeda'
-import type { PackageJson } from 'type-fest'
 import { $, chalk, echo, fs, path } from 'zx'
 
 type SubModuleExport = { types: string; module?: string | undefined }

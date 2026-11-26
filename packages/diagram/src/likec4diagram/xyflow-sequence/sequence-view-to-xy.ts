@@ -1,3 +1,6 @@
+import type { SetNonNullable, Writable } from 'type-fest'
+import type { DiagramContext } from '../state/types'
+import type { Types } from '../types'
 import {
   type BBox,
   type DiagramEdge,
@@ -23,9 +26,6 @@ import {
   pipe,
   piped,
 } from 'remeda'
-import type { SetNonNullable, Writable } from 'type-fest'
-import type { DiagramContext } from '../state/types'
-import type { Types } from '../types'
 import {
   SeqParallelAreaColor,
   SeqZIndex,

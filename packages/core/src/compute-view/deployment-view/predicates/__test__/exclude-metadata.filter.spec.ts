@@ -3,8 +3,6 @@
 // Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { describe, it } from 'vitest'
-import { Builder } from '../../../../builder'
 import type {
   AnyTypes,
   DeploymentRulesBuilderOp,
@@ -13,6 +11,8 @@ import type {
   ViewPredicate,
 } from '../../../../builder'
 import type { WhereOperator } from '../../../../types'
+import { describe, it } from 'vitest'
+import { Builder } from '../../../../builder'
 import { TestHelper } from '../../__test__/TestHelper'
 
 type DeploymentWhereExpr<T extends AnyTypes> = Extract<Types.ToExpression<T>, { where: unknown }>

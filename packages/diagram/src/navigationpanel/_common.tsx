@@ -1,3 +1,4 @@
+import type { HTMLMotionProps } from 'motion/react'
 import { cx } from '@likec4/styles/css'
 import {
   type NavigationPanelActionIconVariant,
@@ -9,7 +10,6 @@ import {
   ThemeIcon,
   Tooltip as MantineTooltip,
 } from '@mantine/core'
-import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type ReactNode, forwardRef } from 'react'
 

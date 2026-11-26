@@ -1,3 +1,6 @@
+import type { InternalNodeUpdate } from '@xyflow/system'
+import type { RelationshipDetailsTypes } from './_types'
+import type { LayoutResult } from './layout'
 import {
   type BBox,
   type EdgeId,
@@ -15,7 +18,6 @@ import {
   applyNodeChanges,
   getViewportForBounds,
 } from '@xyflow/react'
-import type { InternalNodeUpdate } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import { isString, prop } from 'remeda'
 import {
@@ -34,8 +36,6 @@ import { MinZoom } from '../../base/const'
 import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
 import { typedSystem } from '../../likec4diagram/state/utils'
-import type { RelationshipDetailsTypes } from './_types'
-import type { LayoutResult } from './layout'
 import { layoutResultToXYFlow } from './layout-to-xyflow'
 
 type XYFLowInstance = ReactFlowInstance<RelationshipDetailsTypes.AnyNode, RelationshipDetailsTypes.Edge>

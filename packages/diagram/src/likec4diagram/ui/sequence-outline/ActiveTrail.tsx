@@ -1,10 +1,10 @@
+import type { OutlineTreeNodes } from './types'
 import { HStack, styled } from '@likec4/styles/jsx'
 import { IconChevronRight } from '@tabler/icons-react'
 import { Fragment } from 'react'
 import { useDiagram } from '../../../hooks/safeContext'
 import { flowPresentation } from './presentation'
 import { collectTrail, firstStepOf } from './tree'
-import type { OutlineTreeNodes } from './types'
 
 /**
  * Sticky "you are here" trail: the fragments the active step is nested inside.

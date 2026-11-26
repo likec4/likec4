@@ -1,9 +1,9 @@
+import type { LikeC4Services } from '../module'
 import { GraphvizWasmAdapter, QueueGraphvizLayoter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { isEmpty } from 'remeda'
 import which from 'which'
 import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
 
 function graphvizBinPath() {
   try {

@@ -1,3 +1,4 @@
+import type { RelationshipsBrowserTypes } from '../_types'
 import { css } from '@likec4/styles/css'
 import { Tooltip } from '@mantine/core'
 import {
@@ -11,7 +12,6 @@ import {
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { edgePathThroughLabel } from '../../../utils/edge-path-through-label'
-import type { RelationshipsBrowserTypes } from '../_types'
 import { useRelationshipsBrowser, useRelationshipsBrowserState } from '../hooks'
 
 export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((props) => {

@@ -1,4 +1,10 @@
 import type { GeneratorFn } from '@likec4/config'
+import type { Locate } from '@likec4/language-server/protocol'
+import type { Logger } from '@likec4/log'
+import type { LikeC4 } from '../../LikeC4'
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
 import { nonexhaustive } from '@likec4/core'
 import {
   type AnyLikeC4Model,
@@ -8,16 +14,10 @@ import {
   isLikeC4ViewModel,
   isRelationModel,
 } from '@likec4/core/model'
-import type { Locate } from '@likec4/language-server/protocol'
 import { fromWorkspace } from '@likec4/language-services/node'
-import type { Logger } from '@likec4/log'
 import { UriUtils } from 'langium'
-import { existsSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { URI } from 'vscode-uri'
-import type { LikeC4 } from '../../LikeC4'
 import { logger as cliLogger, startTimer } from '../../logger'
 import { ensureProject } from '../utils'
 

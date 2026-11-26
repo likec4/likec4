@@ -1,6 +1,6 @@
+import type { LayoutedView, ModelDiff, ParsedLikeC4ModelData } from '@likec4/core/types'
 import { Builder } from '@likec4/core/builder'
 import { computeLikeC4Model } from '@likec4/core/compute-view'
-import type { LayoutedView, ModelDiff, ParsedLikeC4ModelData } from '@likec4/core/types'
 import { _stage, _type, DiffId, ViewId } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { compareLookupModel } from './compare-model'

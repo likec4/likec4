@@ -1,12 +1,12 @@
 import type * as t from '@likec4/core/types'
+import type { DiagramContext } from '../../likec4diagram/state/types'
+import type { Types } from '../../likec4diagram/types'
+import type { Snapshot, SyncOp } from './types'
 import { filter, isNot, omit } from 'remeda'
 import { type ActorSystem, assertEvent } from 'xstate'
 import { createViewChange } from '../../likec4diagram/state/createViewChange'
-import type { DiagramContext } from '../../likec4diagram/state/types'
 import { typedSystem } from '../../likec4diagram/state/utils'
-import type { Types } from '../../likec4diagram/types'
 import { machine } from './setup'
-import type { Snapshot, SyncOp } from './types'
 
 /**
  * Actually this is DiagramActorRef

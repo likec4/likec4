@@ -1,4 +1,3 @@
-import { omitBy } from 'remeda'
 import type {
   IsAny,
   IsNever,
@@ -7,6 +6,7 @@ import type {
   Simplify,
   UnionToIntersection,
 } from 'type-fest'
+import { omitBy } from 'remeda'
 
 export type NonEmptyArray<T> = [T, ...T[]]
 

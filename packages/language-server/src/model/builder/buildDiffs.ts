@@ -1,9 +1,4 @@
 import type * as c4 from '@likec4/core'
-import { isGlobalFqn } from '@likec4/core'
-import { mergeElementOverlay } from '@likec4/core/compute-view'
-import { FqnRef } from '@likec4/core/types'
-import { parentFqn, sortParentsFirst } from '@likec4/core/utils'
-import { groupBy, isNonNullish, isTruthy, mapValues, prop, unique, values } from 'remeda'
 import type { Writable } from 'type-fest'
 import type {
   ParsedAstDiff,
@@ -13,6 +8,11 @@ import type {
   ParsedAstRelation,
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
+import { isGlobalFqn } from '@likec4/core'
+import { mergeElementOverlay } from '@likec4/core/compute-view'
+import { FqnRef } from '@likec4/core/types'
+import { parentFqn, sortParentsFirst } from '@likec4/core/utils'
+import { groupBy, isNonNullish, isTruthy, mapValues, prop, unique, values } from 'remeda'
 import { logger } from '../../logger'
 import { relationFingerprint } from '../relationFingerprint'
 

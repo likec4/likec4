@@ -1,9 +1,9 @@
 import type { DiagramNode, LayoutedElementView } from '@likec4/core/types'
+import type { XYStoreApi } from '../../hooks/useXYFlow'
 import { scalar } from '@likec4/core/types'
 import { applyNodeChanges } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
 import { assertEvent, createActor } from 'xstate'
-import type { XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramToXY } from '../xyflow-diagram/diagram-view'
 import {
   assignXYDataFromView,
@@ -16,10 +16,10 @@ import { Context, machine } from './machine.setup'
 
 describe('updateNodeSelectionOrder', () => {
   it('appends newly selected nodes and removes deselected ones', () => {
-    let order = updateNodeSelectionOrder([], [
-      { type: 'select', id: 'b', selected: true },
-      { type: 'select', id: 'a', selected: true },
-    ])
+    let order = updateNodeSelectionOrder(
+      [],
+      [{ type: 'select', id: 'b', selected: true }, { type: 'select', id: 'a', selected: true }],
+    )
     expect(order).toEqual(['b', 'a'])
     order = updateNodeSelectionOrder(order, [
       { type: 'select', id: 'c', selected: true },

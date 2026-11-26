@@ -1,9 +1,9 @@
+import type { LikeC4Services } from '../module'
 import { isSameHierarchy } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { isEmpty } from 'remeda'
 import { ast } from '../ast'
 import { isAltSteps } from '../generated/ast'
-import type { LikeC4Services } from '../module'
 import { elementRef } from '../utils/elementRef'
 import { tryOrLog } from './_shared'
 

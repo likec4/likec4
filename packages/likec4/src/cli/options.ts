@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import isInsideContainer from 'is-inside-container'
-import { resolve } from 'node:path'
-import { env, isDevelopment } from 'std-env'
 import type { Options, PositionalOptions } from 'yargs'
+import { resolve } from 'node:path'
+import isInsideContainer from 'is-inside-container'
+import { env, isDevelopment } from 'std-env'
 
 export const path = {
   type: 'string',

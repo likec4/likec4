@@ -1,24 +1,24 @@
-import { type EdgeRouting, type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
-import { type Dimensions, type XYPoint, BBox, placeLabelsAlongRoutes } from '@likec4/core/geometry'
-import { invariant, isome } from '@likec4/core/utils'
 import type {
   EdgeReplaceChange,
   InternalNode as RFInternalNode,
   NodeChange,
   OnNodeDrag,
 } from '@xyflow/react'
+import type { DiagramApi } from '../hooks/useDiagram'
+import type { Types } from './types'
+import { type EdgeRouting, type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
+import { type Dimensions, type XYPoint, BBox, placeLabelsAlongRoutes } from '@likec4/core/geometry'
+import { invariant, isome } from '@likec4/core/utils'
 import { type EdgeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual } from 'fast-equals'
 import { produce } from 'immer'
 import { useMemo, useRef } from 'react'
 import { clamp, difference, filter, hasAtLeast, map, pipe } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
-import type { DiagramApi } from '../hooks/useDiagram'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
 import { bezierControlPoints, leafNodeRects, nodeToRect } from '../utils/xyflow'
-import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
 

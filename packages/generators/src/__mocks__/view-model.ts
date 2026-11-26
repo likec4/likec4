@@ -1,5 +1,5 @@
-import { LikeC4Styles } from '@likec4/core/styles'
 import type { ProcessedView } from '@likec4/core/types'
+import { LikeC4Styles } from '@likec4/core/styles'
 
 /**
  * Fills in the color and line that every computed edge carries and the shared mock views omit,

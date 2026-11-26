@@ -2,12 +2,12 @@
  * Runs `runValidate` against real language services and a real workspace on disk.
  */
 import type { LikeC4 } from '@likec4/language-services/node'
+import type { ValidateLogger, ValidateOptions } from './handler'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { stripVTControlCharacters } from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ValidateLogger, ValidateOptions } from './handler'
 import { runValidate } from './handler'
 
 // The suite runs with `--no-isolate`, and other spec files mock this module,

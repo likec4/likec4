@@ -1,10 +1,10 @@
+import type { GraphvizPort } from '../GraphvizLayoter'
+import type { DotSource } from '../types'
 import { memoizeProp } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger } from '@likec4/log'
 import spawn, { SubprocessError } from 'nano-spawn'
 import { isEmpty, randomString } from 'remeda'
 import which from 'which'
-import type { GraphvizPort } from '../GraphvizLayoter'
-import type { DotSource } from '../types'
 
 const rootLogger = mainLogger.getChild(['graphviz', 'binary'])
 

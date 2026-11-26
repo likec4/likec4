@@ -1,5 +1,5 @@
-import { isNullish, omitBy, pick } from 'remeda'
 import type { LikeC4Model } from '../../model/LikeC4Model'
+import { isNullish, omitBy, pick } from 'remeda'
 import {
   type AnyAux,
   type ComputedEdge,

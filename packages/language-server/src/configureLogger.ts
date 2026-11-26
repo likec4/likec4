@@ -1,3 +1,4 @@
+import type { Connection } from 'vscode-languageserver'
 import {
   configureLogger,
   getAnsiColorFormatter,
@@ -6,7 +7,6 @@ import {
   getTextFormatter,
 } from '@likec4/log'
 import { isColorSupported, isDevelopment } from 'std-env'
-import type { Connection } from 'vscode-languageserver'
 import { getTelemetrySink, serverLogger } from './logger'
 
 export type ConfigureLanguageServerLoggerOptions = {

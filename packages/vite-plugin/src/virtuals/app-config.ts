@@ -1,6 +1,6 @@
 import type { ResolvedLikeC4AppOptions } from '../app-options'
-import { logGenerating } from '../logger'
 import type { VirtualModule } from './_shared'
+import { logGenerating } from '../logger'
 
 export function createAppConfigModule(
   { webcomponentPrefix, title, useHashHistory, theme }: ResolvedLikeC4AppOptions,

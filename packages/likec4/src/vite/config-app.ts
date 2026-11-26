@@ -5,15 +5,15 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import react from '@vitejs/plugin-react'
+import type { BuildEnvironmentOptions, InlineConfig, Logger } from 'vite'
+import type { LikeC4 } from '../LikeC4'
+import type { ViteLogger } from '../logger'
 import { resolve } from 'node:path'
+import react from '@vitejs/plugin-react'
 import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { BuildEnvironmentOptions, InlineConfig, Logger } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
-import type { LikeC4 } from '../LikeC4'
-import type { ViteLogger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin'
 import { reactDedupe, viteAliases } from './aliases'
 import { relativeToCwd, viteAppRoot, viteLogger } from './utils'

@@ -1,5 +1,3 @@
-import { computeView, withReadableEdges } from '@likec4/core/compute-view'
-import { LikeC4Model } from '@likec4/core/model'
 import type {
   ComputedElementView,
   Element,
@@ -11,6 +9,8 @@ import type {
   RelationId,
   ViewId,
 } from '@likec4/core/types'
+import { computeView, withReadableEdges } from '@likec4/core/compute-view'
+import { LikeC4Model } from '@likec4/core/model'
 
 const element = ({ id, kind, title }: { id: string; kind: ElementKind; title?: string }): Element => ({
   id: id as Fqn,

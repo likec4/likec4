@@ -1,6 +1,6 @@
 import type { ElementKind, Fqn, Tag } from '@likec4/core'
-import { isNonNullish, pickBy } from 'remeda'
 import type { Simplify } from 'type-fest'
+import { isNonNullish, pickBy } from 'remeda'
 import * as z from 'zod/v4'
 import * as common from './common'
 

@@ -1,3 +1,4 @@
+import type { Types } from '../types'
 import { ensureSizes } from '@likec4/core'
 import { ifilter, imap, invariant, toArray } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
@@ -19,7 +20,6 @@ import {
 import { useDiagram, useXYStore } from '../../hooks'
 import { selectXYStore } from '../../hooks/useXYFlow'
 import { roundDpr } from '../../utils'
-import type { Types } from '../types'
 
 /**
  * Returns actor nodes from the current XY node list.

@@ -1,7 +1,7 @@
-import { fromWorkspace } from '@likec4/language-services/node'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { normalizePath } from 'vite'
 import { printServerUrls } from '../../vite/printServerUrls'

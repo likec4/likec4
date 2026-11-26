@@ -30,8 +30,7 @@ function code(model: LikeC4Model.Computed) {
         indented.append(
           joinToNode(
             [...model.views()],
-            view =>
-              expandToNode`
+            view => expandToNode`
               case ${JSON.stringify(view.id)}: {
                 return ${JSON.stringify(generateD2(view))}
               }

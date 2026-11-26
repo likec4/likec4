@@ -1,6 +1,3 @@
-import { describe, expect, it } from 'vitest'
-import { Builder } from '../../../builder'
-import { LikeC4Model } from '../../../model'
 import type {
   DeploymentFqn,
   DeploymentViewRule,
@@ -9,6 +6,9 @@ import type {
   UnknownParsed,
   ViewId,
 } from '../../../types'
+import { describe, expect, it } from 'vitest'
+import { Builder } from '../../../builder'
+import { LikeC4Model } from '../../../model'
 import { computeView } from '../../compute-view'
 import { computeDeploymentView } from '../compute'
 

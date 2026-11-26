@@ -7,8 +7,8 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { DiagramView, DynamicViewDisplayVariant } from '@likec4/core'
-import { resolve } from 'node:path'
 import type { Page } from 'playwright'
+import { resolve } from 'node:path'
 import { isTruthy } from 'remeda'
 import { withQuery } from 'ufo'
 

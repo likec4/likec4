@@ -134,9 +134,10 @@ if (existsSync(absolute('.github/copilot-instructions.md'))) {
 if (existsSync(absolute('AGENTS.md'))) {
   const agents = read('AGENTS.md')
   const rootHeadings = new Set(agents.split('\n').filter(line => /^#{1,3} /.test(line)))
-  const routingSection = agents.split(/(?=^## )/m).find(section =>
-    section.startsWith('## Read task guidance before work\n')
-  ) ?? ''
+  const routingSection = agents
+    .split(/(?=^## )/m)
+    .find(section => section.startsWith('## Read task guidance before work\n'))
+    ?? ''
   const routeTargets = [...routingSection.matchAll(/\]\(\s*([^)]*?)\s*\)/g)].map(match => match[1].trim())
 
   for (const [name, sections] of referenceSections) {

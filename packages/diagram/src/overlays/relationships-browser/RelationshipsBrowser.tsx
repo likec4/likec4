@@ -5,6 +5,9 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { SnapshotFrom } from 'xstate'
+import type { RelationshipsBrowserTypes } from './_types'
+import type { RelationshipsBrowserActorRef } from './actor'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Group, Tooltip as MantineTooltip } from '@mantine/core'
 import { useClipboard, useStateHistory } from '@mantine/hooks'
@@ -13,11 +16,8 @@ import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/rea
 import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { memo, useEffect, useRef, useState } from 'react'
-import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
-import type { RelationshipsBrowserTypes } from './_types'
-import type { RelationshipsBrowserActorRef } from './actor'
 import { CompoundNode, ElementNode, EmptyNode, RelationshipEdge } from './custom'
 import {
   RelationshipsBrowserActorContext,

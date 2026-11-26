@@ -2,8 +2,8 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { describe, expect, it } from 'vitest'
 import type { BaseEdge } from './types'
+import { describe, expect, it } from 'vitest'
 import { updateEdges } from './updateEdges'
 
 type TestEdge = BaseEdge<{

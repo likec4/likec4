@@ -6,6 +6,14 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as t from '@likec4/core/types'
+import type {
+  LikeC4DiagramEventHandlers,
+  LikeC4DiagramProperties,
+  PaddingWithUnit,
+  ViewPadding,
+  ViewPaddings,
+} from './LikeC4Diagram.props'
+import type { Types } from './likec4diagram/types'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
@@ -26,18 +34,10 @@ import { customizable } from './customization/customizable'
 import { useOptionalLikeC4Editor } from './editor'
 import { useId } from './hooks/useId'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
-import type {
-  LikeC4DiagramEventHandlers,
-  LikeC4DiagramProperties,
-  PaddingWithUnit,
-  ViewPadding,
-  ViewPaddings,
-} from './LikeC4Diagram.props'
 import { convertToXYFlow } from './likec4diagram/convert-to-xyflow'
 import { LikeC4DiagramUI } from './likec4diagram/DiagramUI'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
-import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
 import { pickViewBounds } from './utils/view-bounds'
 

@@ -1,6 +1,6 @@
-import { omit } from 'remeda'
 import type { Except } from 'type-fest'
 import type { ElementModel } from '../../model'
+import { omit } from 'remeda'
 import {
   type AnyAux,
   type aux,

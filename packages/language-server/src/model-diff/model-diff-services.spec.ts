@@ -1,14 +1,14 @@
 import type { DiffId, ParsedLikeC4ModelData, ProjectId } from '@likec4/core'
-import { applyModelDiff } from '@likec4/core/compute-view'
 import type { LangiumDocument } from 'langium'
+import type { WorkspaceEdit } from 'vscode-languageserver-types'
+import type { LikeC4Services } from '../module'
+import type { SafeDeleteOptions } from './RemovalImpact'
+import { applyModelDiff } from '@likec4/core/compute-view'
 import { mapValues, values } from 'remeda'
 import { describe, it, vi } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import type { WorkspaceEdit } from 'vscode-languageserver-types'
 import { isParsedLikeC4LangiumDocument } from '../ast'
-import type { LikeC4Services } from '../module'
 import { createTestServices } from '../test'
-import type { SafeDeleteOptions } from './RemovalImpact'
 import { DocumentEdits } from './text-edits'
 
 const model = `

@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: MIT
-//
-// Copyright (c) 2023-2026 Denis Davydkov
-// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-//
-// oxlint-disable no-misused-spread
-import { ancestorsFqn, isAncestor, nameFromFqn, nonNullable } from '@likec4/core'
 import type { ElementModel } from '@likec4/core/model'
 import type {
   DeploymentFqn,
@@ -12,6 +5,15 @@ import type {
   NodeId,
   ViewId,
 } from '@likec4/core/types'
+import type { Rect } from '@xyflow/system'
+import type { DetailsSubject } from './subject'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// oxlint-disable no-misused-spread
+import { ancestorsFqn, isAncestor, nameFromFqn, nonNullable } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { HStack, styled, Txt } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -41,7 +43,6 @@ import {
   IconFileSymlink,
   IconZoomScan,
 } from '@tabler/icons-react'
-import type { Rect } from '@xyflow/system'
 import { type HTMLMotionProps, type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, type SyntheticEvent, Fragment, useCallback, useRef, useState } from 'react'
 import { clamp, entries, only } from 'remeda'
@@ -58,7 +59,6 @@ import * as styles from './ElementDetailsCard.css'
 import { CardFooter, CardFooterSection, ElementTitle } from './ElementDetailsCard.css'
 import { MetadataList, MetadataProvider } from './MetadataValue'
 import { PropertiesSplit } from './PropertiesSplit'
-import type { DetailsSubject } from './subject'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'

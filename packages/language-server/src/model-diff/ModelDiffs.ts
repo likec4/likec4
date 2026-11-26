@@ -1,4 +1,7 @@
 import type { DiagramView, DiffId, DiffSummary, ParsedLikeC4ModelData, ProjectId, ViewId } from '@likec4/core'
+import type { ast } from '../ast'
+import type { LikeC4Services } from '../module'
+import type { DocumentEdits } from './text-edits'
 import {
   type CompareModels,
   type CompareViewResult,
@@ -9,12 +12,9 @@ import { getOrCreate } from '@likec4/core/utils'
 import { AstUtils } from 'langium'
 import { keys, values } from 'remeda'
 import { type Position, type Range, DiagnosticSeverity } from 'vscode-languageserver-types'
-import type { ast } from '../ast'
 import { relationFingerprint } from '../model/relationFingerprint'
-import type { LikeC4Services } from '../module'
 import { diffRange, mergeDiffAdds, mergeDiffViews, modelBlockWith, viewsBlockWith } from './merge-apply'
 import { findDiffOverlaps, overlapsOf } from './overlaps'
-import type { DocumentEdits } from './text-edits'
 
 export type DiffAction = 'apply' | 'discard'
 

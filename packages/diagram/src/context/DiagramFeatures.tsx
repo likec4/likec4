@@ -1,6 +1,6 @@
 import type { ExclusiveUnion } from '@likec4/core/types'
-import { type PropsWithChildren, createContext, useContext } from 'react'
 import type { JSX } from 'react/jsx-runtime'
+import { type PropsWithChildren, createContext, useContext } from 'react'
 import { useSetState } from '../hooks/useSetState'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { ComparingLayoutsProvider } from './ComparingLayoutsContext'

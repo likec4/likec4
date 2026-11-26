@@ -1,10 +1,10 @@
+import type { DiagnosticSeverity as lcDiagnosticSeverity } from 'vscode-languageclient'
+import type { RpcClient } from './types'
 import { useCommand, useDisposable } from 'reactive-vscode'
 import { entries, groupBy, map, pipe, prop } from 'remeda'
 import * as vscode from 'vscode'
-import type { DiagnosticSeverity as lcDiagnosticSeverity } from 'vscode-languageclient'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
-import type { RpcClient } from './types'
 
 export interface ValidateLayoutCommandDeps {
   sendTelemetry(commandId: string): void

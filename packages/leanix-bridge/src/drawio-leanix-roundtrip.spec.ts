@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { BridgeManifest } from './contracts'
+import { describe, expect, it } from 'vitest'
 import { BRIDGE_MANIFEST_VERSION, BRIDGE_VERSION } from './contracts'
 import { manifestToDrawioLeanixMapping } from './drawio-leanix-roundtrip'
 

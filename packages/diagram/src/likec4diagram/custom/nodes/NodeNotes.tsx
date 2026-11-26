@@ -1,3 +1,6 @@
+import type { MouseEvent } from 'react'
+import type { BaseNodePropsWithData } from '../../../base/types'
+import type { Types } from '../../types'
 import { type scalar, hasProp, RichText } from '@likec4/core'
 import { stringHash } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
@@ -7,12 +10,9 @@ import { ScrollAreaAutosize } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { ViewportPortal } from '@xyflow/react'
 import { type Variants, AnimatePresence, m } from 'motion/react'
-import type { MouseEvent } from 'react'
 import { clamp, isEmptyish } from 'remeda'
-import type { BaseNodePropsWithData } from '../../../base/types'
 import { MarkdownWithRefs } from '../../../components/markdown'
 import { useCallbackRef, useOnDiagramEvent } from '../../../hooks'
-import type { Types } from '../../types'
 
 type RequiredData = Pick<Types.NodeData, 'id' | 'notes' | 'width' | 'height' | 'x' | 'y'>
 
@@ -302,8 +302,7 @@ function Catch({
         onMouseDownCapture={onCatchClick}
         onClickCapture={onCatchClick}
         onClick={stopPropagation}
-      >
-      </Box>
+      ></Box>
     </ViewportPortal>
   )
 }

@@ -1,6 +1,6 @@
-import { definePattern } from '@pandacss/dev'
 import type { LiteralUnion } from '@pandacss/types'
 import type { ThemeColor } from '../defaults/types'
+import { definePattern } from '@pandacss/dev'
 import { ThemeColors } from '../defaults/types'
 
 export const txt = definePattern({

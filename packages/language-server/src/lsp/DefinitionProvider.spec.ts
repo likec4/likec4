@@ -1,6 +1,6 @@
 import type { LangiumDocument } from 'langium'
-import { describe, expect } from 'vitest'
 import type { LocationLink } from 'vscode-languageserver'
+import { describe, expect } from 'vitest'
 import { type TestServices as Services, testFileScope as it } from '../test'
 
 const modelSource = `

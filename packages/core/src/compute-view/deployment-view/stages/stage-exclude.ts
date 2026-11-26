@@ -1,6 +1,6 @@
+import type { Ctx } from '../memory/memory'
 import { difference } from '../../../utils'
 import { AbstractStageExclude } from '../../memory'
-import type { Ctx } from '../memory/memory'
 
 export class StageExclude extends AbstractStageExclude<Ctx> {
   protected override postcommit(state: Ctx['MutableState']) {

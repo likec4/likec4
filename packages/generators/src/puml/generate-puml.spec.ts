@@ -1,6 +1,6 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import { LikeC4Styles } from '@likec4/core/styles'
 import type { aux, ProcessedView } from '@likec4/core/types'
+import { LikeC4Styles } from '@likec4/core/styles'
 import { expect, test, vi } from 'vitest'
 import { fakeComputedView3Levels, fakeComputedViewWithAllShapes, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import { generatePuml } from './generate-puml'

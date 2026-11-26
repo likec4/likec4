@@ -4,11 +4,6 @@
  */
 
 import type { AnyLikeC4Model } from '@likec4/core/model'
-import {
-  buildBridgeReport,
-  toBridgeManifest,
-  toLeanixInventoryDryRun,
-} from '@likec4/leanix-bridge'
 import type {
   BridgeManifest,
   BridgeModelInput,
@@ -17,6 +12,11 @@ import type {
 } from '@likec4/leanix-bridge'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
+import {
+  buildBridgeReport,
+  toBridgeManifest,
+  toLeanixInventoryDryRun,
+} from '@likec4/leanix-bridge'
 import k from 'tinyrainbow'
 
 /** Error message when workspace has no project or empty model. */

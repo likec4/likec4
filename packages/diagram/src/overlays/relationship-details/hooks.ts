@@ -1,10 +1,10 @@
+import type { OverlaysActorRef } from '../overlaysActor'
+import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 import { type EdgeId, type Fqn, nonNullable } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, useContext, useMemo } from 'react'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
-import type { OverlaysActorRef } from '../overlaysActor'
-import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 
 export const RelationshipDetailsActorContext = createContext<RelationshipDetailsActorRef | null>(null)
 

@@ -1,8 +1,7 @@
+import type { AnyAux, aux, ParsedElementView } from '../../types'
+import { Graph, topologicalSort, willCreateCycle } from '@likec4/core/utils/graphology'
 import { unique, values } from 'remeda'
 import { type LikeC4View, isElementView, isExtendsElementView } from '../../types/view'
-
-import { Graph, topologicalSort, willCreateCycle } from '@likec4/core/utils/graphology'
-import type { AnyAux, aux, ParsedElementView } from '../../types'
 import { isNonEmptyArray } from '../../utils'
 /**
  * Resolve rules of extended views

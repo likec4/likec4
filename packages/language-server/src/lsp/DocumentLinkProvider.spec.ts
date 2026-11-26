@@ -1,8 +1,8 @@
-import { beforeAll, describe, it } from 'vitest'
 import type { LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
-import { createMultiProjectTestServices, createTestServices } from '../test'
 import type { LikeC4DocumentLinkProvider } from './DocumentLinkProvider'
+import { beforeAll, describe, it } from 'vitest'
+import { createMultiProjectTestServices, createTestServices } from '../test'
 
 describe('DocumentLinkProvider', () => {
   describe('single project', () => {

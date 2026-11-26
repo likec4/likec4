@@ -1,7 +1,7 @@
-import { Portal } from '@mantine/core'
 import type {
   PropsWithChildren,
 } from 'react'
+import { Portal } from '@mantine/core'
 import { useRootContainerContext } from '../context/RootContainerContext'
 
 /**

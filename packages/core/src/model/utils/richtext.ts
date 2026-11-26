@@ -1,9 +1,9 @@
 import type { Any, RichTextOrEmpty } from '../../types'
-import { RichText } from '../../types/RichText'
 import type { MarkdownOrString } from '../../types/scalar'
-import { memoizeProp } from '../../utils/memoize-prop'
 import type { LikeC4DeploymentModel } from '../DeploymentModel'
 import type { LikeC4Model } from '../LikeC4Model'
+import { RichText } from '../../types/RichText'
+import { memoizeProp } from '../../utils/memoize-prop'
 
 type WithModel<A extends Any> = { readonly $model: LikeC4Model<A> } | { readonly $model: LikeC4DeploymentModel<A> }
 

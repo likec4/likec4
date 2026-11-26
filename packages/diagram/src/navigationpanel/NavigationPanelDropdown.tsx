@@ -1,10 +1,11 @@
+import type { ViewId } from '@likec4/core/types'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   type LikeC4ViewModel,
   type LikeC4ViewsFolder,
   normalizeViewPath,
   VIEW_FOLDERS_SEPARATOR,
 } from '@likec4/core/model'
-import type { ViewId } from '@likec4/core/types'
 import { compareNaturalHierarchically, ifilter, ifirst, nonexhaustive, toArray } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
@@ -30,7 +31,6 @@ import {
   IconSearch,
 } from '@tabler/icons-react'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   type ComponentPropsWithoutRef,
   type KeyboardEventHandler,

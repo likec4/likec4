@@ -6,6 +6,15 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
+import type {
+  ParsedAstDeployment,
+  ParsedAstDeploymentRelation,
+  ParsedAstElement,
+  ParsedAstRelation,
+  ParsedAstSpecification,
+  ParsedLikeC4LangiumDocument,
+} from '../../ast'
+import type { DescriptionFileResolver, WithDescription } from './descriptionFileResolver'
 import { assignTagColors } from '@likec4/core/styles'
 import { exact, FqnRef } from '@likec4/core/types'
 import { isNonEmptyArray, MultiMap, nameFromFqn } from '@likec4/core/utils'
@@ -16,16 +25,7 @@ import {
   only,
   unique,
 } from 'remeda'
-import type {
-  ParsedAstDeployment,
-  ParsedAstDeploymentRelation,
-  ParsedAstElement,
-  ParsedAstRelation,
-  ParsedAstSpecification,
-  ParsedLikeC4LangiumDocument,
-} from '../../ast'
 import { logger, logWarnError } from '../../logger'
-import type { DescriptionFileResolver, WithDescription } from './descriptionFileResolver'
 
 const iconTechPrefixRe = /^(aws|azure|gcp|tech):(.+)$/
 

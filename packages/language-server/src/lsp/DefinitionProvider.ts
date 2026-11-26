@@ -1,3 +1,5 @@
+import type { CancellationToken, DefinitionParams } from 'vscode-languageserver'
+import type { LikeC4Services } from '../module'
 import { Fqn } from '@likec4/core/types'
 import {
   type AstNodeDescription,
@@ -8,10 +10,8 @@ import {
   CstUtils,
 } from 'langium'
 import { DefaultDefinitionProvider } from 'langium/lsp'
-import type { CancellationToken, DefinitionParams } from 'vscode-languageserver'
 import { LocationLink } from 'vscode-languageserver'
 import { ast } from '../ast'
-import type { LikeC4Services } from '../module'
 import { type DocumentMarkdownRef, markdownRefsOf, projectIdFrom } from '../utils'
 
 /**

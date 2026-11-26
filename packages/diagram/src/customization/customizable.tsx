@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { Simplify } from 'type-fest'
 // import type { Customizable, Customizables, FC, ValidName } from '@likec4/diagram-customization'
 // import type { CustomComponentName } from '@likec4/diagram-customization'
 import { type ComponentProps, type FC, type JSX, type ReactNode, use } from 'react'
-import type { Simplify } from 'type-fest'
 import {
   type CustomComponent,
   type CustomComponents,

@@ -120,23 +120,26 @@ describe('resolveAppConfig', () => {
         server: { host: '0.0.0.0', port: 5000, hmrPort: 5001, allowedHosts: ['config.dev'] },
       })
 
-      const resolved = await resolveAppConfig({
-        title: 'Flag',
-        theme: 'light',
-        useHashHistory: false,
-        webcomponentPrefix: 'flag',
-        customization: '/flag.tsx',
-        useDot: false,
-        base: '/flag/',
-        publicDir: '/flag-public',
-        output: '/flag-dist',
-        outputSingleFile: false,
-        buildWebcomponent: true,
-        listen: '127.0.0.1',
-        port: 6000,
-        hmrPort: 6001,
-        allowedHosts: ['flag.dev'],
-      }, { cwd, env: {} })
+      const resolved = await resolveAppConfig(
+        {
+          title: 'Flag',
+          theme: 'light',
+          useHashHistory: false,
+          webcomponentPrefix: 'flag',
+          customization: '/flag.tsx',
+          useDot: false,
+          base: '/flag/',
+          publicDir: '/flag-public',
+          output: '/flag-dist',
+          outputSingleFile: false,
+          buildWebcomponent: true,
+          listen: '127.0.0.1',
+          port: 6000,
+          hmrPort: 6001,
+          allowedHosts: ['flag.dev'],
+        },
+        { cwd, env: {} },
+      )
 
       expect(resolved).toMatchObject({
         title: 'Flag',

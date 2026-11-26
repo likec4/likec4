@@ -1,6 +1,6 @@
+import type { DiagramEdge, DynamicViewDisplayVariant, LayoutedView } from '@likec4/core/types'
 import { invariant } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
-import type { DiagramEdge, DynamicViewDisplayVariant, LayoutedView } from '@likec4/core/types'
 
 /**
  * Picks appropriate bounds from the view,

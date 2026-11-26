@@ -1,3 +1,4 @@
+import type { LikeC4SharedServices } from '../module'
 import { invariant } from '@likec4/core'
 import { shallowEqual } from 'fast-equals'
 import {
@@ -18,7 +19,6 @@ import {
 } from '../ast'
 import { isNotLikeC4Builtin } from '../likec4lib'
 import { serverLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
 
 type DocumentStateReset = Exclude<DocumentState, DocumentState.Validated>
 

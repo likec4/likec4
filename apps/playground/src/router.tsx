@@ -1,7 +1,7 @@
+import type { FallbackProps } from 'react-error-boundary'
 import { Box, Button, Code, Group, Notification, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { createRouter as createTanstackRouter, RouterProvider } from '@tanstack/react-router'
-import type { FallbackProps } from 'react-error-boundary'
 import { NotFound } from './components/NotFound'
 import { routeTree } from './routeTree.gen'
 

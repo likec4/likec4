@@ -5,16 +5,16 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { SimplifyDeep } from 'type-fest'
+import type { BaseNodeData } from '../../../base/types'
+import type { Types } from '../../types'
 import { IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { hasAtLeast } from 'remeda'
-import type { SimplifyDeep } from 'type-fest'
 import { ElementActionButtons } from '../../../base-primitives'
-import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { readableText } from '../../../utils'
-import type { Types } from '../../types'
 
 type WithExtraButtons = {
   /**

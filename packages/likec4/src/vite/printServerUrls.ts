@@ -1,6 +1,6 @@
+import type { PreviewServer, ViteDevServer } from 'vite'
 import { first, isString } from 'remeda'
 import k from 'tinyrainbow'
-import type { PreviewServer, ViteDevServer } from 'vite'
 import { boxen } from '../logger'
 
 export function resolveServerUrl(server: ViteDevServer | PreviewServer) {

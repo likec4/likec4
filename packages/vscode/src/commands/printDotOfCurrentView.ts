@@ -1,8 +1,8 @@
+import type { PreviewPanel, RpcClient } from './types'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
-import type { PreviewPanel, RpcClient } from './types'
 
 export interface PrintDotOfCurrentViewDeps {
   sendTelemetry(commandId: string): void

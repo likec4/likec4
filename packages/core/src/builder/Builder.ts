@@ -1,3 +1,31 @@
+import type { Writable } from 'type-fest'
+import type {
+  Any,
+  aux,
+  DeployedInstance,
+  DeploymentFqn,
+  DeploymentNode,
+  ElementStyle,
+  LikeC4Project,
+  MarkdownOrString,
+  ParsedElementView,
+  ParsedLikeC4ModelData,
+  Specification,
+  TagSpecification,
+} from '../types'
+import type { AnyTypes, BuilderMode, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
+import type { AddDeploymentNode } from './Builder.deployment'
+import type {
+  AddDeploymentNodeHelpers,
+  DeloymentModelBuildFunction,
+  DeloymentModelHelpers,
+  DeploymentModelBuilder,
+} from './Builder.deploymentModel'
+import type { AddElement } from './Builder.element'
+import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
+import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
+import type { ElementViewRulesBuilder } from './Builder.view-element'
+import type { BuilderMethods } from './Builder.with'
 // oxlint-disable consistent-type-specifier-style
 import { defu } from 'defu'
 import {
@@ -14,24 +42,9 @@ import {
   mapValues,
   pipe,
 } from 'remeda'
-import type { Writable } from 'type-fest'
 import { computeLikeC4Model } from '../compute-view/compute-view'
 import { LikeC4Model } from '../model/LikeC4Model'
 import { assignTagColors } from '../styles/assignTagColors'
-import type {
-  Any,
-  aux,
-  DeployedInstance,
-  DeploymentFqn,
-  DeploymentNode,
-  ElementStyle,
-  LikeC4Project,
-  MarkdownOrString,
-  ParsedElementView,
-  ParsedLikeC4ModelData,
-  Specification,
-  TagSpecification,
-} from '../types'
 import {
   type DeploymentElement,
   type DeploymentRelation,
@@ -59,23 +72,10 @@ import {
 } from '../types'
 import { DefaultMap, invariant } from '../utils'
 import { isSameHierarchy, nameFromFqn, parentFqn } from '../utils/fqn'
-import type { AnyTypes, BuilderMode, BuilderProjectSpecification, BuilderSpecification, Types } from './_types'
-import type { AddDeploymentNode } from './Builder.deployment'
-import type {
-  AddDeploymentNodeHelpers,
-  DeloymentModelBuildFunction,
-  DeloymentModelHelpers,
-  DeploymentModelBuilder,
-} from './Builder.deploymentModel'
-import type { AddElement } from './Builder.element'
-import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
 import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
-import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 import { $includeAncestors } from './Builder.view-deployment'
 import { type DynamicViewRulesBuilder, $step } from './Builder.view-dynamic'
-import type { ElementViewRulesBuilder } from './Builder.view-element'
 import { type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers, mkViewBuilder } from './Builder.views'
-import type { BuilderMethods } from './Builder.with'
 
 export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
   /**

@@ -1,15 +1,15 @@
-import { DiffId } from '@likec4/core'
 import type { LangiumDocument } from 'langium'
+import type { InitializeParams } from 'vscode-languageserver-protocol'
+import type { FileSystemProvider } from '../filesystem/types'
+import type { LikeC4Services, LikeC4SharedServices } from '../module'
+import type { DocumentEdits } from './text-edits'
+import { DiffId } from '@likec4/core'
 import { AstUtils, CstUtils, DocumentState, URI, UriUtils } from 'langium'
 import { isPlainObject } from 'remeda'
-import type { InitializeParams } from 'vscode-languageserver-protocol'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { type Diagnostic, type Range, type WorkspaceEdit, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { ast } from '../ast'
-import type { FileSystemProvider } from '../filesystem/types'
 import { logger as rootLogger } from '../logger'
-import type { LikeC4Services, LikeC4SharedServices } from '../module'
-import type { DocumentEdits } from './text-edits'
 
 const logger = rootLogger.getChild('model-diff')
 

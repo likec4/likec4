@@ -1,5 +1,15 @@
-import { values } from 'remeda'
 import type { LikeC4Styles } from '../styles/LikeC4Styles'
+import type { LikeC4Model } from './LikeC4Model'
+import type {
+  $ModelData,
+  DeploymentOrFqn,
+  ElementOrFqn,
+  IncomingFilter,
+  OutgoingFilter,
+  RelationOrId,
+} from './types'
+import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { values } from 'remeda'
 import {
   type Any,
   type DeploymentElement,
@@ -25,17 +35,7 @@ import {
   DeploymentRelationModel,
   NestedElementOfDeployedInstanceModel,
 } from './DeploymentElementModel'
-import type { LikeC4Model } from './LikeC4Model'
-import type {
-  $ModelData,
-  DeploymentOrFqn,
-  ElementOrFqn,
-  IncomingFilter,
-  OutgoingFilter,
-  RelationOrId,
-} from './types'
 import { getId } from './utils'
-import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export class LikeC4DeploymentModel<A extends Any = Any> {
   readonly #elements = new Map<aux.DeploymentFqn<A>, DeploymentElementModel<A>>()

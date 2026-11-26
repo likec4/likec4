@@ -5,6 +5,15 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { ParsedLikeC4LangiumDocument } from '../ast'
+import type {
+  LikeC4ManualLayouts,
+  ManualLayoutsSnapshot,
+} from '../filesystem'
+import type { LikeC4Services } from '../module'
+import type { LikeC4DescriptionFiles } from './description-files/LikeC4DescriptionFiles'
+import type { LastSeenArtifacts } from './last-seen-artifacts'
+import type { LikeC4ModelParser } from './model-parser'
 import {
   type UnknownComputed,
   type UnknownParsed,
@@ -46,21 +55,12 @@ import {
   values,
 } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
-import type { ParsedLikeC4LangiumDocument } from '../ast'
-import type {
-  LikeC4ManualLayouts,
-  ManualLayoutsSnapshot,
-} from '../filesystem'
 import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
-import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
 import { type LikeC4DocumentBuilder, type ProjectData, ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
-import type { LikeC4DescriptionFiles } from './description-files/LikeC4DescriptionFiles'
-import type { LastSeenArtifacts } from './last-seen-artifacts'
-import type { LikeC4ModelParser } from './model-parser'
 
 type ModelParsedListener = (projectId: ProjectId, docs: URI[]) => void
 

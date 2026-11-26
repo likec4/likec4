@@ -1,7 +1,7 @@
 import type { ViewPredicate } from '../../builder/Builder.view-common'
-import { $expr } from '../../builder/Builder.view-element'
 import type { LikeC4Model } from '../../model'
 import type { AnyAux } from '../../types'
+import { $expr } from '../../builder/Builder.view-element'
 import { type AdhocViewPredicate, type ComputedAdhocView, computeAdhocView } from './compute'
 
 /**

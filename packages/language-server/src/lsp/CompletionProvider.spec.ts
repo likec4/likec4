@@ -1,5 +1,5 @@
-import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import assert from 'node:assert'
+import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { map, prop, take } from 'remeda'
 import { describe } from 'vitest'
 import { type CompletionList, InsertReplaceEdit } from 'vscode-languageserver-types'

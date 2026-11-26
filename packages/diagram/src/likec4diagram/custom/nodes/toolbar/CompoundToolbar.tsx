@@ -1,5 +1,5 @@
-import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import type { Types } from '../../../types'
+import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import { BorderStyleOption, BrowseRelationshipsButton, GoToSourceButton } from './_shared'
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'

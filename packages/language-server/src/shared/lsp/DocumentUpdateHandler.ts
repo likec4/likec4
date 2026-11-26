@@ -1,4 +1,7 @@
 import type { NonEmptyArray } from '@likec4/core'
+import type { TextDocument } from 'vscode-languageserver-textdocument'
+import type { LikeC4SharedServices } from '../../module'
+import type { DocOrUri } from '../../workspace'
 import { DefaultDocumentUpdateHandler } from 'langium/lsp'
 import { basename, extname } from 'pathe'
 import { hasAtLeast } from 'remeda'
@@ -10,13 +13,10 @@ import {
   type TextDocumentChangeEvent,
   Disposable,
 } from 'vscode-languageserver'
-import type { TextDocument } from 'vscode-languageserver-textdocument'
 import { URI } from 'vscode-uri'
 import { hasLikeC4Ext, insideNodeModulesOrRepo } from '../../filesystem/utils'
 import { LikeC4LanguageMetaData } from '../../generated/module'
 import { logger } from '../../logger'
-import type { LikeC4SharedServices } from '../../module'
-import type { DocOrUri } from '../../workspace'
 
 export class LikeC4DocumentUpdateHandler extends DefaultDocumentUpdateHandler {
   #logger = logger.getChild('document-updater')

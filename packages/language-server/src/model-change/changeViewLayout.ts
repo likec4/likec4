@@ -1,10 +1,10 @@
+import type { LikeC4Services } from '../module'
 import { type ViewChange, invariant } from '@likec4/core'
 import { ops, print } from '@likec4/generators/likec4'
 import { GrammarUtils } from 'langium'
 import { findLast } from 'remeda'
 import { TextEdit } from 'vscode-languageserver-types'
 import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../ast'
-import type { LikeC4Services } from '../module'
 
 const { findNodeForKeyword } = GrammarUtils
 

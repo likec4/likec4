@@ -1,5 +1,6 @@
-import { pipe, prop, reduce } from 'remeda'
 import type { RelationshipModel } from '../../model'
+import type { AnyAux } from '../../types'
+import { pipe, prop, reduce } from 'remeda'
 import {
   ConnectionModel,
   differenceConnections,
@@ -9,7 +10,6 @@ import {
   isOutgoing,
   mergeConnections,
 } from '../../model'
-import type { AnyAux } from '../../types'
 import { intersection, union } from '../../utils'
 import { ifilter, toSet } from '../../utils/iterable'
 

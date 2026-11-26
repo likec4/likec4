@@ -1,5 +1,6 @@
 import type { AutoLayoutDirection } from '@likec4/core'
 import type { EdgeRouting } from '@likec4/core/types'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   Box,
   Flex,
@@ -21,7 +22,6 @@ import {
 import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
-import type { MouseEvent as ReactMouseEvent } from 'react'
 import { forwardRef, useMemo, useState } from 'react'
 import { useCurrentViewRouting } from '../../hooks/useCurrentView'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'

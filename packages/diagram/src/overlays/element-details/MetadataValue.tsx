@@ -1,6 +1,6 @@
+import type { ReactNode } from 'react'
 import { css } from '@likec4/styles/css'
 import { Badge, UnstyledButton } from '@mantine/core'
-import type { ReactNode } from 'react'
 
 export function MetadataProvider({ children }: { children: ReactNode }) {
   return <>{children}</>

@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
+import type { WithExpressionV2 } from './FqnRefParser'
 import { invariant, LinkedList, nonexhaustive, nonNullable } from '@likec4/core'
 import { exact, FqnRef } from '@likec4/core/types'
 import { filter, first, hasAtLeast, isDefined, isEmpty, isEmptyish, isTruthy, map, mapToObj, pipe } from 'remeda'
@@ -21,7 +22,6 @@ import {
 import { stringHash } from '../../utils/stringHash'
 import { relationFingerprint } from '../relationFingerprint'
 import { parseInlineTitleKeepingEscapedSlash, parseTitleKeepingEscapedSlash } from './Base'
-import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
 

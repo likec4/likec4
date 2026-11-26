@@ -5,12 +5,12 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { LikeC4Services } from '../module'
 import { type ProjectId, FqnRef, isSameHierarchy } from '@likec4/core'
 import { type ValidationCheck, AstUtils, DocumentState, WorkspaceCache } from 'langium'
 import { flatMap, map, pipe } from 'remeda'
 import { ast } from '../ast'
 import { relationFingerprint } from '../model/relationFingerprint'
-import type { LikeC4Services } from '../module'
 import { projectIdFrom, safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 

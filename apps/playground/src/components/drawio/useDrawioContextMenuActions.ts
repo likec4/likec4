@@ -1,6 +1,7 @@
+import type { DiagramView } from '@likec4/core/types'
+import type { DrawioViewModelLike } from '@likec4/generators'
 import { type LayoutedLikeC4ModelData, LikeC4Styles } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
-import type { DiagramView } from '@likec4/core/types'
 import {
   buildDrawioExportOptionsForViews,
   buildDrawioExportOptionsFromSource,
@@ -8,7 +9,6 @@ import {
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
-import type { DrawioViewModelLike } from '@likec4/generators'
 import { useDisclosure } from '@mantine/hooks'
 import { useCallback, useMemo, useState } from 'react'
 import { DRAWIO_MIME_TYPE } from './drawio-events'

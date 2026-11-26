@@ -1,5 +1,3 @@
-import z from 'zod'
-
 import type {
   AnyViewRuleStyle,
   FqnExpr,
@@ -8,6 +6,7 @@ import type {
   ViewRuleRank,
 } from '@likec4/core/types'
 import { isNonNullish, keys, pickBy, values } from 'remeda'
+import z from 'zod'
 import * as common from './common'
 import * as schemas from './expression'
 

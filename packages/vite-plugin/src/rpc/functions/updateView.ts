@@ -1,6 +1,6 @@
-import k from 'tinyrainbow'
 import type { LikeC4VitePluginRpc } from '../protocol'
 import type { PluginRPCParams } from '../rpc'
+import k from 'tinyrainbow'
 
 export async function updateView({
   logger,

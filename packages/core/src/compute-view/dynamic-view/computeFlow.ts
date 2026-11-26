@@ -1,15 +1,15 @@
-import {
-  filter,
-  isString,
-  map,
-  pipe,
-} from 'remeda'
 import type {
   ComputedDynamicView,
   DynamicViewFlow,
   LayoutedDynamicView,
   scalar,
 } from '../../types'
+import {
+  filter,
+  isString,
+  map,
+  pipe,
+} from 'remeda'
 
 /**
  * Result of {@link computeFlow}: the subset of the dynamic view that should be

@@ -1,5 +1,5 @@
-import { type AnyAux, type ModelFqnExpr, FqnRef } from '../../../types'
 import type { Elem, PredicateExecutor } from '../_types'
+import { type AnyAux, type ModelFqnExpr, FqnRef } from '../../../types'
 import { findConnectionsWithin, resolveElements } from './_utils'
 
 export const ExpandedElementPredicate: PredicateExecutor<ModelFqnExpr.Ref<AnyAux>> = {

@@ -1,10 +1,10 @@
 import type { LayoutedDynamicView, NonEmptyArray, Point } from '@likec4/core/types'
+import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
+import type { Types } from '../types'
 import { scalar } from '@likec4/core/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback } from 'xstate'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
-import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
-import type { Types } from '../types'
 import { diagramMachine } from './machine'
 
 // One step of the view, as the layouter leaves it.

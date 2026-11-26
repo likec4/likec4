@@ -1,5 +1,5 @@
-import { defineConfig } from '@likec4/devops/tsdown'
 import { execSync } from 'node:child_process'
+import { defineConfig } from '@likec4/devops/tsdown'
 
 export default defineConfig({
   entry: [

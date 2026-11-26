@@ -1,3 +1,4 @@
+import type { Participant } from '../../../types/operators'
 import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4Model } from '../../../model'
 import {
@@ -35,7 +36,6 @@ import {
   ModelFqnExpr,
   ModelRelationExpr,
 } from '../../../types'
-import type { Participant } from '../../../types/operators'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeElementView } from '../compute'
 

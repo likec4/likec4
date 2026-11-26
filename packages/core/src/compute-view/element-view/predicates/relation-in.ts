@@ -1,10 +1,10 @@
+import type { ModelRelationExpr } from '../../../types'
+import type { ConnectionWhere, PredicateExecutor } from '../_types'
 import { anyPass, unique } from 'remeda'
 import { type ConnectionModel, type LikeC4Model, type RelationshipModel, Connection } from '../../../model'
-import type { ModelRelationExpr } from '../../../types'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { nonexhaustive } from '../../../utils'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
-import type { ConnectionWhere, PredicateExecutor } from '../_types'
 import { findConnectionsFrom, isBidirectionalRelation, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming<AnyAux>> = {

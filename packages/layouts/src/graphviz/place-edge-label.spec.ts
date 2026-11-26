@@ -1,5 +1,5 @@
-import { BBox } from '@likec4/core/geometry'
 import type { DiagramEdge, EdgeId, NodeId, NonEmptyArray, Point } from '@likec4/core/types'
+import { BBox } from '@likec4/core/geometry'
 import { describe, expect, it } from 'vitest'
 import { placeEdgeLabels } from './place-edge-label'
 

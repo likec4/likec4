@@ -1,5 +1,5 @@
-import { filter, partition } from 'remeda'
 import type { ModelFqnExpr } from '../../../types'
+import { filter, partition } from 'remeda'
 import { ifilter, toArray } from '../../../utils/iterable'
 import { toSet } from '../../../utils/iterable/to'
 import { type PredicateExecutor, Memory } from '../_types'

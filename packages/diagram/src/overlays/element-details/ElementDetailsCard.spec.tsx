@@ -1,10 +1,10 @@
+import type { DetailsSubject } from './subject'
 import { scalar } from '@likec4/core'
 import { Builder } from '@likec4/core/builder'
 import { MantineProvider } from '@mantine/core'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import { ElementDetailsCard, fqnPathSegments } from './ElementDetailsCard'
-import type { DetailsSubject } from './subject'
 
 const model = Builder.specification({
   elements: ['app'],

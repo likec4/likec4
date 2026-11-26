@@ -1,5 +1,5 @@
-import { expectTypeOf, test } from 'vitest'
 import type { ast } from './index'
+import { expectTypeOf, test } from 'vitest'
 
 test('syntax tree types are exported', () => {
   expectTypeOf<ast.Relation['$type']>().toEqualTypeOf<'Relation'>()

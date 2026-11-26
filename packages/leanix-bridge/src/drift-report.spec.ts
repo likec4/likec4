@@ -1,6 +1,6 @@
+import type { ReconciliationResult } from './reconcile'
 import { describe, expect, it } from 'vitest'
 import { buildDriftReport } from './drift-report'
-import type { ReconciliationResult } from './reconcile'
 
 const FIXED_DATE = '2025-01-15T12:00:00.000Z'
 

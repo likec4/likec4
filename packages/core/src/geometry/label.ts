@@ -1,6 +1,6 @@
+import type { Dimensions, XYPoint } from './types'
 import { BBox } from './bbox'
 import { type Segment, distanceBetween } from './segment'
-import type { Dimensions, XYPoint } from './types'
 
 // Spacing around labels, in diagram units
 const GAP = 4

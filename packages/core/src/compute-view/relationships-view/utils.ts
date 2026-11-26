@@ -1,6 +1,6 @@
-import { drop, filter, once, pipe, reduce } from 'remeda'
 import type { ElementModel } from '../../model/ElementModel'
 import type { AnyAux, aux } from '../../types'
+import { drop, filter, once, pipe, reduce } from 'remeda'
 import { nonNullable } from '../../utils'
 import { isAncestor, isDescendantOf, sortParentsFirst } from '../../utils/fqn'
 import { DefaultMap } from '../../utils/mnemonist'

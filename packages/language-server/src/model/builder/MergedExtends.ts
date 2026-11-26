@@ -1,12 +1,12 @@
 import type * as c4 from '@likec4/core'
+import type {
+  ParsedAstExtend,
+} from '../../ast'
 import {
   hasAtLeast,
   isEmpty,
   unique,
 } from 'remeda'
-import type {
-  ParsedAstExtend,
-} from '../../ast'
 
 export class MergedExtends {
   private mergedData = new Map<string, {

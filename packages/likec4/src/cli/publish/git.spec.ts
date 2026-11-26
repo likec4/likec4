@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GitRunner, SpawnProcess } from './git'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   COMMIT_FORMAT,
   createGitRunner,

@@ -6,15 +6,15 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { DiagramView } from '@likec4/core'
-import { fromWorkspace } from '@likec4/language-services/node'
+import type { Page } from 'playwright'
+import type { ViteDevServer } from 'vite'
 import { relative } from 'node:path'
 import { hrtime } from 'node:process'
+import { fromWorkspace } from '@likec4/language-services/node'
 import picomatch from 'picomatch'
-import type { Page } from 'playwright'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
-import type { ViteDevServer } from 'vite'
 import { resolveAppConfig } from '../../../app-config'
 import { type ViteLogger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'

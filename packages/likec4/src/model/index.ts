@@ -1,5 +1,5 @@
-import { LikeC4Model } from '@likec4/core/model'
 import type * as types from '@likec4/core/types'
+import { LikeC4Model } from '@likec4/core/model'
 
 export type UnknownLayouted = types.UnknownLayouted
 

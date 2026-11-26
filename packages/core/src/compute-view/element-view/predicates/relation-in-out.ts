@@ -1,9 +1,9 @@
-import { unique } from 'remeda'
 import type { ConnectionModel } from '../../../model'
 import type { RelationshipModel } from '../../../model'
+import type { PredicateExecutor } from '../_types'
+import { unique } from 'remeda'
 import { type AnyAux, type ModelRelationExpr, ModelFqnExpr } from '../../../types'
 import { toArray, toSet } from '../../../utils/iterable/to'
-import type { PredicateExecutor } from '../_types'
 import { findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const InOutRelationPredicate: PredicateExecutor<ModelRelationExpr.InOut<AnyAux>> = {

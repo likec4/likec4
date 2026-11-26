@@ -3,9 +3,9 @@ import type {
   LikeC4Styles as LikeC4StylesLib,
   ThemeColorValues,
 } from '@likec4/core'
+import type { JSX } from 'react/jsx-runtime'
 import { useMantineStyleNonce } from '@mantine/core'
 import { memo, useMemo } from 'react'
-import type { JSX } from 'react/jsx-runtime'
 import { entries, join, map, pipe } from 'remeda'
 import { MAX_COMPOUND_DEPTH } from './base/const'
 import { useLikeC4Styles } from './hooks/useLikeC4Styles'

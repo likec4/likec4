@@ -1,9 +1,9 @@
 import type { DiagramEdge } from '@likec4/core/types'
+import type { UndefinedOnPartialDeep } from 'type-fest'
+import type { BaseEdgePropsWithData } from '../../base/types'
 import { css, cx } from '@likec4/styles/css'
 import { edgePath } from '@likec4/styles/recipes'
 import { type PointerEventHandler, forwardRef } from 'react'
-import type { UndefinedOnPartialDeep } from 'type-fest'
-import type { BaseEdgePropsWithData } from '../../base/types'
 import { arrowTypeToMarker, EdgeMarkers } from './EdgeMarkers'
 
 type Data = UndefinedOnPartialDeep<

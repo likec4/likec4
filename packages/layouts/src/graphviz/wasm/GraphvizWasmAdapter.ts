@@ -1,10 +1,10 @@
+import type { GraphvizPort } from '../GraphvizLayoter'
+import type { DotSource } from '../types'
 import { Graphviz } from '@hpcc-js/wasm-graphviz'
 import { delay } from '@likec4/core/utils'
 import { loggable, rootLogger } from '@likec4/log'
 import pLimit from 'p-limit'
 import { randomString } from 'remeda'
-import type { GraphvizPort } from '../GraphvizLayoter'
-import type { DotSource } from '../types'
 
 // limit to 1 concurrency to avoid wasm loading issues
 const limit = pLimit(1)

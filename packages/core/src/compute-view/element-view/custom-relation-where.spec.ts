@@ -1,8 +1,8 @@
+import type { AnyTypes, ElementViewRulesBuilder, Types } from '../../builder'
+import type { Color, WhereOperator } from '../../types'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder'
-import type { AnyTypes, ElementViewRulesBuilder, Types } from '../../builder'
 import { RelationExpr } from '../../types'
-import type { Color, WhereOperator } from '../../types'
 import { TestHelper } from './__test__/TestHelper'
 
 function includeWhereWith<T extends AnyTypes>(

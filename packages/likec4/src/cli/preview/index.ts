@@ -1,5 +1,5 @@
-import { resolve } from 'node:path'
 import type * as yargs from 'yargs'
+import { resolve } from 'node:path'
 import { appConfig, base, path, withoutDefault } from '../options'
 import { handler } from './preview'
 

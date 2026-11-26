@@ -1,3 +1,4 @@
+import type { LikeC4Langium } from '../common/LikeC4'
 import { WithFileSystem, WithLikeC4ManualLayouts, WithUnstorageCache } from '@likec4/language-server/filesystem'
 import {
   createLanguageServices as createCustomLanguageServices,
@@ -11,7 +12,6 @@ import { rootLogger } from '@likec4/log'
 import defu from 'defu'
 import { isTruthy } from 'remeda'
 import k from 'tinyrainbow'
-import type { LikeC4Langium } from '../common/LikeC4'
 
 export type CreateLanguageServiceOptions = {
   /**

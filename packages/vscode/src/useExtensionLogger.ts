@@ -1,3 +1,4 @@
+import type { TelemetryReporter } from '@vscode/extension-telemetry'
 import { nonexhaustive } from '@likec4/core'
 import {
   type Sink,
@@ -11,7 +12,6 @@ import {
   loggable,
   rootLogger,
 } from '@likec4/log'
-import type { TelemetryReporter } from '@vscode/extension-telemetry'
 import { defineLogger, defineService } from 'reactive-vscode'
 import * as vscode from 'vscode'
 

@@ -1,4 +1,3 @@
-import { isEmpty, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type {
   Any,
@@ -12,18 +11,19 @@ import type {
   Link,
   RichTextOrEmpty,
 } from '../types'
-import { exact, preferDescription, preferSummary, splitGlobalFqn } from '../types'
 import type * as aux from '../types/_aux'
 import type * as scalar from '../types/scalar'
-import { commonAncestor, hierarchyLevel, isAncestor, nameFromFqn, sortNaturalByFqn } from '../utils/fqn'
-import { ihead } from '../utils/iterable/head'
-import { memoizeProp } from '../utils/memoize-prop'
 import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
-import { memoizeDescription, memoizeSummary } from './utils/richtext'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { isEmpty, isTruthy, unique } from 'remeda'
+import { exact, preferDescription, preferSummary, splitGlobalFqn } from '../types'
+import { commonAncestor, hierarchyLevel, isAncestor, nameFromFqn, sortNaturalByFqn } from '../utils/fqn'
+import { ihead } from '../utils/iterable/head'
+import { memoizeProp } from '../utils/memoize-prop'
+import { memoizeDescription, memoizeSummary } from './utils/richtext'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
 

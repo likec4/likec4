@@ -1,12 +1,12 @@
-import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import type { ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
+import type { RelationshipsViewData } from './_types'
+import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
+import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import { type DiagramNode, type DiagramView, type Fqn, type NodeId, exact } from '../../types'
 import { invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
-import type { RelationshipsViewData } from './_types'
 import { treeFromElements } from './utils'
 
 /**

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 import type { ProjectId } from '@likec4/core'
+import type { OutputLogger } from '../useExtensionLogger'
+import type { RpcClient } from './types'
 import * as vscode from 'vscode'
 import { Likec4CliNotFoundError } from '../likec4CliNotFoundError'
 import { version as extensionVersion } from '../meta'
-import type { OutputLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
-import type { RpcClient } from './types'
 
 /**
  * Persist dirty LikeC4 documents so CLI export sees the same model as the preview/editor.

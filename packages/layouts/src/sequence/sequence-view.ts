@@ -5,10 +5,10 @@ import type {
   NodeId,
   StepPath,
 } from '@likec4/core/types'
+import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
 import { dynamicViewFlow, parentFlow } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
-import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
 import {
   CONTINUOUS_OFFSET,
 } from './const'

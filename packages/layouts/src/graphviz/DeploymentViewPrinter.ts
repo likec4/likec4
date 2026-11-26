@@ -5,9 +5,9 @@ import type {
   ComputedNode,
   HexColor,
 } from '@likec4/core'
+import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { nonNullable } from '@likec4/core/utils'
 import { filter, first, forEach, groupBy, isNonNullish, last, map, pipe, tap, values } from 'remeda'
-import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'

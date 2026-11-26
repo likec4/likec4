@@ -1,10 +1,10 @@
-import { rootLogger } from '@likec4/log'
 import type { Options as BoxenOptions } from 'boxen'
-import _boxen from 'boxen'
+import type { LogErrorOptions, LogType } from 'vite'
 import { hrtime } from 'node:process'
+import { rootLogger } from '@likec4/log'
+import _boxen from 'boxen'
 import prettyMilliseconds from 'pretty-ms'
 import k from 'tinyrainbow'
-import type { LogErrorOptions, LogType } from 'vite'
 
 /** Root CLI logger (e.g. for likec4 start, export). */
 export const logger = rootLogger.getChild('cli')

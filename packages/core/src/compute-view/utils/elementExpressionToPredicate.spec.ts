@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { ComputedNode, ModelExpression } from '../../types'
+import { describe, expect, it } from 'vitest'
 import { type $Aux, type Expression, type FakeElementIds, $expr, $where, $with } from '../element-view/__test__/fixture'
 import { elementExprToPredicate } from './elementExpressionToPredicate'
 

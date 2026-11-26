@@ -1,6 +1,6 @@
+import type { PropsWithChildren } from 'react'
 import { Box, Button, Group, Notification, ScrollAreaAutosize, Stack, Text } from '@mantine/core'
 import { QueryErrorResetBoundary, useQueryErrorResetBoundary } from '@tanstack/react-query'
-import type { PropsWithChildren } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
 import { isError, isObjectType } from 'remeda'
 import { stateAlert } from './App.css'

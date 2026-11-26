@@ -5,9 +5,9 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
+import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import * as z from 'zod/v4'
 import { useLanguageServices } from '../ctx'
 import { mcpToolSchema } from '../utils'

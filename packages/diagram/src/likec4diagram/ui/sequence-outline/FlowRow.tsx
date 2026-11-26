@@ -1,10 +1,10 @@
+import type { OutlineTreeNodeFlow } from './types'
 import { css, cva } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import { m } from 'motion/react'
 import { recessed } from './depth-of-field'
 import { flowPresentation } from './presentation'
-import type { OutlineTreeNodeFlow } from './types'
 
 /** Small pill tag for the sub-flow operator (`loop`, `par`, `try`, …). */
 const flowTagBase = cva({

@@ -1,8 +1,8 @@
+import type { ColorLiteral, HexColor, ThemeColorValues } from './types'
 import chroma from 'chroma-js'
 import { isDeepEqual } from 'remeda'
 import { invariant } from '../utils'
 import { adjustToneHex } from '../utils/colors'
-import type { ColorLiteral, HexColor, ThemeColorValues } from './types'
 
 const CONTRAST_MIN_WITH_FOREGROUND = 60
 const CONTRAST_START_TONE_DIFFERENCE = 2

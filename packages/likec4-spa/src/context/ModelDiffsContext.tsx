@@ -1,5 +1,5 @@
-import { useStore } from '@nanostores/react'
 import type { ProjectDiffs } from 'likec4:diffs'
+import { useStore } from '@nanostores/react'
 import { type ReadableAtom, atom } from 'nanostores'
 import { type PropsWithChildren, createContext, useContext } from 'react'
 

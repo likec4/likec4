@@ -1,7 +1,4 @@
-import { type GraphvizPort, QueueGraphvizLayoter } from '@likec4/layouts'
-import { loggable } from '@likec4/log'
 import type { Module } from 'langium'
-import { DocumentState, inject, WorkspaceCache } from 'langium'
 import type {
   DefaultSharedModuleContext,
   LangiumServices,
@@ -9,8 +6,6 @@ import type {
   PartialLangiumServices,
   PartialLangiumSharedServices,
 } from 'langium/lsp'
-import { createDefaultModule, createDefaultSharedModule } from 'langium/lsp'
-import { LikeC4DocumentationProvider } from './documentation'
 import type {
   FileSystemModuleContext,
   FileSystemProvider,
@@ -18,6 +13,12 @@ import type {
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
+import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
+import { type GraphvizPort, QueueGraphvizLayoter } from '@likec4/layouts'
+import { loggable } from '@likec4/log'
+import { DocumentState, inject, WorkspaceCache } from 'langium'
+import { createDefaultModule, createDefaultSharedModule } from 'langium/lsp'
+import { LikeC4DocumentationProvider } from './documentation'
 import { NoFileSystem, NoLikeC4ManualLayouts, NoopFileSystemProvider } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
@@ -63,7 +64,6 @@ import {
   WorkspaceSymbolProvider,
 } from './shared'
 import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
-import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
   type Unstorage,

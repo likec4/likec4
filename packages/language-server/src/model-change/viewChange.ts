@@ -1,3 +1,7 @@
+import type { CstNode } from 'langium'
+import type { LikeC4Services } from '../module'
+import type { ChangeView } from '../protocol'
+import type { ProjectData } from '../workspace/ProjectsManager'
 import { type scalar, type ViewChange, type ViewId, nonNullable } from '@likec4/core'
 import { splitViewFolderPath, VIEW_FOLDERS_SEPARATOR } from '@likec4/core/model'
 import {
@@ -7,13 +11,9 @@ import {
   print,
   withctx,
 } from '@likec4/generators/likec4'
-import type { CstNode } from 'langium'
 import { filter, hasAtLeast, isTruthy, last, map, pipe, piped } from 'remeda'
 import { Position, TextEdit } from 'vscode-languageserver-protocol'
 import { type ParsedLikeC4LangiumDocument, ast } from '../ast'
-import type { LikeC4Services } from '../module'
-import type { ChangeView } from '../protocol'
-import type { ProjectData } from '../workspace/ProjectsManager'
 
 export type ViewChangePayload<Op extends ViewChange['op']> = {
   viewId: ViewId

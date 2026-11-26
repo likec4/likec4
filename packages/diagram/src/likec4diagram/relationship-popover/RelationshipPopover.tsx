@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { autoPlacement, autoUpdate, computePosition, hide, offset, size } from '@floating-ui/dom'
-import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/types'
+import { autoPlacement, autoUpdate, computePosition, hide, offset, size } from '@floating-ui/dom'
+import { nameFromFqn } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'

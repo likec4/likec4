@@ -3,8 +3,8 @@
 // Copyright (c) 2023-2026 Denis Davydkov
 
 import type { Browser, BrowserContext, Page } from 'playwright'
-import k from 'tinyrainbow'
 import type { ViteLogger } from '../../../logger'
+import k from 'tinyrainbow'
 
 export type ScreenshotBrowserOptions = {
   logger: ViteLogger

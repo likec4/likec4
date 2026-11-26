@@ -1,9 +1,9 @@
+import type { Range } from 'vscode-languageserver-types'
+import type { ast } from '../ast'
 import { type MarkdownRef, extractRefs } from '@likec4/core/utils'
 import { type CstNode, type LangiumDocument, AstUtils, GrammarUtils } from 'langium'
 import { isString } from 'remeda'
 import { dedent } from 'strip-indent'
-import type { Range } from 'vscode-languageserver-types'
-import type { ast } from '../ast'
 
 /**
  * Element/view ref found in a Markdown value, with positions in the source document.

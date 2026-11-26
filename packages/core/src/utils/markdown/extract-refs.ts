@@ -1,8 +1,8 @@
+import type { MarkdownRef } from './types'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import { remarkLikeC4Refs, visitRefs } from './refs'
-import type { MarkdownRef } from './types'
 
 // Same syntax as markdownToHtml (GFM affects tables, autolinks, etc.)
 const processor = unified()

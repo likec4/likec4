@@ -1,5 +1,5 @@
-import { defineConfig } from '@likec4/devops/tsdown'
 import { createRequire } from 'node:module'
+import { defineConfig } from '@likec4/devops/tsdown'
 
 const require = createRequire(import.meta.url)
 

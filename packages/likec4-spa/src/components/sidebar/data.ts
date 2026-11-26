@@ -1,7 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
+import type { TreeNodeData } from '@mantine/core'
 import { compareNatural, nonexhaustive } from '@likec4/core/utils'
 import { useLikeC4Model } from '@likec4/diagram'
-import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find } from 'remeda'
 

@@ -1,6 +1,6 @@
+import type { Point, XYPoint } from './types'
 import { hasAtLeast } from 'remeda'
 import { invariant } from '../utils/invariant'
-import type { Point, XYPoint } from './types'
 
 // Bounding box
 export interface BBox {

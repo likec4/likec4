@@ -1,3 +1,5 @@
+import type { Location } from 'vscode'
+import type { DocumentUri } from 'vscode-languageserver-types'
 import {
   BuildDocuments,
   ChangeView,
@@ -16,8 +18,6 @@ import {
   ValidateLayout,
 } from '@likec4/language-server/protocol'
 import { defineService, useDisposable } from 'reactive-vscode'
-import type { Location } from 'vscode'
-import type { DocumentUri } from 'vscode-languageserver-types'
 import { useExtensionLogger } from './useExtensionLogger'
 import { whenExtensionActive } from './useIsActivated'
 import { useLanguageClient } from './useLanguageClient'

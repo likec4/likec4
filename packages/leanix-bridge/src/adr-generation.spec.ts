@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import { generateAdrFromDriftReport, generateAdrFromReconciliation } from './adr-generation'
 import type { DriftReport } from './drift-report'
 import type { ReconciliationResult } from './reconcile'
+import { describe, expect, it } from 'vitest'
+import { generateAdrFromDriftReport, generateAdrFromReconciliation } from './adr-generation'
 
 const FIXED_DATE = '2025-01-15T12:00:00.000Z'
 

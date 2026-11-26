@@ -1,8 +1,8 @@
 import type { DiffId } from '@likec4/core'
+import type { ParsedAstDiff, ParsedAstRelation, ParsedLikeC4LangiumDocument } from '../ast'
 import { FqnRef } from '@likec4/core/types'
 import { ancestorsFqn, parentFqn } from '@likec4/core/utils'
 import { groupBy, isDeepEqual, isNonNullish, prop, unique, values } from 'remeda'
-import type { ParsedAstDiff, ParsedAstRelation, ParsedLikeC4LangiumDocument } from '../ast'
 import { relationFingerprint } from '../model/relationFingerprint'
 
 /**

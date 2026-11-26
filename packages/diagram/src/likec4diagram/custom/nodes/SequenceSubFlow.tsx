@@ -1,8 +1,8 @@
 import type { DynamicViewFlow } from '@likec4/core'
+import type { Types } from '../../types'
 import { type RecipeVariant, css, cx, sva } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import { useDiagram } from '../../../hooks'
-import type { Types } from '../../types'
 
 const labelStyle = css.raw({
   color: 'colorPalette.text',

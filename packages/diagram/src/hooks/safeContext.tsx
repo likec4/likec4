@@ -1,12 +1,12 @@
+import type { AnyActorRef, SnapshotFrom } from 'xstate'
+import type { DiagramApi } from '../likec4diagram/state/diagram-api'
+import type { DiagramMachineSnapshot } from '../likec4diagram/state/machine'
+import type { DiagramActorRef, DiagramContext } from '../likec4diagram/state/types'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { invariant } from 'motion'
 import { type Provider, createContext, use, useContext } from 'react'
 import { isFunction } from 'remeda'
-import type { AnyActorRef, SnapshotFrom } from 'xstate'
-import type { DiagramApi } from '../likec4diagram/state/diagram-api'
-import type { DiagramMachineSnapshot } from '../likec4diagram/state/machine'
-import type { DiagramActorRef, DiagramContext } from '../likec4diagram/state/types'
 
 const DiagramApiSafeContext = createContext<DiagramApi>(null as any)
 DiagramApiSafeContext.displayName = 'DiagramApiSafeContext'

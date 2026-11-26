@@ -1,9 +1,9 @@
-import { fromWorkspace } from '@likec4/language-services/node'
+import type * as yargs from 'yargs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
-import type * as yargs from 'yargs'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { path } from '../options'
 

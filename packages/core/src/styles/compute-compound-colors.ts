@@ -1,8 +1,8 @@
+import type { NTuple } from '../types'
+import type { ElementColorValues, HexColor } from './types'
 import chroma from 'chroma-js'
 import { map, pipe, zip } from 'remeda'
-import type { NTuple } from '../types'
 import { invariant } from '../utils'
-import type { ElementColorValues, HexColor } from './types'
 
 /**
  * Compute color values for compound nodes (for six depth levels)

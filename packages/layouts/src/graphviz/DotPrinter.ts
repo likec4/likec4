@@ -13,6 +13,7 @@ import type {
   RelationshipColorValues,
   RelationshipLineType,
 } from '@likec4/core/types'
+import type { DotSource } from './types'
 import {
   compareFqnHierarchically,
   DefaultMap,
@@ -55,7 +56,6 @@ import {
 } from 'ts-graphviz'
 import { compoundLabel, nodeLabel } from './dot-labels'
 import { type ElementNodeBox, elementNodeBox } from './text-metrics'
-import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } from './utils'
 
 export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType

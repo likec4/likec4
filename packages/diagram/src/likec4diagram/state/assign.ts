@@ -1,14 +1,14 @@
+import type { InternalNode } from '@xyflow/react'
+import type { Types } from '../types'
+import type { ActionArg, Context as DiagramContext } from './machine.setup'
 import { type LayoutedView, type NodeId, type XYPoint, nonNullable } from '@likec4/core'
 import { type VectorValue, vector } from '@likec4/core/geometry'
-import type { InternalNode } from '@xyflow/react'
 import { type NodeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { mergeDeep } from 'remeda'
 import { assertEvent } from 'xstate'
 import { Base, hasSubObject, updateEdges, updateNodes } from '../../base'
 import { getNodeCenter } from '../../utils/xyflow'
-import type { Types } from '../types'
-import type { ActionArg, Context as DiagramContext } from './machine.setup'
 
 export function lastClickedNode(
   params: { context: DiagramContext; event: { node: Types.Node } },

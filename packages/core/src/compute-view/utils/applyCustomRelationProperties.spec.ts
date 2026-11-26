@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
 import type { ComputedEdge, ComputedNode, ElementViewRule, ViewId } from '../../types'
 import type { RelationExpr } from '../../types/expression'
+import { describe, expect, it } from 'vitest'
 import { type CustomProps, $include, $inout, $where } from '../element-view/__test__/fixture'
 import { applyCustomRelationProperties } from './applyCustomRelationProperties'
 

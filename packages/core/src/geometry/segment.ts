@@ -1,5 +1,5 @@
-import { nearlyEqual } from './spline'
 import type { XYPoint } from './types'
+import { nearlyEqual } from './spline'
 
 export function distanceBetween(a: XYPoint, b: XYPoint): number {
   return Math.hypot(b.x - a.x, b.y - a.y)

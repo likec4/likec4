@@ -1,5 +1,6 @@
-import { entries, flatMap, hasAtLeast, isEmpty, keys, map, only, prop, unique } from 'remeda'
 import type { ElementModel } from '../../model'
+import type { ComputedProjectEdge, ComputedProjectNode, ComputedProjectsView } from './_types'
+import { entries, flatMap, hasAtLeast, isEmpty, keys, map, only, prop, unique } from 'remeda'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import { RelationshipModel } from '../../model/RelationModel'
 import {
@@ -18,7 +19,6 @@ import { invariant, nonNullable, stringHash } from '../../utils'
 import { DefaultMap } from '../../utils/mnemonist'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { topologicalSort } from '../utils/topological-sort'
-import type { ComputedProjectEdge, ComputedProjectNode, ComputedProjectsView } from './_types'
 
 const keysCount = (object: Record<string, unknown>): number => keys(object).length
 

@@ -1,6 +1,6 @@
+import type { ComputedElementView, LikeC4View } from '@likec4/core/types'
 import { computeView, withReadableEdges } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
-import type { ComputedElementView, LikeC4View } from '@likec4/core/types'
 import { omit } from 'remeda'
 import { amazonView, cloud3levels, cloudOrthoView, cloudView, FakeModel, indexView, issue577View } from './model'
 

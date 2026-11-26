@@ -1,7 +1,7 @@
 import type { LayoutedProjectsView } from '@likec4/core/compute-view'
+import type { VirtualModule } from './_shared'
 import JSON5 from 'json5'
 import { logGenerating } from '../logger'
-import type { VirtualModule } from './_shared'
 
 const code = (view: LayoutedProjectsView) => `
 import { atom, useStore } from 'likec4/vite-plugin/internal'

@@ -2,12 +2,12 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { LikeC4Model } from '@likec4/core/model'
-import { type LayoutedLikeC4ModelData, type LayoutedView, ProjectId } from '@likec4/core/types'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { LikeC4Model } from '@likec4/core/model'
+import { type LayoutedLikeC4ModelData, type LayoutedView, ProjectId } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { buildRenderPayload, projectConfigSchema, serializeConfig } from './_common'
 

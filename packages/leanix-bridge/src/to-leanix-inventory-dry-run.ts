@@ -1,6 +1,6 @@
-import { getFactSheetType, getRelationType, mergeWithDefault } from './mapping'
 import type { LeanixMappingConfig } from './mapping'
 import type { BridgeModelInput } from './model-input'
+import { getFactSheetType, getRelationType, mergeWithDefault } from './mapping'
 
 /** Single LeanIX fact sheet in dry-run shape (no IDs from live API) */
 export interface LeanixFactSheetDryRun {

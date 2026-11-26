@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { Fqn } from '@likec4/core/types'
+import type { Types } from '../../types'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Handle, Position } from '@xyflow/react'
@@ -13,7 +14,6 @@ import { m } from 'motion/react'
 import { isTruthy } from 'remeda'
 import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
-import type { Types } from '../../types'
 import { ElementActions } from './ElementActions'
 import { NodeDrifts } from './NodeDrifts'
 import { NodeNotes } from './NodeNotes'

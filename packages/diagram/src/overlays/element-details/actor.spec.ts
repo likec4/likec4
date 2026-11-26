@@ -1,5 +1,5 @@
-import { scalar } from '@likec4/core'
 import type { DiagramView } from '@likec4/core'
+import { scalar } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
 import { createActor } from 'xstate'
 import { elementDetailsLogic } from './actor'

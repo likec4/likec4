@@ -1,7 +1,7 @@
 import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from '../types/_common'
-import { invariant } from '../utils/invariant'
 import type { Point, XYPoint } from './types'
+import { invariant } from '../utils/invariant'
 
 /** Coordinates within one diagram unit count as equal, to absorb Graphviz rounding. */
 export function nearlyEqual(a: number, b: number): boolean {

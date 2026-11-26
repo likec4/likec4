@@ -1,7 +1,7 @@
 import type { ValidationCheck } from 'langium'
+import type { LikeC4Services } from '../module'
 import { AstUtils, CstUtils } from 'langium'
 import { ast } from '../ast'
-import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 

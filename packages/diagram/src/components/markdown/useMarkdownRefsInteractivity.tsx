@@ -1,10 +1,10 @@
+import type { MarkdownRefActions } from '../../hooks/useDiagramMarkdownRefActions'
 import { nonexhaustive } from '@likec4/core'
 import { useSyncedRef, useUnmountEffect } from '@react-hookz/web'
 import { createAtom } from '@xstate/store'
 import { shallowEqual } from 'fast-equals'
 import { type SyntheticEvent, useId, useMemo, useRef } from 'react'
 import { useCallbackRef } from '../../hooks'
-import type { MarkdownRefActions } from '../../hooks/useDiagramMarkdownRefActions'
 import { type MarkdownRefResolver, type ResolvedMarkdownRef, parseMarkdownRefAnchor } from './markdown-refs'
 
 export const interactiveRefSelector = '[data-likec4-ref-state="link"], [data-likec4-ref-state="missing"]'

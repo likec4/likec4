@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import type { ConfigureLanguageServerLoggerOptions } from '@likec4/language-server'
+import { argv, exit, stdout } from 'node:process'
 import {
   configureLogger,
   getAnsiColorFormatter,
@@ -8,7 +9,6 @@ import {
   getConsoleSink,
   loggable,
 } from '@likec4/log'
-import { argv, exit, stdout } from 'node:process'
 import { clamp, pipe } from 'remeda'
 import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'

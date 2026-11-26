@@ -1,9 +1,9 @@
-import { BBox } from '@likec4/core/geometry'
 import type { NonEmptyArray, Point } from '@likec4/core/types'
-import { describe, expect, it, vi } from 'vitest'
-import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import type { XYStoreApi } from '../hooks/useXYFlow'
 import type { Types } from './types'
+import { BBox } from '@likec4/core/geometry'
+import { describe, expect, it, vi } from 'vitest'
+import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { createLayoutConstraints } from './useLayoutConstraints'
 
 type MockNode = { id: string; parentId?: string; x: number; y: number; width: number; height: number }
@@ -235,10 +235,10 @@ describe('createLayoutConstraints.resize', () => {
       target: 'b',
       data: { points: [[100, 25], [200, 25]], controlPoints: null, labelBBox: null },
     }
-    const { store, triggerEdgeChanges } = mockStore([
-      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
-      { id: 'b', x: 200, y: 0, width: 100, height: 50 },
-    ], [edge])
+    const { store, triggerEdgeChanges } = mockStore(
+      [{ id: 'a', x: 0, y: 0, width: 100, height: 50 }, { id: 'b', x: 200, y: 0, width: 100, height: 50 }],
+      [edge],
+    )
     const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
     constraints.resize('a', { width: 120 })
     constraints.updateXYFlow()
@@ -253,10 +253,10 @@ describe('createLayoutConstraints.resize', () => {
       target: 'b',
       data: { points: [[100, 25], [200, 25]], controlPoints: null, labelBBox: null },
     }
-    const { store, triggerEdgeChanges } = mockStore([
-      { id: 'a', x: 0, y: 0, width: 100, height: 50 },
-      { id: 'b', x: 200, y: 0, width: 100, height: 50 },
-    ], [edge])
+    const { store, triggerEdgeChanges } = mockStore(
+      [{ id: 'a', x: 0, y: 0, width: 100, height: 50 }, { id: 'b', x: 200, y: 0, width: 100, height: 50 }],
+      [edge],
+    )
     const constraints = createLayoutConstraints(store, ['a', 'b'], 'spline')
     constraints.rects.get('a')!.positionAbsolute = { x: 20, y: 0 }
     constraints.updateXYFlow()

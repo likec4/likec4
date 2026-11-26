@@ -1,6 +1,6 @@
+import type { URI } from 'vscode-uri'
 // oxlint-disable vitest/expect-expect
 import { describe, test } from 'vitest'
-import type { URI } from 'vscode-uri'
 import { createTestServices } from '../test'
 
 const model = `

@@ -6,12 +6,13 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { EdgeId, EdgeRouting } from '@likec4/core/types'
+import type { XYPosition } from '@xyflow/react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import type { Types } from '../../types'
 import { css, cx } from '@likec4/styles/css'
 import { edgeControlPoints } from '@likec4/styles/recipes'
 import { useRafEffect } from '@react-hookz/web'
-import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import type { MouseEvent as ReactMouseEvent } from 'react'
 import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
 import { isNumber } from 'remeda'
 import {
@@ -37,7 +38,6 @@ import {
   isSamePoint,
   leafNodeRects,
 } from '../../../utils/xyflow'
-import type { Types } from '../../types'
 import { EdgeDrifts } from './EdgeDrifts'
 import { useControlPoints } from './useControlPoints'
 import { useRelationshipEdgePath } from './useRelationshipEdgePath'

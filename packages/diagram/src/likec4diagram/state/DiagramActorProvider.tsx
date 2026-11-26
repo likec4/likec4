@@ -6,6 +6,8 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
+import type { RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
+import type { Types } from '../types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
@@ -26,8 +28,6 @@ import {
   useOnDiagramEvent,
 } from '../../hooks/useDiagram'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
-import type { RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
-import type { Types } from '../types'
 import { DiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
 import { deriveToggledFeatures, isComparingLayouts } from './machine.setup'

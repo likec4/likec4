@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { ComputedNode, ElementViewRule as ViewRule } from '../../types'
+import { describe, expect, it } from 'vitest'
 import { type $Aux, $custom, $exclude, $group, $include } from '../element-view/__test__/fixture'
 import { applyCustomElementProperties } from './applyCustomElementProperties'
 

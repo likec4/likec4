@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+import type { PreviewPanel, RpcClient } from './types'
 import { exportCurrentViewAsPng } from '#copyAsPng'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
@@ -14,7 +15,6 @@ import {
   saveDirtyLikeC4Documents,
   showPngExportError,
 } from './exportPngShared'
-import type { PreviewPanel, RpcClient } from './types'
 
 export interface CopyAsPngCommandDeps {
   sendTelemetry(commandId: string): void

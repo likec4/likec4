@@ -1,10 +1,10 @@
-import { anyPass } from 'remeda'
 import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
+import type { Elem, Memory, PredicateCtx } from '../_types'
+import { anyPass } from 'remeda'
 import { modelConnection } from '../../../model'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { ifilter, isDescendantOf, nonexhaustive, toArray } from '../../../utils'
 import { isBidirectionalRelation } from '../../utils/is-bidirectional-relation'
-import type { Elem, Memory, PredicateCtx } from '../_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = modelConnection
 

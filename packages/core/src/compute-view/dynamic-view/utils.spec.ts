@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { describe, expect, it } from 'vitest'
-import { Builder } from '../../builder/Builder'
 import type { LikeC4Model } from '../../model'
 import type { StepPath, ViewId } from '../../types'
+import { describe, expect, it } from 'vitest'
+import { Builder } from '../../builder/Builder'
 import { findRelations } from './utils'
 
 const viewId = 'index' as ViewId<'index'>

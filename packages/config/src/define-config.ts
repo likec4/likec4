@@ -1,7 +1,7 @@
 import type { LikeC4ProjectStylesConfig, LikeC4ProjectTheme, ThemeColorValues } from '@likec4/core/types'
 import type { GeneratorFn, LikeC4ProjectConfig, LikeC4ProjectConfigInput } from './schema'
-import { GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
 import type { LikeC4ConfigThemeInput, LikeC4StylesConfigInput, ThemeColorValuesInput } from './schema.theme'
+import { GeneratorsSchema, LikeC4ProjectConfigSchema } from './schema'
 import { LikeC4Config_Styles_Theme, LikeC4StylesConfigSchema, ThemeColorValuesSchema } from './schema.theme'
 
 /**

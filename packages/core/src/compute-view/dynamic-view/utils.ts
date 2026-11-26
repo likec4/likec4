@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { first, flatMap, hasAtLeast, isDeepEqual, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
 import type { ElementModel } from '../../model'
-import { findConnection } from '../../model/connection/model'
 import type { LikeC4Model } from '../../model/LikeC4Model'
+import { first, flatMap, hasAtLeast, isDeepEqual, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
+import { findConnection } from '../../model/connection/model'
 import {
   type Any,
   type aux,

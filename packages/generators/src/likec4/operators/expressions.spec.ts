@@ -1,7 +1,7 @@
 import type { Expression, FqnExpr, ViewId, WhereOperator } from '@likec4/core'
+import type { schemas } from '../schemas'
 import { dedent } from 'strip-indent'
 import { type Assertion, describe, expect as viExpect, it } from 'vitest'
-import type { schemas } from '../schemas'
 import {
   materialize,
   withctx,

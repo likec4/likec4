@@ -1,7 +1,7 @@
-import { usePlayground, usePlaygroundContext } from '$/hooks/usePlayground'
 import type { DiffViewSummary, ViewId } from '@likec4/core'
 import type { CompareViewMode } from '@likec4/core/compute-view'
 import type { DiffAction } from '@likec4/language-server/protocol'
+import { usePlayground, usePlaygroundContext } from '$/hooks/usePlayground'
 import { Anchor, Button, Group, SegmentedControl, Select, Stack, Text } from '@mantine/core'
 import { DiffLegend } from './DiffLegend'
 

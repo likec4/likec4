@@ -5,15 +5,15 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { Simplify } from 'type-fest'
+import type { BaseNodeProps } from '../../base/types'
 import { cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { Simplify } from 'type-fest'
-import type { BaseNodeProps } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
 import { compoundActionBtn } from './actionbtns.css'
 

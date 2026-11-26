@@ -1,11 +1,11 @@
+import type { RelationshipsBrowserTypes as Types } from '../_types'
+import type { RelationshipsBrowserSnapshot } from '../actor'
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { ElementActionButtons } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCurrentViewId } from '../../../hooks/useCurrentView'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { RelationshipsBrowserTypes as Types } from '../_types'
-import type { RelationshipsBrowserSnapshot } from '../actor'
 import { useRelationshipsBrowser, useRelationshipsBrowserState } from '../hooks'
 
 const selectSubject = (state: RelationshipsBrowserSnapshot) => state.context.subject

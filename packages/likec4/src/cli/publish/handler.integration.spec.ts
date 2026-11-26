@@ -1,3 +1,4 @@
+import type { PublishPayload } from './payload'
 /**
  * Unlike `handler.spec.ts`, this suite runs against **real** language services and real
  * fixture workspaces on disk. Only `git` and the network are faked.
@@ -13,7 +14,6 @@ import { gunzipSync } from 'node:zlib'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearLogs, createGitRunner, logs, useRealWorkspace } from './__doubles__'
 import { publishHandler } from './handler'
-import type { PublishPayload } from './payload'
 
 // The doubles live in `./__doubles__` because this suite runs with `--no-isolate` and shares
 // its module registry with `handler.spec.ts` - see that module's header. `fromWorkspace` is

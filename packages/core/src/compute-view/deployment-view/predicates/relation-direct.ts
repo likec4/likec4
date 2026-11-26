@@ -1,17 +1,17 @@
-import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
 import type {
   DeploymentConnectionModel,
   LikeC4DeploymentModel,
   RelationshipModel,
 } from '../../../model'
+import type { AnyAux } from '../../../types'
+import type { PredicateExecutor } from '../_types'
+import { filter, flatMap, isNonNullish, map, pipe } from 'remeda'
 import {
   type ConnectionModel,
   findConnectionsBetween as findModelConnectionsBetween,
 } from '../../../model/connection/model'
-import type { AnyAux } from '../../../types'
 import { type RelationExpr, FqnExpr } from '../../../types'
 import { invariant } from '../../../utils'
-import type { PredicateExecutor } from '../_types'
 import {
   deploymentExpressionToPredicate,
   findConnection,

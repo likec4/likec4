@@ -1,5 +1,5 @@
-import { type LabelRoute, type Segment, polylineToSegments } from '@likec4/core/geometry'
 import type { EdgeRouting } from '@likec4/core/types'
+import { type LabelRoute, type Segment, polylineToSegments } from '@likec4/core/geometry'
 import { edgeEndFromNode } from '../utils/edge-endpoints'
 import { drawnFromRoute, editedEdgePath, editedEdgeRoute, layoutedEdgeRoute } from '../utils/edge-path'
 import { type TrackRoute, keepOwnTrack } from '../utils/edge-tracks'

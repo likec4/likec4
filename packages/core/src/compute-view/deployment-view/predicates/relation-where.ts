@@ -1,6 +1,6 @@
-import { type RelationExpr, whereOperatorAsPredicate } from '../../../types'
 import type { PredicateExecutor } from '../_types'
 import type { StageExclude, StageInclude } from '../memory'
+import { type RelationExpr, whereOperatorAsPredicate } from '../../../types'
 import { predicateToPatch } from './utils'
 
 // relation matches the condition

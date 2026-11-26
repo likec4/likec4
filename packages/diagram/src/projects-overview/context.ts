@@ -1,6 +1,6 @@
+import type { ProjectsOverviewActorRef } from './actor'
 import { nonNullable } from '@likec4/core'
 import { createContext, useContext } from 'react'
-import type { ProjectsOverviewActorRef } from './actor'
 
 const ProjectsOverviewActorContext = createContext<ProjectsOverviewActorRef | null>(null)
 

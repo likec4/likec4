@@ -1,3 +1,5 @@
+import type { EdgeRouting } from '@likec4/core/types'
+import type { XYPosition } from '@xyflow/react'
 import {
   type BBox,
   type Dimensions,
@@ -5,8 +7,6 @@ import {
   distanceBetween,
   placeLabelAlongSegments,
 } from '@likec4/core/geometry'
-import type { EdgeRouting } from '@likec4/core/types'
-import type { XYPosition } from '@xyflow/react'
 import { firstBy } from 'remeda'
 
 /** The part of `SVGPathElement` needed to place a label along the path. */

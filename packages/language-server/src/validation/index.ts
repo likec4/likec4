@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { LikeC4Services } from '../module'
 import { type GuardedBy, isAnyOf } from '@likec4/core/types'
 import { onNextTick } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
@@ -13,7 +14,6 @@ import { isNullish } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
 import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
 import {
   deployedInstanceChecks,
   deploymentNodeChecks,

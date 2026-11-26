@@ -7,13 +7,13 @@
 
 import type { LikeC4Model } from '@likec4/core/model'
 import type { ElementShape, Fqn, NonEmptyArray, ViewId } from '@likec4/core/types'
+import type { TreeNodeData } from '@mantine/core'
 import {
   ifilter,
   ihead,
   imap,
   toArray,
 } from '@likec4/core/utils'
-import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { filter, hasAtLeast, pipe } from 'remeda'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'

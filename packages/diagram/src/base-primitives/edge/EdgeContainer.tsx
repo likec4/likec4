@@ -1,10 +1,10 @@
-import { invariant } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
 import type { PropsWithChildren } from 'react'
-import { pickBy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
+import { invariant } from '@likec4/core'
+import { cx } from '@likec4/styles/css'
+import { pickBy } from 'remeda'
 
 type Data = UndefinedOnPartialDeep<
   Pick<

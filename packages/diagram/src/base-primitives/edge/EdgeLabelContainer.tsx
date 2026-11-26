@@ -4,12 +4,12 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 import type { DiagramEdge } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
-import { EdgeLabelRenderer } from '@xyflow/react'
 import type { HTMLAttributes } from 'react'
-import { isNumber } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
+import { cx } from '@likec4/styles/css'
+import { EdgeLabelRenderer } from '@xyflow/react'
+import { isNumber } from 'remeda'
 
 type Data = UndefinedOnPartialDeep<
   Pick<

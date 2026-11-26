@@ -1,13 +1,13 @@
+import type { RelationshipModel } from '../../../model'
+import type { Ctx, Memory } from '../memory'
 import { forEach, only, pipe } from 'remeda'
 import { differenceConnections } from '../../../model'
-import type { RelationshipModel } from '../../../model'
 import { isAncestor, sortByFqnHierarchically } from '../../../utils/fqn'
 import { ifilter, isome, toArray } from '../../../utils/iterable'
 import { DefaultMap } from '../../../utils/mnemonist'
 import { difference, union } from '../../../utils/set'
 import { treeFromMemoryState } from '../../memory'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
-import type { Ctx, Memory } from '../memory'
 
 type Elem = Ctx['Element']
 /**

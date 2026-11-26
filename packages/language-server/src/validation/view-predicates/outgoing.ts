@@ -1,7 +1,7 @@
+import type { LikeC4Services } from '../../module'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { isNullish } from 'remeda'
 import { ast, getViewRulePredicateContainer } from '../../ast'
-import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
 export const checkOutgoingRelationExpr = (

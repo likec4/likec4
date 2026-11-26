@@ -1,3 +1,4 @@
+import type { MouseEventHandler, ReactNode } from 'react'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -23,7 +24,6 @@ import {
   IconRulerMeasure2,
 } from '@tabler/icons-react'
 import { memo, useState } from 'react'
-import type { MouseEventHandler, ReactNode } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { PanelActionIcon } from '../_common'

@@ -1,8 +1,8 @@
 import type {
   Fqn,
 } from '@likec4/core'
-import { type ExpectStatic, describe } from 'vitest'
 import type { LikeC4Services } from '../../module'
+import { type ExpectStatic, describe } from 'vitest'
 import { test as it } from '../../test'
 
 function asserts(services: LikeC4Services, expect: ExpectStatic) {

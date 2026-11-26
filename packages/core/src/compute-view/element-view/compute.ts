@@ -1,7 +1,9 @@
+import type { RelationshipModel } from '../../model/RelationModel'
+import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
+import type { Connection, Elem, PredicateCtx } from './_types'
 import { anyPass, filter, findLast, hasAtLeast, map, pipe } from 'remeda'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
-import type { RelationshipModel } from '../../model/RelationModel'
 import {
   type AnyAux,
   type ComputedElementView,
@@ -28,12 +30,10 @@ import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { relationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
-import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { withResolvedRouting } from '../utils/view-routing'
-import type { Connection, Elem, PredicateCtx } from './_types'
 import { type Stage, Memory } from './memory'
 import { ActiveGroupMemory } from './memory/memory'
 import { StageFinal } from './memory/stage-final'
