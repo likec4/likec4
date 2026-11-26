@@ -83,7 +83,15 @@ type GraphologyEdgeAttributes<V extends ViewToPrint> = {
   hierarchyDistance: number
 }
 
-// space around clusters, but SVG output requires hack
+/**
+ * Root graph `margin` of a view without `compoundSep`.
+ *
+ * Graphviz reads the root graph margin twice: as the gap between top-level clusters
+ * and their neighbours on the same rank (in points), and as the canvas margin of SVG output (in inches).
+ * The layouter removes the root margin from every DOT it returns, and removes this default
+ * value before the layout too, so views without `compoundSep` keep their layout.
+ * The fraction tells it apart from a `compoundSep` margin, which is always an integer.
+ */
 export const GraphClusterSpace = 50.1
 
 export abstract class DotPrinter<V extends ViewToPrint> {
@@ -362,7 +370,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       [_.fontsize]: pxToPoints(this.styles.fontSize()),
       [_.labeljust]: direction === 'RL' ? 'r' : 'l',
       [_.labelloc]: direction === 'BT' ? 'b' : 't',
-      [_.margin]: GraphClusterSpace,
+      [_.margin]: autoLayout.compoundSep ? pxToPoints(autoLayout.compoundSep) : GraphClusterSpace,
     })
 
     return G

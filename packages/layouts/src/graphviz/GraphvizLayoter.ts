@@ -61,11 +61,45 @@ export type LayoutResult<A extends aux.Any = aux.Any> = {
 
 const rootLogger = mainLogger.getChild('layouter')
 
+const rootMarginLine = /^\s*margin\s*=\s*"?([\d.]+)"?\s*[,;]?\s*$/
+
+/**
+ * Removes the `margin` of the root graph, see {@link GraphClusterSpace}.
+ *
+ * The root graph attributes are the first `graph [...]` list, both in the printer output
+ * (one attribute per line, ending with `;`) and in the `unflatten` output (one per line, ending with `,`).
+ * Only that list is searched, so the margins of clusters and nodes stay.
+ *
+ * @param which `default` removes only {@link GraphClusterSpace} and keeps a `compoundSep` margin,
+ *  `any` removes the root margin whatever its value
+ */
+function removeRootMargin(dot: DotSource, which: 'default' | 'any'): DotSource {
+  const lines = dot.split('\n')
+  const start = lines.findIndex(l => l.trimStart().startsWith('graph ['))
+  if (start < 0) {
+    return dot
+  }
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i]!
+    const value = rootMarginLine.exec(line)?.[1]
+    if (value) {
+      if (which === 'any' || value === `${GraphClusterSpace}`) {
+        lines.splice(i, 1)
+      }
+      break
+    }
+    if (line.includes(']')) {
+      break
+    }
+  }
+  return lines.join('\n') as DotSource
+}
+
+/**
+ * Prepares DOT for output (SVG, `dot` export): removes the root graph margin.
+ */
 function normalizeDot(dot: DotSource): DotSource {
-  return dot
-    .split('\n')
-    .filter((l) => !(l.includes('margin') && l.includes(`${GraphClusterSpace}`))) // see DotPrinter.ts#L175
-    .join('\n') as DotSource
+  return removeRootMargin(dot, 'any')
 }
 
 export class GraphvizLayouter implements Disposable {
@@ -131,7 +165,7 @@ export class GraphvizLayouter implements Disposable {
     const logger = this.newScopedLogger('layout')
     try {
       logger.trace`layouting view ${params.view.id}...`
-      let dot = await this.dot(params)
+      let dot = await this.layoutDot(params)
       const { view } = params
       const json = await this.dotToJson(dot)
       let diagram = parseGraphvizJson(json, view)
@@ -194,20 +228,27 @@ export class GraphvizLayouter implements Disposable {
   }
 
   async dot<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<DotSource> {
+    return normalizeDot(await this.layoutDot(params))
+  }
+
+  /**
+   * Generates the DOT source that goes into the Graphviz layout.
+   * It keeps the root graph margin set by `compoundSep`, which {@link dot} removes.
+   */
+  protected async layoutDot<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<DotSource> {
     const logger = this.newScopedLogger('dot')
     logger.trace`generating dot for view ${params.view.id}`
     const printer = getPrinter(params)
     let dot = printer.print()
-    if (!isElementView(params.view)) {
-      return normalizeDot(dot)
+    if (isElementView(params.view)) {
+      try {
+        logger.trace`unflattening dot`
+        dot = await this.graphviz.unflatten(dot)
+      } catch (error) {
+        logger.warn(`Error during unflatten: ${params.view.id}`, { error })
+      }
     }
-    try {
-      logger.trace`unflattening dot`
-      dot = await this.graphviz.unflatten(dot)
-    } catch (error) {
-      logger.warn(`Error during unflatten: ${params.view.id}`, { error })
-    }
-    return normalizeDot(dot)
+    return removeRootMargin(dot, 'default')
   }
 
   async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {

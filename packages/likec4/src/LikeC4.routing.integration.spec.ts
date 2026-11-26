@@ -53,7 +53,7 @@ describe('view routing', () => {
         }
         view sugarWithSpacing {
           include *
-          autoLayout LeftRight 120 110 ortho
+          autoLayout LeftRight 120 110 80 ortho
         }
         view propertyWins {
           routing spline
@@ -67,7 +67,7 @@ describe('view routing', () => {
     expect(m.view('sugar').$view.routing).toBe('ortho')
     expect(m.view('sugarWithSpacing').$view).toMatchObject({
       routing: 'ortho',
-      autoLayout: { direction: 'LR', rankSep: 120, nodeSep: 110 },
+      autoLayout: { direction: 'LR', rankSep: 120, nodeSep: 110, compoundSep: 80 },
     })
     expect(m.view('propertyWins').$view).not.toHaveProperty('routing')
   })
