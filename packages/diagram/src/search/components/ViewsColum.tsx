@@ -24,14 +24,13 @@ import {
 } from '@mantine/core'
 import { m } from 'motion/react'
 import { memo, useMemo, useRef } from 'react'
-import { first } from 'remeda'
 import { EmptyBox } from '../../components/EmptyBox'
 import { ViewIcon } from '../../components/ViewIcon'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
 import { METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
-import { centerY, createViewSearch, moveFocusToSearchInput, queryAllFocusable, viewTitleWithFolder } from './utils'
+import { createViewSearch, focusColumn, moveFocusToSearchInput, viewTitleWithFolder } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -79,16 +78,10 @@ export const ViewsColumn = memo(() => {
       data-likec4-search-views
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          const maxY = (e.target as HTMLElement).getBoundingClientRect().y
-          const elementButtons = queryAllFocusable(ref.current, 'elements', '.likec4-element-button')
-          let elementButton = elementButtons.length > 1
-            ? elementButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
-            : null
-          elementButton ??= first(elementButtons)
-
-          if (elementButton) {
+          const target = e.target as HTMLElement
+          const columns = e.key === 'ArrowLeft' ? ['relationships', 'elements'] as const : ['elements'] as const
+          if (focusColumn(target, target.getBoundingClientRect().y, columns)) {
             e.stopPropagation()
-            elementButton.focus()
           }
           return
         }
