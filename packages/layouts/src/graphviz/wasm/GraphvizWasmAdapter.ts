@@ -89,6 +89,13 @@ export class GraphvizWasmAdapter implements GraphvizPort {
     })
   }
 
+  async layoutDot(dot: DotSource): Promise<DotSource> {
+    return await this.attempt(`layoutDot`, dot, async () => {
+      const graphviz = await Graphviz.load()
+      return graphviz.layout(dot, 'dot') as DotSource
+    })
+  }
+
   async svg(dot: DotSource): Promise<string> {
     return await this.attempt(`svg`, dot, async () => {
       const graphviz = await Graphviz.load()

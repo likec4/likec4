@@ -46,7 +46,26 @@ async function layoutIndex(model: ReturnType<typeof buildModel>) {
     diagram,
     dot,
     exportedDot: await layouter.dot(params),
+    svg: await layouter.svg(params),
   }
+}
+
+/**
+ * Returns the horizontal ranges of the cluster boxes in a Graphviz SVG, sorted by left edge.
+ */
+function svgClusters(svg: string) {
+  const clusters = [...svg.matchAll(/<g id="clust\d+" class="cluster">[\s\S]*?<polygon [^>]*points="([^"]+)"/g)]
+  return clusters
+    .map(([, points]) => {
+      const xs = points!.trim().split(/\s+/).map(p => Number(p.split(',')[0]))
+      return { left: Math.min(...xs), right: Math.max(...xs) }
+    })
+    .sort((a, b) => a.left - b.left)
+}
+
+function svgViewBox(svg: string) {
+  const [, width, height] = /viewBox="[\d.-]+ [\d.-]+ ([\d.]+) ([\d.]+)"/.exec(svg) ?? []
+  return { width: Number(width), height: Number(height) }
 }
 
 function gapBetweenCompounds(diagram: DiagramView) {
@@ -87,5 +106,30 @@ describe('autoLayout compoundSep', () => {
       expect(source).not.toMatch(/margin\s*=\s*150\b/)
       expect(source).toMatch(/margin\s*=\s*40\b/)
     }
+  })
+
+  it('renders the SVG with the gap between top-level compounds', async ({ expect }) => {
+    const { diagram, svg } = await layoutIndex(buildModel({ rank: 120, node: 110, compound: 150 }))
+    const [left, right] = svgClusters(svg.svg)
+    expect(left).toBeDefined()
+    expect(right).toBeDefined()
+    expect(Math.abs(right!.left - left!.right - 150)).toBeLessThanOrEqual(1)
+    // the root margin of 150 would add 2 * 150 inches to the canvas if it reached the SVG
+    const viewBox = svgViewBox(svg.svg)
+    expect(Math.abs(viewBox.width - diagram.bounds.width)).toBeLessThanOrEqual(40)
+    expect(Math.abs(viewBox.height - diagram.bounds.height)).toBeLessThanOrEqual(40)
+    expect(svg.dot).not.toMatch(/margin\s*=\s*150\b/)
+  })
+
+  it('renders the SVG of a view without it', async ({ expect }) => {
+    const { diagram, svg } = await layoutIndex(buildModel({ rank: 120, node: 110 }))
+    const [left, right] = svgClusters(svg.svg)
+    expect(left).toBeDefined()
+    expect(right).toBeDefined()
+    expect(right!.left - left!.right).toBe(110 - 2 * 40)
+    expect(svg.svg).toContain('<title>top</title>')
+    const viewBox = svgViewBox(svg.svg)
+    expect(Math.abs(viewBox.width - diagram.bounds.width)).toBeLessThanOrEqual(40)
+    expect(Math.abs(viewBox.height - diagram.bounds.height)).toBeLessThanOrEqual(40)
   })
 })
