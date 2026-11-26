@@ -11,7 +11,7 @@ import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/com
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { TextDocument, URI } from 'langium'
-import { entries, filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
+import { filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
 import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -241,32 +241,41 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     return this.workspaceUri.fsPath
   }
 
+  /**
+   * Returns projects that have documents, own or included, default project first.
+   * Falls back to the default project if there are no documents.
+   */
   projects(): NonEmptyArray<LikeC4ProjectData> {
     const projectsManager = this.services.shared.workspace.ProjectsManager
-    const projectsWithDocs = pipe(
-      this.services.shared.workspace.LangiumDocuments.groupedByProject(),
-      entries(),
-      map(([projectId, docs]) => {
-        const id = projectId as ProjectId
-        const { folderUri, config } = projectsManager.getProject(id)
-        return {
-          id,
-          folder: folderUri,
-          path: this.workspaceManager.relativePath(folderUri),
-          title: config.title ?? config.name,
-          documents: map(docs, prop('uri')),
-          config,
-        }
-      }),
-    )
-    // if there are multiple projects and default project is set, ensure it is first
-    if (hasAtLeast(projectsWithDocs, 2) && projectsManager.defaultProjectId) {
-      const idx = projectsWithDocs.findIndex(p => p.id === projectsManager.defaultProjectId)
-      if (idx > 0) {
-        const [defaultProject] = projectsWithDocs.splice(idx, 1)
-        return [defaultProject!, ...projectsWithDocs]
+    const langiumDocuments = this.services.shared.workspace.LangiumDocuments
+    // Documents grouped by owner project
+    const ownedDocuments = langiumDocuments.groupedByProject()
+    // Lazily evaluated, only needed for projects with include paths
+    let userDocuments: LikeC4LangiumDocument[] | undefined
+
+    const projectsWithDocs = [] as LikeC4ProjectData[]
+    for (const id of projectsManager.all) {
+      const { folderUri, config, includePaths } = projectsManager.getProject(id)
+      let docs: ReadonlyArray<LikeC4LangiumDocument>
+      if (includePaths) {
+        // Included documents are owned by another project,
+        // check each document without re-assigning its project
+        userDocuments ??= langiumDocuments.userDocuments.toArray()
+        docs = userDocuments.filter(doc => projectsManager.isIncluded(id, doc))
+      } else {
+        docs = ownedDocuments[id] ?? []
       }
-      return projectsWithDocs
+      if (docs.length === 0) {
+        continue
+      }
+      projectsWithDocs.push({
+        id,
+        folder: folderUri,
+        path: this.workspaceManager.relativePath(folderUri),
+        title: config.title ?? config.name,
+        documents: map(docs, prop('uri')),
+        config,
+      })
     }
     if (hasAtLeast(projectsWithDocs, 1)) {
       return projectsWithDocs
