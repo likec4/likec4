@@ -436,10 +436,9 @@ class ProjectStorage {
 
   async get(task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
     const key = cacheKey(task)
-    const cached = await this.#storage.get(key)
-    if (isCachedLayout(cached)) {
-      this.#logger.trace`cache hit for ${task.view.id}`
-      return mergeWithCachedLayout(task.view, cached)
+    const fromCache = await this.#fromCache(key, task)
+    if (fromCache) {
+      return fromCache
     }
     this.#logger.trace`cache miss for ${task.view.id}`
     return undefined
@@ -447,10 +446,9 @@ class ProjectStorage {
 
   async getOrExecute(task: LayoutTaskParams): Promise<GraphvizOut> {
     const key = cacheKey(task)
-    const cached = await this.#storage.get(key)
-    if (isCachedLayout(cached)) {
-      this.#logger.trace`cache hit for ${task.view.id}`
-      return mergeWithCachedLayout(task.view, cached)
+    const fromCache = await this.#fromCache(key, task)
+    if (fromCache) {
+      return fromCache
     }
     this.#logger.trace`cache miss for ${task.view.id}`
     const m0 = performanceMark()
@@ -461,6 +459,28 @@ class ProjectStorage {
     })
     this.resetViewError(task.view)
     return result
+  }
+
+  /**
+   * Returns the cached layout merged with the current view.
+   * Malformed entries (e.g. a damaged cache file) are removed and treated as a cache miss.
+   */
+  async #fromCache(key: string, task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
+    const cached = await this.#storage.get(key)
+    if (!cached) {
+      return undefined
+    }
+    if (isCachedLayout(cached)) {
+      try {
+        const result = mergeWithCachedLayout(task.view, cached)
+        this.#logger.trace`cache hit for ${task.view.id}`
+        return result
+      } catch (error) {
+        this.#logger.warn(`invalid cache entry for {view}`, { view: task.view.id, error })
+      }
+    }
+    await this.#storage.remove(key).catch(err => this.#logger.warn(loggable(err)))
+    return undefined
   }
 
   remember = <A extends GraphvizOut | undefined>(task: LayoutTaskParams, result: A): A => {
