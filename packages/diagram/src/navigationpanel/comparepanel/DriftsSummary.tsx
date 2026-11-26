@@ -8,15 +8,14 @@ import type {
   NodeId,
   NonEmptyReadonlyArray,
 } from '@likec4/core/types'
-import { deepEqual } from 'fast-equals'
-
+import type { MouseEvent, MouseEventHandler } from 'react'
 import { nonNullable, sortNaturalByFqn } from '@likec4/core/utils'
 import { css } from '@likec4/styles/css'
 import { HStack, styled, Txt } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
 import { useDebouncedCallback } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
-import type { MouseEvent, MouseEventHandler } from 'react'
+import { deepEqual } from 'fast-equals'
 import { difference, filter, hasAtLeast, map, pipe } from 'remeda'
 import {
   selectDiagramContext,

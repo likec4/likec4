@@ -1,3 +1,4 @@
+import type { PreviewPanel, RpcClient } from './types'
 import { type AILayoutProvider, type AILayoutRequest, enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { loggable } from '@likec4/log'
 import { defineLogger, ref, toValue, useCommand } from 'reactive-vscode'
@@ -7,7 +8,6 @@ import { hasAI } from '../const.ts'
 import { commands } from '../meta.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useMessenger } from '../useMessenger.ts'
-import type { PreviewPanel, RpcClient } from './types'
 
 type OutputLogger = ReturnType<typeof defineLogger>
 

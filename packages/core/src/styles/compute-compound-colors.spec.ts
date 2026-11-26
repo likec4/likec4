@@ -1,7 +1,7 @@
+import type { ElementColorValues, HexColor } from './types'
 import chroma from 'chroma-js'
 import { describe, expect, it } from 'vitest'
 import { computeCompoundColorValues } from './compute-compound-colors'
-import type { ElementColorValues, HexColor } from './types'
 
 describe('computeCompoundColorValues', () => {
   describe('should generate color variations', () => {

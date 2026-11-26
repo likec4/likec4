@@ -1,8 +1,8 @@
+import type { AnyCtx, CtxConnection, CtxElement, MutableState, StageExclude, StageExpression } from './_types'
 import { isBoolean, pipe } from 'remeda'
 import { findAscendingConnections } from '../../model'
 import { difference, intersection, invariant, isDescendantOf, isIterable } from '../../utils'
 import { ifilter, isome, toSet } from '../../utils/iterable'
-import type { AnyCtx, CtxConnection, CtxElement, MutableState, StageExclude, StageExpression } from './_types'
 
 export abstract class AbstractStageExclude<T extends AnyCtx> implements StageExclude<T> {
   // Removed elements

@@ -1,3 +1,4 @@
+import type { FallbackProps } from 'react-error-boundary'
 import { css } from '@likec4/styles/css'
 import { HStack, Txt, VStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -5,7 +6,6 @@ import { Alert, Button, Code, Container, ScrollAreaAutosize, Text, ThemeIcon } f
 import { IconX } from '@tabler/icons-react'
 import { type ErrorComponentProps, isNotFound, useParams, useRouter } from '@tanstack/react-router'
 import { type PropsWithChildren, useEffect, useRef } from 'react'
-import type { FallbackProps } from 'react-error-boundary'
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
 import { isError, isNullish, isObjectType } from 'remeda'
 

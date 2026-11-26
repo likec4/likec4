@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ElementShape } from '@likec4/core'
+import type { ElementIconRenderer, ElementIconRendererProps } from '../LikeC4Diagram.props'
 import { cx as clsx } from '@likec4/styles/css'
 import {
   type IconProps,
@@ -28,7 +29,6 @@ import {
   useContext,
   useMemo,
 } from 'react'
-import type { ElementIconRenderer, ElementIconRendererProps } from '../LikeC4Diagram.props'
 
 const IconRendererContext = createContext<ElementIconRenderer | null>(null)
 

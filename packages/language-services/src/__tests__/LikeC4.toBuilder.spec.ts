@@ -1,5 +1,5 @@
-import { vol } from 'memfs'
 import { join } from 'node:path'
+import { vol } from 'memfs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fromSource, writeDSL } from '../node/index'
 

@@ -1,5 +1,5 @@
-import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
+import { getHotkeyHandler } from '@mantine/hooks'
 import { type AnyEventObject, type CallbackActorLogic, type NonReducibleUnknown, fromCallback } from 'xstate'
 import { isEventFromSearch } from '../../utils/search-event'
 

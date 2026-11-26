@@ -1,7 +1,7 @@
+import type { ReactNode } from 'react'
 import { styled } from '@likec4/styles/jsx'
 import { Menu, SegmentedControl } from '@mantine/core'
 import { IconCheck, IconChevronDown } from '@tabler/icons-react'
-import type { ReactNode } from 'react'
 
 export interface SortOption<T extends string> {
   readonly value: T

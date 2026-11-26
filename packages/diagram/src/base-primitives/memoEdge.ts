@@ -1,6 +1,6 @@
+import type { BaseEdgeProps } from '../base/types'
 import { deepEqual as eq } from 'fast-equals'
 import { type FunctionComponent, memo } from 'react'
-import type { BaseEdgeProps } from '../base/types'
 
 // If points are within 3px, consider them the same
 const isSame = (a: number, b: number) => {

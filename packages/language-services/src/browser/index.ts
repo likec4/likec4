@@ -1,3 +1,4 @@
+import type { FromWorkspaceOptions, InitOptions } from '../common/options'
 import {
   type LikeC4LanguageServices,
   createLanguageServices as createBrowserLanguageServices,
@@ -5,7 +6,6 @@ import {
 import { configureLogger, getConsoleSink, getTextFormatter, rootLogger } from '@likec4/log'
 import { createFromSources } from '../common/createFromSources'
 import { type LikeC4Diagnostic, type LikeC4Langium, LikeC4 } from '../common/LikeC4'
-import type { FromWorkspaceOptions, InitOptions } from '../common/options'
 
 export type {
   FromWorkspaceOptions,

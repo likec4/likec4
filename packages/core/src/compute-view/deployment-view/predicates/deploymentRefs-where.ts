@@ -1,6 +1,6 @@
+import type { PredicateExecutor } from '../_types'
 import { type FqnExpr, whereOperatorAsPredicate } from '../../../types'
 import { nonNullable } from '../../../utils'
-import type { PredicateExecutor } from '../_types'
 import { predicateToPatch } from './utils'
 
 // relation matches the condition

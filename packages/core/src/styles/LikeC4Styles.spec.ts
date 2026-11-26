@@ -1,8 +1,8 @@
-import { describe, it } from 'vitest'
 import type { LikeC4ProjectStylesConfig } from '../types'
+import type { CustomColorDefinitions } from './types'
+import { describe, it } from 'vitest'
 import { computeColorValues } from './compute-color-values'
 import { LikeC4Styles } from './LikeC4Styles'
-import type { CustomColorDefinitions } from './types'
 
 describe('LikeC4Styles', () => {
   describe('from', () => {

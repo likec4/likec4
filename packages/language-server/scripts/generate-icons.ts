@@ -1,6 +1,6 @@
-import { fdir } from 'fdir'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { basename, sep } from 'path'
+import { fdir } from 'fdir'
 
 const files = new fdir()
   .filter((name, isDir) => !isDir && name.endsWith('.js') && !['index.js', 'all.js'].includes(basename(name)))

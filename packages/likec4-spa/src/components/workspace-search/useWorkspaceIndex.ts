@@ -1,9 +1,8 @@
 import type { ProjectId } from '@likec4/core/types'
-import { use, useMemo } from 'react'
-
 import { batch, computed, deepEqual, map as mapAtom, onMount, useStore } from '@likec4/vite-plugin/internal'
 import { type LikeC4Model, type ReadableAtom, loadModel } from 'likec4:model'
 import { $projectIds, $projects } from 'likec4:projects'
+import { use, useMemo } from 'react'
 import { map } from 'remeda'
 import {
   type SearchElement,

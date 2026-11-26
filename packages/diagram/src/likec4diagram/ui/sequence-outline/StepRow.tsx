@@ -1,3 +1,4 @@
+import type { OutlineTreeNodeStep } from './types'
 import { RichText } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
@@ -10,7 +11,6 @@ import { useDiagram } from '../../../hooks/safeContext'
 import { recessed } from './depth-of-field'
 import { SEQ_CARD_LAYOUT_ID, SEQ_TRANSITION } from './motion'
 import { NotesDot, StepBadge } from './StepBadge'
-import type { OutlineTreeNodeStep } from './types'
 
 /** A step the walkthrough is not on: one line, clickable, recessed with its level. */
 export function StepRow({ node, recession, active }: {

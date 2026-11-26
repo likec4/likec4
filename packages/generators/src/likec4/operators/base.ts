@@ -1,3 +1,4 @@
+import type { IfAny, IsUnknown, Or } from 'type-fest'
 import { type MarkdownOrString, hasProp, invariant } from '@likec4/core'
 import {
   type Generated,
@@ -22,7 +23,6 @@ import {
   pipe,
 } from 'remeda'
 import { dedent } from 'strip-indent'
-import type { IfAny, IsUnknown, Or } from 'type-fest'
 import * as z from 'zod'
 import { NL, toStringLF } from '../../newline'
 

@@ -1,10 +1,10 @@
+import type { ElementViewDisplayVariant } from '../likec4diagram/state/machine.setup'
 import { invariant } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { SegmentedControl } from '@mantine/core'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useDiagram } from '../hooks/useDiagram'
-import type { ElementViewDisplayVariant } from '../likec4diagram/state/machine.setup'
 
 /**
  * Diagram/Graph segmented control for element views.

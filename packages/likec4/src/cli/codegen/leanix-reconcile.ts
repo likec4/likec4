@@ -4,11 +4,11 @@
  * Optional: use workspace to build dryRun for name+type matching and ambiguous detection.
  */
 
-import { fromWorkspace } from '@likec4/language-services/node'
 import type { BridgeManifest, LeanixInventoryDryRun, LeanixInventorySnapshot } from '@likec4/leanix-bridge'
-import { isBridgeManifest, isLeanixInventorySnapshot, reconcileInventoryWithManifest } from '@likec4/leanix-bridge'
 import { readFile, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
+import { fromWorkspace } from '@likec4/language-services/node'
+import { isBridgeManifest, isLeanixInventorySnapshot, reconcileInventoryWithManifest } from '@likec4/leanix-bridge'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { LikeC4Model } from '../../model'

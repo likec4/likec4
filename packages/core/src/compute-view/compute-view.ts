@@ -1,3 +1,4 @@
+import type { Any, AnyParsed, ViewId } from '../types/_aux'
 import { mapValues } from 'remeda'
 import { LikeC4Model } from '../model'
 import {
@@ -12,7 +13,6 @@ import {
   isDynamicView,
   isElementView,
 } from '../types'
-import type { Any, AnyParsed, ViewId } from '../types/_aux'
 import { nonexhaustive } from '../utils'
 import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'

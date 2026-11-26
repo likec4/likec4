@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
+import type { WithExpressionV2 } from './FqnRefParser'
 import { nonexhaustive } from '@likec4/core'
 import { ast } from '../../ast'
-import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithPredicates = ReturnType<typeof PredicatesParser>
 

@@ -1,3 +1,5 @@
+import type { DiagramEdge, EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
+import type { XYPosition } from '@xyflow/react'
 import {
   type BBox,
   type Segment,
@@ -8,9 +10,7 @@ import {
   polylineToSegments,
   splineToPolyline,
 } from '@likec4/core/geometry'
-import type { DiagramEdge, EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
-import type { XYPosition } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { first, last } from 'remeda'
 import { bezierControlPoints, bezierPath, getNodeIntersectionFromCenterToPoint, isEqualRects } from './xyflow'

@@ -1,9 +1,9 @@
+import type { DrawioRoundtripData } from './parse-drawio'
 /**
  * DrawIO parse tests. All helpers imported from source (./parse-drawio) so CI typecheck passes without building dist; aligned with other specs in this package.
  */
 import pako from 'pako'
 import { describe, expect, test } from 'vitest'
-import type { DrawioRoundtripData } from './parse-drawio'
 import {
   decompressDrawioDiagram,
   getAllDiagrams,

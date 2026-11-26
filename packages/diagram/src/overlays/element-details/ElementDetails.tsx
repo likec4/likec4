@@ -1,6 +1,6 @@
+import type { ElementDetailsActorRef, ElementDetailsSnapshot } from './actor'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import type { ElementDetailsActorRef, ElementDetailsSnapshot } from './actor'
 import { ElementDetailsActorContext } from './actorContext'
 import { ElementDetailsCard } from './ElementDetailsCard'
 

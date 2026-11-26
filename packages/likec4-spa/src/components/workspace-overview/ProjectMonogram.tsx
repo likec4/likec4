@@ -1,5 +1,5 @@
-import { defaultTheme } from '@likec4/core/styles'
 import type { ExclusiveUnion, ProjectId } from '@likec4/core/types'
+import { defaultTheme } from '@likec4/core/styles'
 import { memo } from 'react'
 import { type MonogramProps, Monogram } from '../ui/Monogram'
 import { monogramColor, projectInitials } from './catalog'

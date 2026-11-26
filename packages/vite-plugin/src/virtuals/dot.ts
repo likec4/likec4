@@ -39,8 +39,7 @@ function code(
         indented.append(
           joinToNode(
             Object.keys(sources),
-            key =>
-              expandToNode`
+            key => expandToNode`
               case ${JSON.stringify(key)}: {
                 return ${JSON.stringify(sources[key]!.dot)}
               }
@@ -69,8 +68,7 @@ function code(
         indented.append(
           joinToNode(
             Object.keys(sources),
-            key =>
-              expandToNode`
+            key => expandToNode`
               case ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(key))}: {
                 return ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(sources[key]!.svg))}
               }

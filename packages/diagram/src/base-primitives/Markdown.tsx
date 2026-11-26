@@ -1,9 +1,9 @@
+import type { Tokens } from '@likec4/styles/tokens'
 import { type RichTextOrEmpty as RichTextType, isRichText } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
-import type { Tokens } from '@likec4/styles/tokens'
 import { Text } from '@mantine/core'
 import {
   type ComponentPropsWithoutRef,

@@ -7,6 +7,12 @@ import type {
   ProjectId,
   ViewId,
 } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
+import type { AILayoutHints } from '@likec4/layouts/ai'
+import type { Writable } from 'type-fest'
+import type { CancellationToken } from 'vscode-languageserver'
+import type { LikeC4ModelBuilder } from '../model/model-builder'
+import type { LikeC4Services } from '../module'
 import {
   _layout,
   applyCachedLayout,
@@ -16,18 +22,12 @@ import {
   invariant,
 } from '@likec4/core'
 import { type AdhocViewPredicate, computeAdhocView } from '@likec4/core/compute-view'
-import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
-import type { AILayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, Disposable, interruptAndCheck } from 'langium'
 import { isPlainObject, isTruthy, values } from 'remeda'
-import type { Writable } from 'type-fest'
 import { type Storage, prefixStorage } from 'unstorage'
-import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'
-import type { LikeC4ModelBuilder } from '../model/model-builder'
-import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 
 export type GraphvizOut = {

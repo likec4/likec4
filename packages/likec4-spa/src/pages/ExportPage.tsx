@@ -5,13 +5,13 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { CSSProperties } from 'react'
 import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
 import { LikeC4Diagram, pickViewBounds, useLikeC4Model, useLikeC4Styles } from '@likec4/diagram'
 import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
-import type { CSSProperties } from 'react'
 import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 import {

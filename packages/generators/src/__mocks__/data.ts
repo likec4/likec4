@@ -1,5 +1,5 @@
-import { ElementShapes } from '@likec4/core/styles'
 import type { ComputedView, DiagramView } from '@likec4/core/types'
+import { ElementShapes } from '@likec4/core/styles'
 
 export const fakeDiagram: DiagramView = {
   edges: [

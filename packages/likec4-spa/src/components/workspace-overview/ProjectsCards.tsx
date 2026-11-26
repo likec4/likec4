@@ -1,4 +1,5 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { CatalogProject, ProjectLink } from './catalog'
 import { styled } from '@likec4/styles/jsx'
 import { HoverCard, Tooltip } from '@mantine/core'
 import { IconFolder, IconUser } from '@tabler/icons-react'
@@ -21,7 +22,6 @@ import { Detail, DetailButton } from '../ui/Detail'
 import { Metric, MetricsGrid } from '../ui/Metric'
 import { MonogramMore, MonogramStack } from '../ui/Monogram'
 import { EmptyNote, FieldLabel } from '../ui/Text'
-import type { CatalogProject, ProjectLink } from './catalog'
 import { ProjectDrifts } from './ProjectDrifts'
 import { ProjectMonogram } from './ProjectMonogram'
 

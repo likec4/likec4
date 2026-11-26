@@ -1,7 +1,7 @@
-import { DefaultTagColors } from '@likec4/style-preset/defaults'
-import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
 import type { ColorLiteral, TagSpecification } from '../types'
 import type { Tag } from '../types/scalar'
+import { DefaultTagColors } from '@likec4/style-preset/defaults'
+import { concat, entries, isTruthy, map, pipe, prop, pullObject, sort } from 'remeda'
 import { compareNatural } from '../utils/compare-natural'
 import { nonNullable } from '../utils/invariant'
 

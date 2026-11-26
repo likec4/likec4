@@ -1,5 +1,8 @@
-import { type ProjectId, invariant, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
+import type { DeploymentsIndex, FqnIndex } from '../model'
+import type { LikeC4Services } from '../module'
+import type { IndexManager } from '../workspace'
+import { type ProjectId, invariant, nonexhaustive } from '@likec4/core'
 import {
   type AstNodeDescription,
   type ReferenceInfo,
@@ -21,12 +24,9 @@ import {
   isLikeC4LangiumDocument,
 } from '../ast'
 import { logWarnError } from '../logger'
-import type { DeploymentsIndex, FqnIndex } from '../model'
 import { streamImports } from '../model/parser/ImportsParser'
-import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { elementRef, readStrictFqn } from '../utils/elementRef'
-import type { IndexManager } from '../workspace'
 
 const { getDocument } = AstUtils
 

@@ -1,3 +1,5 @@
+import type { RelationshipModel } from '../../model'
+import type { Connection, Connections } from './_types'
 import {
   dropWhile,
   filter,
@@ -12,7 +14,6 @@ import {
   reduce,
   values,
 } from 'remeda'
-import type { RelationshipModel } from '../../model'
 import {
   DeploymentConnectionModel,
   differenceConnections,
@@ -25,7 +26,6 @@ import { invariant } from '../../utils'
 import { imap, toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import { intersection, union } from '../../utils/set'
-import type { Connection, Connections } from './_types'
 import { findConnection } from './utils'
 
 type MapOfExcludesFromConnection = DefaultMap<DeploymentConnectionModel, Set<RelationshipModel>>

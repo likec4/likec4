@@ -1,6 +1,6 @@
 import type { ProjectId } from '@likec4/core/types'
-import { logGenerating } from '../logger'
 import type { ProjectVirtualModule } from './_shared'
+import { logGenerating } from '../logger'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 const jsStringLiteral = (value: string) => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))

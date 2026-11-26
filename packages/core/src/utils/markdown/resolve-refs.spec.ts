@@ -1,8 +1,8 @@
+import type { MarkdownRefTitleResolver } from './types'
 import { describe, expect, it } from 'vitest'
 import { resolveMarkdownRefs } from './resolve-refs'
 import { markdownToHtml } from './to-html'
 import { markdownToText } from './to-text'
-import type { MarkdownRefTitleResolver } from './types'
 
 const titles: Record<string, string> = {
   'element:cloud.api': 'API',

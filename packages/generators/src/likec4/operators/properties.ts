@@ -1,8 +1,8 @@
+import type { ConditionalKeys } from 'type-fest'
+import type { Op } from './base'
 import { type Color, type ElementStyle, type Link, type MarkdownOrString, exact } from '@likec4/core/types'
 import { entries, isArray, isNot, isString, piped } from 'remeda'
-import type { ConditionalKeys } from 'type-fest'
 import * as common from '../schemas/common'
-import type { Op } from './base'
 import {
   body,
   foreach,

@@ -1,16 +1,5 @@
 import type * as t from '@likec4/core/types'
-import { css, cx } from '@likec4/styles/css'
-import { Box } from '@likec4/styles/jsx'
-import { ActionIcon } from '@mantine/core'
-import { IconX } from '@tabler/icons-react'
 import type { CSSProperties, ReactNode } from 'react'
-import { useState } from 'react'
-import { isBoolean } from 'remeda'
-import { FitViewPaddings } from './base/const'
-import { ErrorMessage } from './components/ViewNotFound'
-import { customizable } from './customization/customizable'
-import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
-import { LikeC4Diagram } from './LikeC4Diagram'
 import type {
   ElementIconRenderer,
   NodeRenderers,
@@ -18,6 +7,17 @@ import type {
   PaddingWithUnit,
   ViewPadding,
 } from './LikeC4Diagram.props'
+import { css, cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
+import { ActionIcon } from '@mantine/core'
+import { IconX } from '@tabler/icons-react'
+import { useState } from 'react'
+import { isBoolean } from 'remeda'
+import { FitViewPaddings } from './base/const'
+import { ErrorMessage } from './components/ViewNotFound'
+import { customizable } from './customization/customizable'
+import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
+import { LikeC4Diagram } from './LikeC4Diagram'
 import { Overlay } from './overlays/overlay/Overlay'
 import { ShadowRoot } from './shadowroot'
 import { stopPropagation } from './utils'

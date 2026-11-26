@@ -1,5 +1,5 @@
-import { isBoolean } from 'remeda'
 import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
+import { isBoolean } from 'remeda'
 
 type PersistedToggledFeatures = Partial<Pick<EnabledFeatures, `enable${TogglableFeature}`>>
 

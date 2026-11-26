@@ -1,14 +1,14 @@
-import { type Fqn, type ProjectId, FqnRef, preferSummary } from '@likec4/core'
 import type { ElementModel, LikeC4ViewModel } from '@likec4/core/model'
+import type { Hover } from 'vscode-languageserver-types'
+import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
+import type { LikeC4Services } from '../module'
+import { type Fqn, type ProjectId, FqnRef, preferSummary } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { type AstNode, type MaybePromise, AstUtils, URI } from 'langium'
 import { AstNodeHoverProvider } from 'langium/lsp'
 import { isNonNullish } from 'remeda'
-import type { Hover } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 import { logger } from '../logger'
-import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
-import type { LikeC4Services } from '../module'
 
 const HR = '\n---\n'
 

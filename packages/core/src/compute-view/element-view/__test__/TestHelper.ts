@@ -1,7 +1,5 @@
-import { indexBy, isArray, isString, map, mapValues, pipe, prop } from 'remeda'
 import type { Writable } from 'type-fest'
 import type { ExpectStatic } from 'vitest'
-import { expect as vitestExpect } from 'vitest'
 import type {
   AnyTypes,
   Builder,
@@ -9,9 +7,11 @@ import type {
   Types,
   ViewPredicate,
 } from '../../../builder'
+import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
+import { indexBy, isArray, isString, map, mapValues, pipe, prop } from 'remeda'
+import { expect as vitestExpect } from 'vitest'
 import * as viewhelpers from '../../../builder/Builder.view-common'
 import { mkViewBuilder } from '../../../builder/Builder.views'
-import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
 import { differenceConnections } from '../../../model/connection'
 import {
   type Any,

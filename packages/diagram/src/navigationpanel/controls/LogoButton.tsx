@@ -1,6 +1,6 @@
 import type { CssProperty } from '@likec4/styles/types'
-import * as m from 'motion/react-m'
 import type { ComponentPropsWithRef } from 'react'
+import * as m from 'motion/react-m'
 import { NavigationPanel } from '../../components/NavigationPanel'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { customizable } from '../../customization/customizable'

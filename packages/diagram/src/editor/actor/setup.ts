@@ -1,4 +1,11 @@
 import type * as t from '@likec4/core/types'
+import type {
+  EditorActorContext,
+  EditorActorEmitedEvent,
+  EditorActorEvent,
+  EditorActorInput,
+  EditorActorStateTag,
+} from './types'
 import {
   type ActorRefFromLogic,
   type StateMachine,
@@ -12,13 +19,6 @@ import {
   defineActors,
 } from '../../utils/defineActors'
 import { hotkey } from './hotkey'
-import type {
-  EditorActorContext,
-  EditorActorEmitedEvent,
-  EditorActorEvent,
-  EditorActorInput,
-  EditorActorStateTag,
-} from './types'
 
 export namespace EditorCalls {
   export type ApplyLatestToManual = (

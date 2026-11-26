@@ -1,7 +1,7 @@
-import { URI } from 'langium'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { URI } from 'langium'
 import { resolve } from 'pathe'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { projectModelModule } from './model'

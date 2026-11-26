@@ -1,4 +1,3 @@
-import { nonexhaustive } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type {
   aux,
@@ -12,6 +11,7 @@ import type {
   RelationshipColorValues,
   ThemeColor,
 } from '@likec4/core/types'
+import { nonexhaustive } from '@likec4/core'
 import { RichText } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode } from 'langium/generate'
 import { isEmptyish, isNullish as isNil } from 'remeda'

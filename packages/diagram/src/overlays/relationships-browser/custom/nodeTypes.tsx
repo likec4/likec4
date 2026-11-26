@@ -1,5 +1,6 @@
-import { Handle, Position } from '@xyflow/react'
 import type { BaseNodePropsWithData } from '../../../base'
+import type { RelationshipsBrowserTypes } from '../_types'
+import { Handle, Position } from '@xyflow/react'
 import {
   type ElementTagsProps,
   CompoundDetailsButton,
@@ -14,7 +15,6 @@ import {
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { RelationshipsBrowserTypes } from '../_types'
 import { ElementActions } from './ElementActions'
 
 function ElementTags(props: ElementTagsProps) {

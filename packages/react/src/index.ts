@@ -1,3 +1,4 @@
+import type { Types } from '@likec4/diagram'
 import {
   ControlButton as XYControlButton,
   MiniMap as XYMiniMap,
@@ -7,8 +8,6 @@ import {
   Position as XYPosition,
   ViewportPortal as XYViewportPortal,
 } from '@xyflow/react'
-
-import type { Types } from '@likec4/diagram'
 
 export * from '@likec4/diagram'
 export * from '@likec4/diagram/custom'

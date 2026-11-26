@@ -1,7 +1,7 @@
+import type { LikeC4Services } from '../module'
 import { Fqn, hasProp } from '@likec4/core/types'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
-import type { LikeC4Services } from '../module'
 import { markdownRefsOf, projectIdFrom } from '../utils'
 import { tryOrLog } from './_shared'
 

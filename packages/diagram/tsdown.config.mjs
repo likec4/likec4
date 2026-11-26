@@ -1,7 +1,7 @@
-import postcssPanda from '@pandacss/dev/postcss'
 import { execSync } from 'node:child_process'
 import { glob, readFile, writeFile } from 'node:fs/promises'
 import { basename } from 'node:path'
+import postcssPanda from '@pandacss/dev/postcss'
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({

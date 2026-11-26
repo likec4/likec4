@@ -5,8 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { nonexhaustive } from '@likec4/core'
 import type { ComputedNodeStyle, ElementShape as Shape, ShapeSize } from '@likec4/core/types'
+import { nonexhaustive } from '@likec4/core'
 import { elementShapeRecipe } from '@likec4/styles/recipes'
 import { customizable } from '../../customization/customizable'
 import { roundDpr } from '../../utils'

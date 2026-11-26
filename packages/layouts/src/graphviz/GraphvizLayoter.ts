@@ -1,3 +1,7 @@
+import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
+import type { AILayoutHints } from './ai/types'
+import type { DotSource } from './types'
+import type { GraphvizJson } from './types-dot'
 import {
   type AnyAux,
   type aux,
@@ -9,12 +13,10 @@ import {
   isElementView,
   LikeC4Styles,
 } from '@likec4/core'
-import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
 import { nonexhaustive } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger, wrapError } from '@likec4/log'
 import { randomString } from 'remeda'
 import { calcSequenceLayout } from '../sequence'
-import type { AILayoutHints } from './ai/types'
 import { AiLayoutViewPrinter } from './AiLayoutPrinter'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 import { GraphClusterSpace } from './DotPrinter'
@@ -22,8 +24,6 @@ import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson, parseGraphvizJsonOfProjectsView } from './GraphvizParser'
 import { ProjectsViewPrinter } from './ProjectsViewPrinter'
-import type { DotSource } from './types'
-import type { GraphvizJson } from './types-dot'
 import { GraphvizWasmAdapter } from './wasm/GraphvizWasmAdapter'
 
 export interface GraphvizPort extends Disposable {

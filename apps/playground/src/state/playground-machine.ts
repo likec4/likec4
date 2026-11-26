@@ -1,3 +1,17 @@
+import type { CompareViewMode } from '@likec4/core/compute-view'
+import type {
+  ApplyEditsResult,
+  Locate as LocateRequest,
+  ModelEditPreview,
+  ModelEditRecord,
+  ModelEditRequest,
+  ModelEditResult,
+  RemainingError,
+  RemovalImpactReport,
+} from '@likec4/language-server/protocol'
+import type { Location } from 'vscode-languageserver-types'
+import type { ShareOptions } from './shareOptions'
+import type { LocalWorkspace, ShareHistoryItem, WithInput } from './types'
 import { type Api, api } from '$/api'
 import {
   type aux,
@@ -12,22 +26,10 @@ import {
   type ViewId,
   nonNullable,
 } from '@likec4/core'
-import type { CompareViewMode } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
-import type {
-  ApplyEditsResult,
-  Locate as LocateRequest,
-  ModelEditPreview,
-  ModelEditRecord,
-  ModelEditRequest,
-  ModelEditResult,
-  RemainingError,
-  RemovalImpactReport,
-} from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { keys, prop } from 'remeda'
-import type { Location } from 'vscode-languageserver-types'
 import {
   assign,
   cancel,
@@ -38,8 +40,6 @@ import {
   setup,
 } from 'xstate'
 import { selectWorkspacePersistence } from './persistence'
-import type { ShareOptions } from './shareOptions'
-import type { LocalWorkspace, ShareHistoryItem, WithInput } from './types'
 
 export type DiagramState = {
   // Never loaded

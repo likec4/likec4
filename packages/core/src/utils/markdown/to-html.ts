@@ -1,6 +1,7 @@
-import defu from 'defu'
 import type { Element } from 'hast'
 import type { State } from 'mdast-util-to-hast'
+import type { MarkdownRefTitleResolver } from './types'
+import defu from 'defu'
 import rehypePrism from 'rehype-prism-plus/common'
 import rehypeSanitize, { type Options as SanitizeSchema, defaultSchema } from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
@@ -11,7 +12,6 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { type LikeC4RefNode, remarkLikeC4Refs } from './refs'
 import { remarkResolveLikeC4Refs } from './resolve-refs'
-import type { MarkdownRefTitleResolver } from './types'
 
 /**
  * Renders a ref as `<a data-likec4-ref="<target>" data-likec4-ref-kind="<kind>">label or target</a>`.

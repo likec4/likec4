@@ -1,10 +1,10 @@
 import type { ProjectId, ViewId } from '@likec4/core'
+import type { PreviewPanel, RpcClient } from './types'
 import { useCommand } from 'reactive-vscode'
 import { countBy, keys } from 'remeda'
 import * as vscode from 'vscode'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
-import type { PreviewPanel, RpcClient } from './types'
 
 export interface OpenPreviewCommandDeps {
   sendTelemetry(commandId: string): void

@@ -31,8 +31,7 @@ function code(model: LikeC4Model.Computed) {
         indented.append(
           joinToNode(
             [...model.views()],
-            view =>
-              expandToNode`
+            view => expandToNode`
               case ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(view.id))}: {
                 return ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(generatePuml(view)))}
               }

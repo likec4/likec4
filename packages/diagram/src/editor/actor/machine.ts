@@ -1,11 +1,11 @@
 import type { ActorRef, SnapshotFrom } from 'xstate'
-import { type BaseEditorActorLogic, machine } from './setup'
-import { editor } from './state.editor'
-import { syncQueue } from './state.sync-queue'
 import type {
   EditorActorEmitedEvent,
   EditorActorEvent,
 } from './types'
+import { type BaseEditorActorLogic, machine } from './setup'
+import { editor } from './state.editor'
+import { syncQueue } from './state.sync-queue'
 
 const _editorActorLogic = machine.createMachine({
   id: 'editor',

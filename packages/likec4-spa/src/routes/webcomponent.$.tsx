@@ -70,8 +70,7 @@ function WebcomponentPage() {
       <iframe
         srcDoc={iframeHtml}
         // @ts-expect-error allowtransparency is not in the iframe element type
-        allowtransparency={'true'}>
-      </iframe>
+        allowtransparency={'true'}></iframe>
     </Box>
   )
 }

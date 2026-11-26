@@ -1,5 +1,11 @@
-import { isEmpty, isEmptyish } from 'remeda'
 import type { Any, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
+import type * as aux from '../types/_aux'
+import type { DeploymentRelationModel } from './DeploymentElementModel'
+import type { ElementModel } from './ElementModel'
+import type { LikeC4Model } from './LikeC4Model'
+import type { WithMetadata, WithTags } from './types'
+import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
+import { isEmpty, isEmptyish } from 'remeda'
 import {
   type Relationship,
   type RelationshipLineType,
@@ -8,14 +14,8 @@ import {
   preferDescription,
   preferSummary,
 } from '../types'
-import type * as aux from '../types/_aux'
 import { commonAncestor } from '../utils/fqn'
-import type { DeploymentRelationModel } from './DeploymentElementModel'
-import type { ElementModel } from './ElementModel'
-import type { LikeC4Model } from './LikeC4Model'
-import type { WithMetadata, WithTags } from './types'
 import { memoizeDescription, memoizeSummary } from './utils/richtext'
-import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<A extends Any> = IteratorLike<RelationshipModel<A>>
 

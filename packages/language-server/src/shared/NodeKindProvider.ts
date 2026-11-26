@@ -1,5 +1,5 @@
-import { type AstNode, type AstNodeDescription, isAstNode } from 'langium'
 import type { LangiumSharedServices, NodeKindProvider as LspNodeKindProvider } from 'langium/lsp'
+import { type AstNode, type AstNodeDescription, isAstNode } from 'langium'
 import { CompletionItemKind, SymbolKind } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 

@@ -1,7 +1,7 @@
-import { type ProjectId, nonNullable } from '@likec4/core'
 import type { ast } from '../../ast'
 import type { LikeC4LangiumDocument } from '../../ast'
 import type { Base } from './Base'
+import { type ProjectId, nonNullable } from '@likec4/core'
 
 /**
  * Yields all imports of the document as pairs of the project ID we import from and `Imported` node.

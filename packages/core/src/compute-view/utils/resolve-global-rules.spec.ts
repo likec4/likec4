@@ -1,3 +1,4 @@
+import type { $Aux } from '../element-view/__test__/fixture'
 import { describe, it } from 'vitest'
 import {
   type aux,
@@ -12,7 +13,6 @@ import {
   ViewId,
 } from '../../types'
 import { invariant } from '../../utils'
-import type { $Aux } from '../element-view/__test__/fixture'
 import { resolveGlobalRules } from './resolve-global-rules'
 
 describe('resolveGlobalRulesInViews', () => {

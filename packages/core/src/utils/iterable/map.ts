@@ -1,5 +1,5 @@
-import { isFunction } from 'remeda'
 import type { IteratorLike } from '../../types'
+import { isFunction } from 'remeda'
 import { invariant } from '../../utils/invariant'
 
 type MapFunction<T, S> = (item: T) => S

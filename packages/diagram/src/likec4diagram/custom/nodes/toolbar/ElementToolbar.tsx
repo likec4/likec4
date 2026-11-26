@@ -1,14 +1,14 @@
-import { type ElementShape, ElementShapes } from '@likec4/core/styles'
 import type { Fqn } from '@likec4/core/types'
+import type { Types } from '../../../types'
+import type { OnStyleChange } from './types'
+import { type ElementShape, ElementShapes } from '@likec4/core/styles'
 import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
 import { IconCheck, IconSelector } from '@tabler/icons-react'
 import { useEnabledFeatures } from '../../../../context/DiagramFeatures'
 import { stopPropagation } from '../../../../utils/xyflow'
-import type { Types } from '../../../types'
 import { BorderStyleOption, BrowseRelationshipsButton, GoToSourceButton } from './_shared'
 import { ColorButton } from './ColorButton'
 import { Toolbar } from './Toolbar'
-import type { OnStyleChange } from './types'
 import { useHandlers } from './useHandlers'
 
 const SortedElementShapes = [...ElementShapes].sort()

@@ -1,13 +1,13 @@
 import type { DiagramNode, Fqn, LayoutedView, NodeId, ViewId } from '@likec4/core'
-import { defu } from 'defu'
 import type { OverrideProperties, Writable } from 'type-fest'
+import type { FileSystemProvider, ManualLayoutUpdateListener } from './types'
+import { defu } from 'defu'
 import { describe, it, vi } from 'vitest'
 import { FileChangeType } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import { createTestServices as createTestServicesBase } from '../test'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
 import { NoopFileSystemProvider } from './noop'
-import type { FileSystemProvider, ManualLayoutUpdateListener } from './types'
 
 // Helper to create services with mocked file system
 async function createTestServices() {

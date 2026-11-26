@@ -1,7 +1,7 @@
-import { describe, expect, expectTypeOf, it } from 'vitest'
 import type { NonEmptyArray } from '../types/_common'
-import { type OrthoSpline, isOrthoSpline, splineToPolyline } from './spline'
 import type { Point, XYPoint } from './types'
+import { describe, expect, expectTypeOf, it } from 'vitest'
+import { type OrthoSpline, isOrthoSpline, splineToPolyline } from './spline'
 
 describe('isOrthoSpline', () => {
   it('accepts a spline whose cubics are all axis-aligned', () => {

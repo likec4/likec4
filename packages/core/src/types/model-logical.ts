@@ -1,5 +1,4 @@
 import type { Simplify } from 'type-fest'
-import { defaultStyle } from '../styles/LikeC4Styles'
 import type {
   BorderStyle,
   Color,
@@ -17,6 +16,7 @@ import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { FqnRef } from './fqnRef'
 import type * as scalar from './scalar'
+import { defaultStyle } from '../styles/LikeC4Styles'
 
 export interface ElementStyle {
   readonly icon?: scalar.Icon

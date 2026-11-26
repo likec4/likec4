@@ -1,10 +1,10 @@
+import type { ComputedDynamicView } from './view-computed'
 import { indexBy, mapValues, pipe, prop } from 'remeda'
 import { describe, expect, it, vi } from 'vitest'
 import { Builder } from '../builder/Builder'
 import { invariant } from '../utils'
 import { type ViewId, StepPath } from './scalar'
 import { isDynamicView } from './view'
-import type { ComputedDynamicView } from './view-computed'
 import { DynamicViewFlow, flowAncestors, flowHelpers, parentFlow, walkthroughFlow } from './view-dynamic-flow'
 
 const viewId = 'index' as ViewId<'index'>

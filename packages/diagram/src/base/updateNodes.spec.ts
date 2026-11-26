@@ -5,9 +5,9 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { BaseNode } from './types'
 import { type NodeHandle, Position } from '@xyflow/system'
 import { describe, expect, it } from 'vitest'
-import type { BaseNode } from './types'
 import { updateNodes } from './updateNodes'
 
 type TestNode = BaseNode<{

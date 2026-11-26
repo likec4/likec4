@@ -1,3 +1,5 @@
+import { writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 /**
  * This script generates theme.c4:
  * - model with all theme colors and shapes
@@ -5,8 +7,6 @@
  * - nested shapes (6 levels)
  */
 import { LikeC4Styles } from '@likec4/core/styles'
-import { writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
 
 const colors = Object.keys(LikeC4Styles.DEFAULT.theme.colors)
 
@@ -63,7 +63,7 @@ ${
         color ${key}
       }
 ${
-        shapes.map(shape => `
+  shapes.map(shape => `
       ${shape} = ${shape} {
         title: '${shape.charAt(0).toUpperCase() + shape.slice(1)}'
         technology: '[ ${key} ]'
@@ -77,7 +77,7 @@ ${
         }
       }
 `).join('')
-      }
+}
     }`,
     ).join('')
 }
@@ -100,14 +100,14 @@ ${
         title "Shape: ${shape.charAt(0).toUpperCase() + shape.slice(1)}"
       },
 ${
-    colors.map(key => `
+  colors.map(key => `
       ${key}.${shape} with {
         title '${key.charAt(0).toUpperCase() + key.slice(1)}'
         technology '[ ${shape} ]'
         navigateTo themecolor_${key}
       },
 `).join('')
-  }
+}
   }
 `).join('')
 }
@@ -124,12 +124,12 @@ ${
         navigateTo index
       },
 ${
-        shapes.map(shape => `
+  shapes.map(shape => `
       ${shape} with {
         navigateTo ${shape}
       },
 `).join('')
-      }
+}
   }
 `,
     ).join('')

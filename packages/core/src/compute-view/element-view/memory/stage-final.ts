@@ -1,11 +1,11 @@
+import type { Elem } from '../_types'
+import type { Ctx, Memory } from './memory'
 import { forEach, only, pipe } from 'remeda'
 import { isAncestor, sortByFqnHierarchically } from '../../../utils/fqn'
 import { isome, toArray } from '../../../utils/iterable'
 import { difference, union } from '../../../utils/set'
 import { treeFromMemoryState } from '../../memory/ops'
-import type { Elem } from '../_types'
 import { findRedundantConnections } from '../clean-connections'
-import type { Ctx, Memory } from './memory'
 
 export class StageFinal {
   static for(memory: Memory) {

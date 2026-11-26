@@ -1,8 +1,8 @@
+import type { Config } from '@pandacss/dev'
+import { writeFileSync } from 'node:fs'
 import { DEFAULT_THEME } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
-import type { Config } from '@pandacss/dev'
 import JSON5 from 'json5'
-import { writeFileSync } from 'node:fs'
 import {
   mapToObj,
   range,

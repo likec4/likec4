@@ -1,6 +1,6 @@
-import { isString } from 'remeda'
 import type * as aux from './_aux'
 import type { ExclusiveUnion } from './_common'
+import { isString } from 'remeda'
 import { GlobalFqn } from './scalar'
 
 // Alias for bundle exports

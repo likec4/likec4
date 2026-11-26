@@ -1,11 +1,12 @@
-import { Examples } from '$/examples'
 import type {
   PlaygroundActorRef,
   PlaygroundActorSnapshot,
   PlaygroundContext,
 } from '$state/types'
-import { type ViewChange, type ViewId, nonNullable } from '@likec4/core'
+import type { ViewChange, ViewId } from '@likec4/core'
 import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
+import { Examples } from '$/examples'
+import { nonNullable } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { type DependencyList, useCallback, useMemo } from 'react'

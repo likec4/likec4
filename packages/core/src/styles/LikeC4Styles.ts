@@ -1,7 +1,3 @@
-import { DefaultTagColorValues, isDefaultTagColor } from '@likec4/style-preset/defaults'
-import chroma from 'chroma-js'
-import { defu } from 'defu'
-import { pick } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import type {
   ComputedNodeStyle,
@@ -10,14 +6,7 @@ import type {
   MarkdownOrString,
   NTuple,
 } from '../types'
-import { ensureSizes, flattenMarkdownOrString } from '../types'
-import { LRUMap, memoizeProp, objectHash } from '../utils'
 import type { DefaultTagColors } from './assignTagColors'
-import { computeColorValues } from './compute-color-values'
-import { computeCompoundColorValues } from './compute-compound-colors'
-import { styleDefaults } from './defaults'
-import { type FittedNodeContent, fitNodeContent } from './fitNodeContent'
-import { defaultTheme } from './theme'
 import type {
   ColorLiteral,
   CustomColor,
@@ -35,6 +24,17 @@ import type {
   ThemeColor,
   ThemeColorValues,
 } from './types'
+import { DefaultTagColorValues, isDefaultTagColor } from '@likec4/style-preset/defaults'
+import chroma from 'chroma-js'
+import { defu } from 'defu'
+import { pick } from 'remeda'
+import { ensureSizes, flattenMarkdownOrString } from '../types'
+import { LRUMap, memoizeProp, objectHash } from '../utils'
+import { computeColorValues } from './compute-color-values'
+import { computeCompoundColorValues } from './compute-compound-colors'
+import { styleDefaults } from './defaults'
+import { type FittedNodeContent, fitNodeContent } from './fitNodeContent'
+import { defaultTheme } from './theme'
 
 export const defaultStyle: LikeC4StylesConfig = {
   theme: defaultTheme,

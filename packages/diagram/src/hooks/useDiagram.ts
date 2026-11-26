@@ -1,6 +1,3 @@
-import { useSelector as useXstateSelector } from '@xstate/react'
-import { shallowEqual } from 'fast-equals'
-import { type DependencyList, useCallback, useEffect, useRef } from 'react'
 import type { Subscription } from 'xstate'
 import type { DiagramApi } from '../likec4diagram/state/diagram-api'
 import type {
@@ -8,6 +5,9 @@ import type {
   DiagramContext,
   DiagramEmittedEvents,
 } from '../likec4diagram/state/types'
+import { useSelector as useXstateSelector } from '@xstate/react'
+import { shallowEqual } from 'fast-equals'
+import { type DependencyList, useCallback, useEffect, useRef } from 'react'
 import { useDiagram, useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'
 

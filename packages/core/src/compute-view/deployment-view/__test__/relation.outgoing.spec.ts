@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
+import { describe, expect, it } from 'vitest'
 import { type Types, $exclude, $include, computeNodesAndEdges } from './fixture'
 
 function expectComputed(...rules: DeploymentRulesBuilderOp<Types>[]) {
@@ -43,13 +43,16 @@ describe('OutgoingRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude({
-        outgoing: {
-          ref: {
-            model: 'cloud.frontend',
+      $exclude(
+        {
+          outgoing: {
+            ref: {
+              model: 'cloud.frontend',
+            },
           },
         },
-      }, { where: 'tag is #old' }),
+        { where: 'tag is #old' },
+      ),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',
@@ -74,13 +77,16 @@ describe('OutgoingRelationPredicate', () => {
       $include('prod.eu.*'),
       $include('prod.eu.zone1.**'),
       $exclude('prod.eu.zone2'),
-      $exclude({
-        outgoing: {
-          ref: {
-            model: 'cloud.frontend',
+      $exclude(
+        {
+          outgoing: {
+            ref: {
+              model: 'cloud.frontend',
+            },
           },
         },
-      }, { where: 'tag is #next' }),
+        { where: 'tag is #next' },
+      ),
     ).toEqual({
       Nodes: [
         'prod.eu.zone1',

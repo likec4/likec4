@@ -1,7 +1,7 @@
 import type { NonEmptyArray, Point } from '@likec4/core/types'
+import type { XYStoreState } from './useXYFlow'
 import { describe, expect, it } from 'vitest'
 import { selectLabelRoutes, selectTrackRoutes } from './useEdgeTracks'
-import type { XYStoreState } from './useXYFlow'
 
 const node = (id: string, x: number, y: number) =>
   [id, {

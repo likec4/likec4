@@ -11,7 +11,6 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { invariant, nonNullable } from '@likec4/core/utils'
 import type { PartialDeep } from 'type-fest'
 import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
@@ -20,14 +19,15 @@ import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
-import type { ElementViewDisplayVariant } from './machine.setup'
 import type { DistributionMode } from './distributors'
+import type { ElementViewDisplayVariant } from './machine.setup'
 import type { ResizeMode } from './machine.setup'
 import type {
   DiagramActorRef,
   DiagramContext,
   DiagramEvents,
 } from './types'
+import { invariant, nonNullable } from '@likec4/core/utils'
 import { findDiagramEdge, findDiagramNode, findNodeByModelFqn, typedSystem } from './utils'
 
 type Any = t.aux.AnyLayouted

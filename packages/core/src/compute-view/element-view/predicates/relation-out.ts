@@ -1,12 +1,12 @@
-import { anyPass, unique } from 'remeda'
 import type { LikeC4Model, RelationshipModel } from '../../../model'
-import { type ConnectionModel, Connection } from '../../../model'
 import type { AnyAux } from '../../../types'
+import type { ConnectionWhere, PredicateExecutor } from '../_types'
+import { anyPass, unique } from 'remeda'
+import { type ConnectionModel, Connection } from '../../../model'
 import { type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
 import { nonexhaustive } from '../../../utils'
 import { toSet } from '../../../utils/iterable/to'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
-import type { ConnectionWhere, PredicateExecutor } from '../_types'
 import { findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const OutgoingExprPredicate: PredicateExecutor<ModelRelationExpr.Outgoing<AnyAux>> = {

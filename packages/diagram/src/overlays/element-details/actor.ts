@@ -1,5 +1,6 @@
 import type { DiagramView, NodeId } from '@likec4/core/types'
 import type { Rect } from '@xyflow/system'
+import type { DetailsSubject } from './subject'
 import {
   type ActorRef,
   type SnapshotFrom,
@@ -9,7 +10,6 @@ import {
   setup,
 } from 'xstate'
 import { type RelationshipsBrowserActorRef, relationshipsBrowserLogic } from '../relationships-browser/actor'
-import type { DetailsSubject } from './subject'
 
 export type ElementDetailsInput = {
   subject: DetailsSubject

@@ -1,3 +1,7 @@
+import type { BaseNodePropsWithData } from '../../../base'
+import type { RelationshipDetailsTypes } from '../_types'
+import { Handle } from '@xyflow/react'
+import { Position } from '@xyflow/system'
 import {
   type ElementTagsProps,
   CompoundNodeContainer,
@@ -8,15 +12,10 @@ import {
   ElementShape,
   ElementTags as ElementTagsPrimitive,
 } from '../../../base-primitives'
-import { ElementActions } from './ElementActions'
-
-import { Handle } from '@xyflow/react'
-import { Position } from '@xyflow/system'
-import type { BaseNodePropsWithData } from '../../../base'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { RelationshipDetailsTypes } from '../_types'
+import { ElementActions } from './ElementActions'
 
 function ElementTags(props: ElementTagsProps) {
   const diagram = useDiagram()

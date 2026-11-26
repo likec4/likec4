@@ -1,17 +1,17 @@
+import type { Tagged } from 'type-fest'
+import type {
+  LikeC4LangiumDocument,
+  ParsedLikeC4LangiumDocument,
+} from '../../ast'
+import type { LikeC4Services } from '../../module'
 import { type NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { difference, objectHash, stringHash } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { Disposable, DocumentState, Emitter, SimpleCache, URI } from 'langium'
 
 import { forEach, forEachObj, groupBy, map, mapValues, pipe, prop, reduce, unique } from 'remeda'
-import type { Tagged } from 'type-fest'
 import { type FileEvent, FileChangeType } from 'vscode-languageserver-protocol'
-import type {
-  LikeC4LangiumDocument,
-  ParsedLikeC4LangiumDocument,
-} from '../../ast'
 import { logger as rootLogger } from '../../logger'
-import type { LikeC4Services } from '../../module'
 import { ADisposable } from '../../utils'
 
 type DescriptionFileURI = Tagged<string, 'DescriptionFileURI'>

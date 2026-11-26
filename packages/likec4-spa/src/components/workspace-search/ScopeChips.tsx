@@ -1,10 +1,10 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { SearchResult } from './search-index'
+import type { WorkspaceIndex } from './search-index'
 import { byId } from '@likec4/core/utils'
 import { styled } from '@likec4/styles/jsx'
 import { Count, Truncate } from '../ui/Text'
 import { ProjectMonogram } from '../workspace-overview/ProjectMonogram'
-import type { SearchResult } from './search-index'
-import type { WorkspaceIndex } from './search-index'
 import { SearchPanel } from './SearchPanel'
 
 /**

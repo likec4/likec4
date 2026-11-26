@@ -1,3 +1,8 @@
+import type {
+  DiagramView,
+  XYPoint,
+} from '@likec4/core/types'
+import type { Viewport } from '@xyflow/react'
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
@@ -6,11 +11,6 @@ import {
   isNonEmptyArray,
   nonNullable,
 } from '@likec4/core'
-import type {
-  DiagramView,
-  XYPoint,
-} from '@likec4/core/types'
-import type { Viewport } from '@xyflow/react'
 import {
   getNodesBounds,
   getViewportForBounds,

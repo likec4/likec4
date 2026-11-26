@@ -1,6 +1,6 @@
-import { expectTypeOf, test } from 'vitest'
 import type { LikeC4Model } from '../model/LikeC4Model'
 import type { Aux, ParsedLikeC4ModelData, SpecAux } from '../types'
+import { expectTypeOf, test } from 'vitest'
 import { Builder } from './Builder'
 
 test('Builder types - style 1', () => {

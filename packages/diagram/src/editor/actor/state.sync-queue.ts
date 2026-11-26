@@ -1,7 +1,7 @@
+import type { DiagramEvents } from '../../likec4diagram/state/types'
 import { invariant } from '@likec4/core'
 import { findLast } from 'remeda'
 import { assign, enqueueActions, log, sendTo } from 'xstate'
-import type { DiagramEvents } from '../../likec4diagram/state/types'
 import { typedSystem } from '../../likec4diagram/state/utils'
 import {
   cancelSync,

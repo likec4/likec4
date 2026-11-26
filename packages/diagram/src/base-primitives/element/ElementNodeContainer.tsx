@@ -1,10 +1,10 @@
+import type { MotionNodeLayoutOptions, MotionStyle, Variants } from 'motion/react'
+import type { BaseNodePropsWithData } from '../../base/types'
 import { type Color, type ComputedNodeStyle, type ElementShape, ensureSizes } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { elementNode } from '@likec4/styles/recipes'
-import type { MotionNodeLayoutOptions, MotionStyle, Variants } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type PropsWithChildren, forwardRef } from 'react'
-import type { BaseNodePropsWithData } from '../../base/types'
 
 type RequiredData = {
   color: Color

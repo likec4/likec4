@@ -1,9 +1,9 @@
-import { calcViewLayoutHash } from '@likec4/core/compute-view'
 import type { DiagramEdge, DiagramNode, LayoutedView, ViewChange } from '@likec4/core/types'
+import type { DiagramContext } from './types'
+import { calcViewLayoutHash } from '@likec4/core/compute-view'
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
-import type { DiagramContext } from './types'
 
 function omitFields<T extends { drifts?: any; diffBefore?: any; diffStatus?: any }>({
   drifts: _drifts,

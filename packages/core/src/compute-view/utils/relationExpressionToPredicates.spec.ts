@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { ComputedNode } from '../../types'
+import { describe, expect, it } from 'vitest'
 import {
   type $Aux,
   $incoming,

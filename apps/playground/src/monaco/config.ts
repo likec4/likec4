@@ -1,3 +1,5 @@
+import type { EditorAppConfig } from 'monaco-languageclient/editorApp'
+import type { MonacoVscodeApiConfig } from 'monaco-languageclient/vscodeApiWrapper'
 import * as monaco from '@codingame/monaco-vscode-editor-api'
 import editorWorkerUrl from '@codingame/monaco-vscode-editor-api/esm/vs/editor/editor.worker?worker&url'
 import {
@@ -6,9 +8,7 @@ import {
 } from '@codingame/monaco-vscode-files-service-override'
 import textMateWorkerUrl from '@codingame/monaco-vscode-textmate-service-override/worker?worker&url'
 import LikeC4LspWorker from '@likec4/language-server/browser-worker?worker'
-import type { EditorAppConfig } from 'monaco-languageclient/editorApp'
 import { type ConnectionConfig, type LanguageClientConfig, LcWorker } from 'monaco-languageclient/lcwrapper'
-import type { MonacoVscodeApiConfig } from 'monaco-languageclient/vscodeApiWrapper'
 import { useWorkerFactory, Worker as WorkerDescriptor } from 'monaco-languageclient/workerFactory'
 import { first } from 'remeda'
 import languageConfig from '../../language-configuration.json?raw'

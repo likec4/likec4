@@ -1,9 +1,9 @@
 import type { ProjectId } from '@likec4/core'
+import type { ApplyEditsResult, ModelEditRequest } from '../model-diff'
+import type { LikeC4Services, LikeC4SharedServices } from '../module'
 import { DiffId, Fqn, nonNullable } from '@likec4/core'
 import { type ExecuteCommandAcceptor, AbstractExecuteCommandHandler } from 'langium/lsp'
 import { logger as rootLogger } from '../logger'
-import type { ApplyEditsResult, ModelEditRequest } from '../model-diff'
-import type { LikeC4Services, LikeC4SharedServices } from '../module'
 
 const logger = rootLogger.getChild('commands')
 

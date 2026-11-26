@@ -1,7 +1,7 @@
+import type { ReactNode } from 'react'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { m } from 'motion/react'
-import type { ReactNode } from 'react'
 import { SEQ_BADGE_LAYOUT_ID, SEQ_TRANSITION } from './motion'
 
 const stepBadgeBase = css.raw({

@@ -1,11 +1,11 @@
 import type { LayoutedDynamicView, LayoutedElementView, LayoutedViewDriftReason, LayoutType } from '@likec4/core/types'
+import type { EditorCalls } from '../../editor/actor/setup'
+import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { scalar } from '@likec4/core/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback, fromPromise } from 'xstate'
 import { type EnabledFeatures, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
-import type { EditorCalls } from '../../editor/actor/setup'
-import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramMachine } from './machine'
 import { deriveToggledFeatures, isComparingLayouts } from './machine.setup'
 

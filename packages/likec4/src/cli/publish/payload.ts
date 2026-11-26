@@ -1,6 +1,6 @@
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
-import { relative } from 'node:path'
 import type { GitCommit, GitProvenance } from './git'
+import { relative } from 'node:path'
 
 /**
  * Still-absolute result of `relative()`, after separators were normalized:

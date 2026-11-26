@@ -1,3 +1,5 @@
+import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
+import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 import { type DiagramEdge, type DiagramView, invariant, isAncestor, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Group } from '@mantine/core'
@@ -13,8 +15,6 @@ import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEdgeLabelFontLoader } from '../../hooks/useEdgeLabelFontLoader'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
-import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
 import {
   type RelationshipDetailsViewData,
   computeEdgeDetailsViewData,

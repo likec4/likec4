@@ -1,3 +1,5 @@
+import type { AnySpec } from '../types/_aux'
+import type { ElementModel } from './ElementModel'
 import { expectTypeOf, test } from 'vitest'
 import { Builder } from '../builder'
 import {
@@ -29,8 +31,6 @@ import {
   type ViewWithType,
   _stage,
 } from '../types'
-import type { AnySpec } from '../types/_aux'
-import type { ElementModel } from './ElementModel'
 import { LikeC4Model } from './LikeC4Model'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { DiagnosticItem } from './result'
+import { describe, expect, it } from 'vitest'
 import { buildValidateResult, parseMaxWarnings } from './result'
 
 const error = (file: string): DiagnosticItem => ({

@@ -1,6 +1,6 @@
+import type { ReactNode } from 'react'
 import { createStyleContext } from '@likec4/styles/jsx'
 import { searchOverlay } from '@likec4/styles/recipes'
-import type { ReactNode } from 'react'
 
 const { withRootProvider, withContext } = createStyleContext(searchOverlay)
 

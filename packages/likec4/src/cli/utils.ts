@@ -1,9 +1,9 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import { ProjectId } from '@likec4/core/types'
+import type { LikeC4 } from '../LikeC4'
 import { existsSync, statSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
+import { ProjectId } from '@likec4/core/types'
 import { URI } from 'vscode-uri'
-import type { LikeC4 } from '../LikeC4'
 import { logger } from '../logger'
 
 function ensureProjectId(likec4: LikeC4, project: string | undefined): ProjectId {

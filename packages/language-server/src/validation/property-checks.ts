@@ -1,8 +1,8 @@
-import { nonexhaustive } from '@likec4/core'
 import type { AstNode, ValidationCheck } from 'langium'
+import type { LikeC4Services } from '../module'
+import { nonexhaustive } from '@likec4/core'
 import { isNumber, isString } from 'remeda'
 import { ast, resolveDescriptionFile } from '../ast'
-import type { LikeC4Services } from '../module'
 import { tryOrLog } from './_shared'
 
 export const opacityPropertyRuleChecks = (

@@ -6,9 +6,9 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { completable } from '@modelcontextprotocol/sdk/server/completable.js'
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'
 import * as z from 'zod/v4'
 import { useLanguageServices } from '../ctx'

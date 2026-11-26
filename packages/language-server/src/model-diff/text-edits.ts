@@ -1,8 +1,8 @@
-import { getOrCreate } from '@likec4/core/utils'
 import type { AstNode, CstNode, LangiumDocument } from 'langium'
+import type { Range, TextEdit, WorkspaceEdit } from 'vscode-languageserver-types'
+import { getOrCreate } from '@likec4/core/utils'
 import { AstUtils } from 'langium'
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import type { Range, TextEdit, WorkspaceEdit } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 
 /**

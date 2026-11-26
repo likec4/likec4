@@ -9,11 +9,11 @@ import type { LikeC4ProjectConfig, WebappExportFormat } from '@likec4/config'
 import type { LikeC4Project, NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import type { URI } from 'langium'
+import type { Rolldown } from 'vite'
+import type { AIOptions } from '../plugin'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
-import type { Rolldown } from 'vite'
 import { type ViteLogger, logGenerating } from '../logger'
-import type { AIOptions } from '../plugin'
 import { isWebappExportFormatEnabled } from './export-formats'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
@@ -196,9 +196,9 @@ export function ${fnName}(projectId) {
     const projects = Object.keys(${registryName})
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     ${
-        exportFormat
-          ? `return Promise.reject(new Error(${disabledExportMessageLiteral} + projectId))`
-          : `
+      exportFormat
+        ? `return Promise.reject(new Error(${disabledExportMessageLiteral} + projectId))`
+        : `
     if (projects.length === 0) {
       return Promise.reject(new Error('No projects found, invalid state'))
     }
@@ -206,7 +206,7 @@ export function ${fnName}(projectId) {
     console.warn('Falling back to project: ' + projectId)
     return ${fnName}(projectId)
     `
-      }
+    }
   }
   const promise = fn()
   cachedPromises.set(projectId, promise)

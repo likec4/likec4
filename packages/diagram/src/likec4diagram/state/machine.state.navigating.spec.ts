@@ -1,9 +1,9 @@
 import type { DiagramView, LayoutedDynamicView, LayoutedElementView } from '@likec4/core/types'
+import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { scalar } from '@likec4/core/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback } from 'xstate'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
-import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramMachine } from './machine'
 
 // Minimal mock views — use `satisfies` so TypeScript validates the shapes.

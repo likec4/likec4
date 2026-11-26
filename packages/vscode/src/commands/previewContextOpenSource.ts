@@ -1,7 +1,7 @@
+import type { PreviewPanel } from './types'
 import { toValue, useCommand } from 'reactive-vscode'
 import { commands as cmd } from 'vscode'
 import { commands } from '../meta'
-import type { PreviewPanel } from './types'
 
 export interface PreviewContextOpenSourceDeps {
   sendTelemetry(commandId: string): void

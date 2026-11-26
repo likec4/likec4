@@ -1,4 +1,3 @@
-import { isArray, isString, map } from 'remeda'
 import type { LiteralUnion, Simplify } from 'type-fest'
 import type {
   Any,
@@ -12,9 +11,10 @@ import type {
   Step,
   WhereOperator,
 } from '../types'
-import { FqnExpr } from '../types'
 import type { Participant, ParticipantOperator } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
+import { isArray, isString, map } from 'remeda'
+import { FqnExpr } from '../types'
 
 export interface LikeC4ViewBuilder<
   Types extends AnyTypes,
@@ -66,7 +66,8 @@ export namespace ViewPredicate {
   export type WhereKind<Kind extends string> = `kind ${'is' | 'is not'} ${Kind}`
   export type WhereParticipant<Types extends AnyTypes> = `${Participant}.${
     | WhereTag<Types['Tag']>
-    | WhereKind<Types['ElementKind']>}`
+    | WhereKind<Types['ElementKind']>
+  }`
 
   export type WhereEq<Types extends AnyTypes> =
     | ViewPredicate.WhereTag<Types['Tag']>

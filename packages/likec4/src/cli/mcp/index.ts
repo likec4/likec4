@@ -1,7 +1,7 @@
+import type { Argv } from 'yargs'
 import { configureLanguageServerLogger } from '@likec4/language-server'
 import { startLikeC4MCP } from '@likec4/mcp'
 import k from 'tinyrainbow'
-import type { Argv } from 'yargs'
 import { boxen } from '../../logger'
 import { logLevel, path, useDotBin, verbose, verboseLogLevel } from '../options'
 

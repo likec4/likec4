@@ -1,3 +1,4 @@
+import type { Connection } from 'vscode-languageserver'
 import { nonexhaustive } from '@likec4/core/utils'
 import {
   type Logger,
@@ -9,7 +10,6 @@ import {
   loggable,
   logger as root,
 } from '@likec4/log'
-import type { Connection } from 'vscode-languageserver'
 
 export const logger: Logger = root.getChild('server')
 

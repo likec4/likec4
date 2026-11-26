@@ -1,9 +1,9 @@
+import type { LikeC4ProjectsContext } from '../../context/LikeC4ProjectsContext'
 import { css } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import { Button, Highlight, Menu, MenuDropdown, MenuItem, MenuSearch, MenuTarget, ScrollArea } from '@mantine/core'
 import { IconChevronDown, IconSearch } from '@tabler/icons-react'
 import { memo, useState } from 'react'
-import type { LikeC4ProjectsContext } from '../../context/LikeC4ProjectsContext'
 import { useLikeC4ProjectId, useLikeC4ProjectsContext } from '../../hooks/useLikeC4Project'
 import { filterProjects, projectSearchHighlights } from '../../utils/filterProjects'
 

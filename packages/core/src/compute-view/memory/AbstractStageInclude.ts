@@ -1,6 +1,3 @@
-import { partition } from 'remeda'
-import { mergeConnections } from '../../model'
-import { intersection, isIterable, union } from '../../utils'
 import type {
   AnyCtx,
   CtxConnection as Connection,
@@ -10,6 +7,9 @@ import type {
   StageExpression,
   StageInclude,
 } from './_types'
+import { partition } from 'remeda'
+import { mergeConnections } from '../../model'
+import { intersection, isIterable, union } from '../../utils'
 
 export abstract class AbstractStageInclude<T extends AnyCtx = GenericCtx> implements StageInclude<T> {
   // New elements

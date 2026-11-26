@@ -5,6 +5,19 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type {
+  DiagramNode,
+  DiagramView,
+  LayoutType,
+  NodeId,
+  StepPath,
+  ViewChange,
+  ViewId,
+} from '@likec4/core/types'
+import type { Writable } from 'type-fest'
+import type { XYStoreApi } from '../../hooks/useXYFlow'
+import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import type { Types } from '../types'
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
@@ -17,31 +30,18 @@ import {
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import { getViewFolderPath } from '@likec4/core/model'
-import type {
-  DiagramNode,
-  DiagramView,
-  LayoutType,
-  NodeId,
-  StepPath,
-  ViewChange,
-  ViewId,
-} from '@likec4/core/types'
 import { isString } from '@likec4/core/utils'
 import { type NodeChange, type Rect, getNodeDimensions, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy, mapToObj, omit } from 'remeda'
-import type { Writable } from 'type-fest'
 import {
   type ActorSystem,
   assertEvent,
 } from 'xstate'
 import { Base } from '../../base'
-import type { XYStoreApi } from '../../hooks/useXYFlow'
-import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import { type DetailsSubject, detailsSubject } from '../../overlays/element-details/subject'
 import { viewRouting } from '../../utils/view-routing'
 import { convertToXYFlow } from '../convert-to-xyflow'
-import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'
 import { type AlignmentMode, getAligner, toNodeRect } from './aligners'
 import {

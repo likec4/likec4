@@ -1,6 +1,6 @@
-import { iconGroups, iconRegistry } from '@likec4/language-server/icons'
 import type { IconGroup } from '@likec4/language-server/icons'
 import type * as yargs from 'yargs'
+import { iconGroups, iconRegistry } from '@likec4/language-server/icons'
 
 const listIconsCmd = (yargs: yargs.Argv) => {
   return yargs

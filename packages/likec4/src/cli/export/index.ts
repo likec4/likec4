@@ -1,6 +1,6 @@
+import type * as yargs from 'yargs'
 import { pipe } from 'remeda'
 import k from 'tinyrainbow'
-import type * as yargs from 'yargs'
 import { drawioCmd } from './drawio/handler'
 import { jpgCmd } from './jpg/handler'
 import { jsonCmd } from './json/handler'

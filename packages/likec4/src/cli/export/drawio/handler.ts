@@ -1,6 +1,9 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProjectId } from '@likec4/core/types'
 import type { GenerateDrawioOptions } from '@likec4/generators'
+import type { Argv } from 'yargs'
+import { mkdir, readdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
+import { dirname, join, relative, resolve } from 'node:path'
 import {
   buildDrawioExportOptionsForViews,
   DEFAULT_DRAWIO_ALL_FILENAME,
@@ -9,10 +12,7 @@ import {
 } from '@likec4/generators'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
-import { mkdir, readdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
-import { dirname, join, relative, resolve } from 'node:path'
 import k from 'tinyrainbow'
-import type { Argv } from 'yargs'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'

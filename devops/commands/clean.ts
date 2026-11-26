@@ -1,5 +1,5 @@
-import { defineCommand } from 'citty'
 import { resolve } from 'node:path'
+import { defineCommand } from 'citty'
 import { $, chalk, echo, fs, path } from 'zx'
 import { loadPrepackGitignore } from './prepack.ts'
 

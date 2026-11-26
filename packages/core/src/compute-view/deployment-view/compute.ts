@@ -1,6 +1,7 @@
+import type { AnyAux, DeploymentViewRule } from '../../types'
+import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { findLast, map } from 'remeda'
 import { type DeploymentConnectionModel, type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import type { AnyAux, DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
   type ParsedDeploymentView as DeploymentView,
@@ -15,7 +16,6 @@ import { applyCustomRelationProperties } from '../utils/applyCustomRelationPrope
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { createRelationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
-import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { withResolvedRouting } from '../utils/view-routing'

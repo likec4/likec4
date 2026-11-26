@@ -1,5 +1,5 @@
-import { type Storage, createStorage } from 'unstorage'
 import type { LikeC4SharedServices } from '../module'
+import { type Storage, createStorage } from 'unstorage'
 
 export interface UnstorageModuleContext {
   unstorage(services: LikeC4SharedServices): Storage

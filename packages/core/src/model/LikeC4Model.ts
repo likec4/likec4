@@ -1,6 +1,4 @@
-import { entries, hasAtLeast, isEmpty, keys, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import type { IsAny } from 'type-fest'
-import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
   Any,
   Aux,
@@ -21,7 +19,6 @@ import type {
   ViewManualLayoutSnapshot,
   WhereOperator,
 } from '../types'
-import { _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import type {
   AnyComputed,
   AnyLayouted,
@@ -33,6 +30,24 @@ import type {
   UnknownLayouted,
   UnknownParsed,
 } from '../types/_aux'
+import type {
+  DeployedInstanceModel,
+  DeploymentNodeModel,
+  DeploymentRelationModel,
+} from './DeploymentElementModel'
+import type {
+  $ModelData,
+  $View,
+  $ViewModel,
+  ElementOrFqn,
+  IncomingFilter,
+  OutgoingFilter,
+  RelationOrId,
+} from './types'
+import type { NodeModel } from './view/NodeModel'
+import { entries, hasAtLeast, isEmpty, keys, map, pipe, prop, sort, sortBy, values } from 'remeda'
+import { LikeC4Styles } from '../styles/LikeC4Styles'
+import { _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
 import * as aux from '../types/_aux'
 import * as scalar from '../types/scalar'
 import {
@@ -46,27 +61,12 @@ import {
 } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap, LRUMap } from '../utils/mnemonist'
-import type {
-  DeployedInstanceModel,
-  DeploymentNodeModel,
-  DeploymentRelationModel,
-} from './DeploymentElementModel'
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { type ElementsIterator, ElementModel } from './ElementModel'
 import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
-import type {
-  $ModelData,
-  $View,
-  $ViewModel,
-  ElementOrFqn,
-  IncomingFilter,
-  OutgoingFilter,
-  RelationOrId,
-} from './types'
 import { getId, getViewFolderPath, normalizeViewPath, splitViewFolderPath, VIEW_FOLDERS_SEPARATOR } from './utils'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
-import type { NodeModel } from './view/NodeModel'
 
 export class LikeC4Model<A extends Any = Any> {
   /**

@@ -1,7 +1,7 @@
+import type { LikeC4Services } from '../../module'
 import { FqnExpr, RelationExpr } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../../ast'
-import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
 export const checkRelationExpr = (services: LikeC4Services): ValidationCheck<ast.RelationExpr> => {

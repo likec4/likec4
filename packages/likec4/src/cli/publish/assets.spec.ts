@@ -1,9 +1,11 @@
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
-import { ProjectId } from '@likec4/core'
+import type { GitProvenance } from './git'
+import type { PublishProject } from './payload'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { ProjectId } from '@likec4/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   ASSET_MAX_BYTES,
@@ -13,8 +15,6 @@ import {
   collectFileIcons,
   rewriteFileIcons,
 } from './assets'
-import type { GitProvenance } from './git'
-import type { PublishProject } from './payload'
 import { buildPublishPayload } from './payload'
 
 const fixtures = join(dirname(fileURLToPath(import.meta.url)), '__fixtures__')

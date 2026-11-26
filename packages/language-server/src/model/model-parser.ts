@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core'
+import type { LikeC4Services } from '../module'
 import { hasProp, invariant, MultiMap, objectHash } from '@likec4/core/utils'
 import { type LangiumDocument, type Stream, Disposable, DocumentState, Emitter } from 'langium'
 import { pipe } from 'remeda'
@@ -19,7 +20,6 @@ import {
   LikeC4DocumentPropKeys,
 } from '../ast'
 import { logger as rootLogger } from '../logger'
-import type { LikeC4Services } from '../module'
 import { ADisposable, stringHash } from '../utils'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'

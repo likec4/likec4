@@ -1,9 +1,9 @@
 import type { AnyTextAdapter } from '@tanstack/ai'
+import type { AIOptions } from '../plugin'
 import { isTruthy, once } from 'remeda'
 import { env } from 'std-env'
 import { ensurePackage } from '../ensurePackage'
 import { logger as rootLogger } from '../logger'
-import type { AIOptions } from '../plugin'
 import { k } from '../virtuals/_shared'
 
 const logger = rootLogger.getChild('ai')

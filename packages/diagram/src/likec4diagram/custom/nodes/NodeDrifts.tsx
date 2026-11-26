@@ -1,6 +1,6 @@
+import type { Types } from '../../types'
 import { Box } from '@likec4/styles/jsx'
 import { useIsComparingLayouts } from '../../../context/ComparingLayoutsContext'
-import type { Types } from '../../types'
 
 export type NodeDriftsProps = {
   nodeProps: Types.NodeProps
@@ -25,7 +25,6 @@ export function NodeDrifts({ nodeProps: { data } }: NodeDriftsProps) {
           outlineOffset: '1.5',
         },
       }}
-    >
-    </Box>
+    ></Box>
   )
 }

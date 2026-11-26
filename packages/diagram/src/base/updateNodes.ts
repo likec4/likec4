@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { BaseNode } from './types'
 import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq, shallowEqual as isShallowEqual } from 'fast-equals'
 import { hasSubObject, isDefined, pickBy } from 'remeda'
-import type { BaseNode } from './types'
 
 const EMPTY_OBJ = {}
 

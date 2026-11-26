@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo, useRef } from 'react'
 import { isFunction, keys, mapToObj } from 'remeda'
-import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
 type RequiredOrNull<T> = {
   [P in keyof T]-?: NonNullable<T[P]> | null

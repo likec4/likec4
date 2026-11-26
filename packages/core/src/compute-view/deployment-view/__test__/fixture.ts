@@ -1,8 +1,8 @@
-import { map, prop } from 'remeda'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
+import type { DeploymentViewRule, ParsedDeploymentView as DeploymentView } from '../../../types'
+import { map, prop } from 'remeda'
 import { Builder } from '../../../builder'
 import { LikeC4Model } from '../../../model'
-import type { DeploymentViewRule, ParsedDeploymentView as DeploymentView } from '../../../types'
 import { withReadableEdges } from '../../utils/with-readable-edges'
 import { computeDeploymentView } from '../compute'
 

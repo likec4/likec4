@@ -1,10 +1,10 @@
 import type { DiagramEdge } from '@likec4/core/types'
+import type { UndefinedOnPartialDeep } from 'type-fest'
+import type { BaseEdgePropsWithData } from '../../base/types'
 import { cx } from '@likec4/styles/css'
 import { edgeLabel } from '@likec4/styles/recipes'
 import { type HTMLAttributes, type PropsWithChildren } from 'react'
 import { isTruthy } from 'remeda'
-import type { UndefinedOnPartialDeep } from 'type-fest'
-import type { BaseEdgePropsWithData } from '../../base/types'
 
 type Data = UndefinedOnPartialDeep<
   Pick<

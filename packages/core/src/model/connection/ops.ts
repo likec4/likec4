@@ -1,12 +1,12 @@
-import { map, pipe } from 'remeda'
 import type { IterableContainer, ReorderedArray } from '../../types'
+import type { Connection } from './Connection'
+import { map, pipe } from 'remeda'
 import { isString } from '../../utils'
 import {
   isAncestor,
   isDescendantOf,
   sortNaturalByFqn,
 } from '../../utils/fqn'
-import type { Connection } from './Connection'
 
 /**
  * Check if connection is nested inside another connection

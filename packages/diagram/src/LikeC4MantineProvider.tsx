@@ -1,5 +1,5 @@
-import { css } from '@likec4/styles/css'
 import type { Token, TokenCategory, Tokens } from '@likec4/styles/tokens'
+import { css } from '@likec4/styles/css'
 import { token } from '@likec4/styles/tokens'
 import {
   type CSSVariablesResolver,

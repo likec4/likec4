@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { DeploymentRulesBuilderOp } from '../../../builder'
+import { describe, expect, it } from 'vitest'
 import { $exclude, $include, builder } from './fixture'
 import { TestHelper } from './TestHelper'
 

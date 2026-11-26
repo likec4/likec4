@@ -1,6 +1,6 @@
 import type { LocalWorkspace } from '#worker/types'
-import { useWorkspaces } from '$hooks/useWorkspaces'
 import type { DiagramView } from '@likec4/core'
+import { useWorkspaces } from '$hooks/useWorkspaces'
 import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { Box, HStack } from '@likec4/styles/jsx'
 import { Alert, Button, Container } from '@mantine/core'

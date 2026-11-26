@@ -1,3 +1,12 @@
+import type { ActorSystem } from 'xstate'
+import type { EditorActorRef } from '../../editor/actor/machine'
+import type { XYStoreState } from '../../hooks/useXYFlow'
+import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
+import type { OverlaysActorRef } from '../../overlays/overlaysActor'
+import type { SearchActorRef } from '../../search/searchActor'
+import type { Types } from '../types'
+import type { Context } from './machine.setup'
+import type { DiagramActorRef, NodeWithData, System } from './types'
 import { BBox } from '@likec4/core/geometry'
 import {
   type DeploymentFqn,
@@ -9,16 +18,7 @@ import {
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import { type Viewport, getEdgePosition, getNodesBounds, getViewportForBounds } from '@xyflow/system'
-import type { ActorSystem } from 'xstate'
-import type { EditorActorRef } from '../../editor/actor/machine'
-import type { XYStoreState } from '../../hooks/useXYFlow'
-import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
-import type { OverlaysActorRef } from '../../overlays/overlaysActor'
-import type { SearchActorRef } from '../../search/searchActor'
 import { pickViewBounds } from '../../utils/view-bounds'
-import type { Types } from '../types'
-import type { Context } from './machine.setup'
-import type { DiagramActorRef, NodeWithData, System } from './types'
 
 export const findNodeByModelFqn = <T extends NodeWithData>(
   xynodes: T[],

@@ -1,11 +1,11 @@
-import { concat, constant, filter, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
 import type { ElementModel, RelationshipModel } from '../../../model'
+import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
+import { concat, constant, filter, flatMap, hasAtLeast, map, partition, pipe, piped, prop, when } from 'remeda'
 import { ConnectionModel } from '../../../model'
 import { type AnyAux, type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
 import { invariant, isSameHierarchy } from '../../../utils'
 import { ifilter, ifind, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
-import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
 import {
   findConnectionsBetween,

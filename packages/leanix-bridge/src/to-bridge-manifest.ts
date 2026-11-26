@@ -6,11 +6,11 @@ import type {
   ManifestView,
   ViewId,
 } from './contracts'
+import type { BridgeModelInput } from './model-input'
 import {
   BRIDGE_MANIFEST_VERSION,
   BRIDGE_VERSION,
 } from './contracts'
-import type { BridgeModelInput } from './model-input'
 
 /** Optional overrides when building a bridge manifest (versions, timestamp, mapping profile). */
 export interface ToBridgeManifestOptions {

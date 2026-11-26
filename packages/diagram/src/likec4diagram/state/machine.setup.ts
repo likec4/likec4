@@ -5,12 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import {
-  hasProp,
-  isDynamicView,
-  nonexhaustive,
-} from '@likec4/core'
-import { BBox } from '@likec4/core/geometry'
 import type {
   DiagramEdge,
   DiagramNode,
@@ -29,8 +23,20 @@ import type {
 } from '@likec4/core/types'
 import type { EdgeChange, NodeChange, Rect, Viewport } from '@xyflow/system'
 import type { MouseEvent } from 'react'
-import { isTruthy, mapValues } from 'remeda'
 import type { PartialDeep } from 'type-fest'
+import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
+import type { OpenSourceParams, RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
+import type { DetailsSubject } from '../../overlays/element-details/subject'
+import type { Types } from '../types'
+import type { AlignmentMode } from './aligners'
+import type { DistributionMode } from './distributors'
+import {
+  hasProp,
+  isDynamicView,
+  nonexhaustive,
+} from '@likec4/core'
+import { BBox } from '@likec4/core/geometry'
+import { isTruthy, mapValues } from 'remeda'
 import {
   type ActorRefFromLogic,
   type StateMachine,
@@ -42,16 +48,10 @@ import { and, not, or, stateIn } from 'xstate/guards'
 import { MaxZoom, MinZoom } from '../../base'
 import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
-import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
-import type { OpenSourceParams, RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
 import { navigationPanelActorLogic } from '../../navigationpanel/actor'
-import type { DetailsSubject } from '../../overlays/element-details/subject'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
 import { defineActors } from '../../utils/defineActors'
-import type { Types } from '../types'
-import type { AlignmentMode } from './aligners'
-import type { DistributionMode } from './distributors'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'

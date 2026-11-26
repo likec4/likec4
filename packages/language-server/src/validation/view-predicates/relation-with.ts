@@ -1,6 +1,6 @@
 import type { ValidationCheck } from 'langium'
-import { ast, getViewRulePredicateContainer } from '../../ast'
 import type { LikeC4Services } from '../../module'
+import { ast, getViewRulePredicateContainer } from '../../ast'
 import { tryOrLog } from '../_shared'
 
 export const checkRelationExprWith = (

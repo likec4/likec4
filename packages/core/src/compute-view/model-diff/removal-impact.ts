@@ -1,4 +1,3 @@
-import { hasAtLeast, isTruthy } from 'remeda'
 import type {
   DeployedInstanceModel,
   DeploymentNodeModel,
@@ -7,8 +6,9 @@ import type {
   RelationshipModel,
 } from '../../model'
 import type { AnyAux, aux, ComputedEdge, ComputedNode, DiffStatus, scalar } from '../../types'
-import { ancestorsFqn, isAncestor } from '../../utils/fqn'
 import type { AdhocViewPredicate } from '../adhoc-view/compute'
+import { hasAtLeast, isTruthy } from 'remeda'
+import { ancestorsFqn, isAncestor } from '../../utils/fqn'
 import { withStatus } from './compare-view'
 
 /**

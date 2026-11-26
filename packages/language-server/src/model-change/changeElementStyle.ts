@@ -1,3 +1,5 @@
+import type { FqnIndex } from '../model'
+import type { LikeC4Services } from '../module'
 import {
   type DeploymentFqn,
   type Fqn,
@@ -12,8 +14,6 @@ import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-types'
 import { type LikeC4LangiumDocument, type ParsedAstView, ast } from '../ast'
-import type { FqnIndex } from '../model'
-import type { LikeC4Services } from '../module'
 
 const { findNodeForKeyword } = GrammarUtils
 
@@ -41,23 +41,24 @@ type ChangeElementStyleArg = {
  * - has exactly one target
  * - the target is an ElementRef to the given fqn
  */
-const isMatchingViewRule = (fqn: string, index: FqnIndex) =>
-(
-  rule: ast.ViewRule | ast.DynamicViewRule | ast.DeploymentViewRule,
-): rule is ast.ViewRuleStyle | ast.DeploymentViewRuleStyle => {
-  if (!ast.isViewRuleStyle(rule) && !ast.isDeploymentViewRuleStyle(rule)) {
-    return false
+const isMatchingViewRule =
+  (fqn: string, index: FqnIndex) =>
+  (
+    rule: ast.ViewRule | ast.DynamicViewRule | ast.DeploymentViewRule,
+  ): rule is ast.ViewRuleStyle | ast.DeploymentViewRuleStyle => {
+    if (!ast.isViewRuleStyle(rule) && !ast.isDeploymentViewRuleStyle(rule)) {
+      return false
+    }
+    const target = rule.targets.value
+    if (
+      !target || isTruthy(rule.targets.prev) || target.$type !== 'FqnRefExpr' || isTruthy(target.selector)
+    ) {
+      return false
+    }
+    const ref = target.ref?.value?.ref
+    const _fqn = ref ? index.resolve(ref) : null
+    return _fqn === fqn
   }
-  const target = rule.targets.value
-  if (
-    !target || isTruthy(rule.targets.prev) || target.$type !== 'FqnRefExpr' || isTruthy(target.selector)
-  ) {
-    return false
-  }
-  const ref = target.ref?.value?.ref
-  const _fqn = ref ? index.resolve(ref) : null
-  return _fqn === fqn
-}
 
 export function changeElementStyle(services: LikeC4Services, {
   view,

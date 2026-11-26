@@ -1,3 +1,5 @@
+import type { WithDeploymentModel } from './DeploymentModelParser'
+import type { WithExpressionV2 } from './FqnRefParser'
 import * as c4 from '@likec4/core'
 import { exact, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { filter, isNonNullish, mapToObj, pipe } from 'remeda'
@@ -5,8 +7,6 @@ import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout,
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
 import { parseTitleKeepingEscapedSlash, parseViewOrder, parseViewRouting, removeIndent, toSingleLine } from './Base'
-import type { WithDeploymentModel } from './DeploymentModelParser'
-import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithDeploymentView = ReturnType<typeof DeploymentViewParser>
 

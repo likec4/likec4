@@ -1,7 +1,7 @@
 import type { Element, Fqn, ModelRelation } from '../types'
 import type { AnyTypes, AnyTypesNested, Invalid, Types, ValidId } from './_types'
-import { Builder } from './Builder'
 import type { AddElement } from './Builder.element'
+import { Builder } from './Builder'
 
 export interface ModelBuilder<T extends AnyTypes> extends Builder<T> {
   __addElement(this: void, element: Element): Builder<T>

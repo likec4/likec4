@@ -1,7 +1,7 @@
+import type { ComputedDynamicView, StepPath } from '../../types'
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder/Builder'
-import type { ComputedDynamicView, StepPath } from '../../types'
 import { invariant } from '../../utils'
 import { computeFlow } from './computeFlow'
 

@@ -2,12 +2,12 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { LikeC4ProjectConfigOps } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
-import { describe } from 'vitest'
 import type { WorkspaceFolder } from 'vscode-languageserver'
-import { URI } from 'vscode-uri'
 import type { FileNode } from '../filesystem'
+import { LikeC4ProjectConfigOps } from '@likec4/config'
+import { describe } from 'vitest'
+import { URI } from 'vscode-uri'
 import { mockMethod, test as it } from '../test'
 
 const fileNode = (uri: URI): FileNode => ({

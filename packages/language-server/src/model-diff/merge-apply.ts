@@ -1,8 +1,8 @@
 import type { AstNode, LangiumDocument } from 'langium'
-import { AstUtils } from 'langium'
 import type { Range } from 'vscode-languageserver-types'
-import { type LikeC4LangiumDocument, ast } from '../ast'
 import type { DocumentEdits } from './text-edits'
+import { AstUtils } from 'langium'
+import { type LikeC4LangiumDocument, ast } from '../ast'
 
 const Indent = '  '
 

@@ -1,3 +1,5 @@
+import type { LikeC4Services } from '../module'
+import type { LikeC4NameProvider } from '../references'
 import { ancestorsFqn, Fqn, isAnyOf } from '@likec4/core'
 import { MultiMap } from '@likec4/core/utils'
 import { UriUtils } from 'langium'
@@ -9,8 +11,6 @@ import {
   ElementOps,
 } from '../ast'
 import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
-import type { LikeC4NameProvider } from '../references'
 import { readStrictFqn } from '../utils/elementRef'
 import { DocumentFqnIndex, FqnIndex } from './fqn-index'
 

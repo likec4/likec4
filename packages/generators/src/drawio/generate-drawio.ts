@@ -1,6 +1,4 @@
-import { LikeC4Styles } from '@likec4/core'
 import type { BBox } from '@likec4/core'
-import { isOrthoSpline, splineToPolyline } from '@likec4/core/geometry'
 import type {
   aux,
   DiagramNode,
@@ -11,6 +9,9 @@ import type {
   TextSize,
   ThemeColorValues,
 } from '@likec4/core/types'
+import type { DrawioRoundtripData } from './parse-drawio'
+import { LikeC4Styles } from '@likec4/core'
+import { isOrthoSpline, splineToPolyline } from '@likec4/core/geometry'
 import { flattenMarkdownOrString } from '@likec4/core/types'
 import { type MarkdownRefTitleResolver, resolveMarkdownRefs } from '@likec4/core/utils'
 import pako from 'pako'
@@ -41,7 +42,6 @@ import {
   MXGRAPH_PAGE_WIDTH,
   NODES_SPREAD_GAP,
 } from './constants'
-import type { DrawioRoundtripData } from './parse-drawio'
 import { parseDrawioRoundtripComments } from './parse-drawio'
 import { escapeXml } from './xml-utils'
 

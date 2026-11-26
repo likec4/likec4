@@ -1,5 +1,5 @@
-import { loggable } from '@likec4/log'
 import type { ViteDevServer } from 'vite'
+import { loggable } from '@likec4/log'
 import { logger } from './logger'
 
 /**

@@ -1,5 +1,5 @@
-import { entries, filter, flatMap, groupBy, map, mapValues, pipe, piped, prop, sortBy, unique } from 'remeda'
 import type { ComputedNode, NodeNotation } from '../../types'
+import { entries, filter, flatMap, groupBy, map, mapValues, pipe, piped, prop, sortBy, unique } from 'remeda'
 
 /**
  * Build element notations from computed nodes:

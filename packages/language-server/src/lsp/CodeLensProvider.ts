@@ -1,8 +1,8 @@
-import { type LangiumDocument, interruptAndCheck } from 'langium'
 import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
-import { isLikeC4LangiumDocument, ViewOps } from '../ast'
 import type { LikeC4Services } from '../module'
+import { type LangiumDocument, interruptAndCheck } from 'langium'
+import { isLikeC4LangiumDocument, ViewOps } from '../ast'
 import { projectIdFrom } from '../utils'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {

@@ -7,11 +7,10 @@ import type {
   HexColor,
   LikeC4Styles,
 } from '@likec4/core'
-
-import { entries, first, isNonNullish, isNumber, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
-import { attribute as _ } from 'ts-graphviz'
 import type { AILayoutHints } from './ai/types'
+import { entries, first, isNonNullish, isNumber, last } from 'remeda'
+import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
 import { pxToInch } from './utils'

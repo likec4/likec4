@@ -1,4 +1,5 @@
 import type * as c4 from '@likec4/core'
+import type { WithExpressionV2 } from './FqnRefParser'
 import {
   exact,
   FqnRef,
@@ -20,7 +21,6 @@ import {
 } from '../../ast'
 
 import { stringHash } from '../../utils/stringHash'
-import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithDeploymentModel = ReturnType<typeof DeploymentModelParser>
 

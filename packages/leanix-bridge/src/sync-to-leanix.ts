@@ -4,6 +4,7 @@
  * Supports a read-only "plan" step that queries LeanIX to produce a sync plan artifact (Phase 2).
  */
 
+import type { LeanixFactSheetDryRun, LeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 import { type BridgeManifest, type CanonicalId, LEANIX_PROVIDER } from './contracts'
 import { LeanixApiClient } from './leanix-api-client'
 import {
@@ -13,7 +14,6 @@ import {
   findFactSheetByNameAndType,
   patchFactSheetAttribute,
 } from './leanix-graphql-operations'
-import type { LeanixFactSheetDryRun, LeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
 
 /** Options for live sync (idempotent lookup, optional likec4Id custom attribute). */
 export interface SyncToLeanixOptions {

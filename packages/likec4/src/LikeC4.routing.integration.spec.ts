@@ -1,7 +1,7 @@
 import type { LayoutedView } from '@likec4/core'
+import type { ExpectStatic } from 'vitest'
 import { BBox, isOrthoSpline } from '@likec4/core/geometry'
 import { fromSources } from '@likec4/language-services/node'
-import type { ExpectStatic } from 'vitest'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 

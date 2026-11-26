@@ -1,7 +1,7 @@
 import type { AnyAux } from '../../../types'
+import type { ElementModel } from '../../ElementModel'
 import { isSameHierarchy } from '../../../utils/fqn'
 import { intersection } from '../../../utils/set'
-import type { ElementModel } from '../../ElementModel'
 import { ConnectionModel } from './ConnectionModel'
 
 /**

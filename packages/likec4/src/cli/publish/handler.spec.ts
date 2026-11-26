@@ -1,3 +1,4 @@
+import type { PublishPayload } from './payload'
 /**
  * Fast unit coverage of the orchestration: git provenance wiring, payload keys, transport
  * and error reporting. The language services are faked here - `handler.integration.spec.ts`
@@ -12,7 +13,6 @@ import { gunzipSync } from 'node:zlib'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearLogs, createGitRunner, fromWorkspace, logs, useRealWorkspace } from './__doubles__'
 import { publishHandler } from './handler'
-import type { PublishPayload } from './payload'
 
 type MockModelData = {
   _stage: 'layouted'

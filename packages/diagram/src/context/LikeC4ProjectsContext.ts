@@ -1,6 +1,6 @@
 import type { ProjectId } from '@likec4/core/types'
-import { createContext, useContext } from 'react'
 import type { LikeC4ProjectData } from '../LikeC4ProjectsProvider'
+import { createContext, useContext } from 'react'
 
 export type LikeC4ProjectsContext = {
   projects: ReadonlyArray<LikeC4ProjectData>

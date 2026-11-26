@@ -1,7 +1,7 @@
 import type { ComputedNode, Point, RelationshipArrowType } from '@likec4/core'
+import type { ArrowType, Color } from 'ts-graphviz'
 import { invariant } from '@likec4/core/utils'
 import { scale, toHex, transparentize } from 'khroma'
-import type { ArrowType, Color } from 'ts-graphviz'
 
 export function isCompound(node: Pick<ComputedNode, 'children'>): boolean {
   return node.children.length > 0

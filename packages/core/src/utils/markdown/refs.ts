@@ -23,10 +23,10 @@
  */
 import type { Literal, Nodes } from 'mdast'
 import type { CompileContext, Extension as FromMarkdownExtension, Token } from 'mdast-util-from-markdown'
-import { decodeString } from 'micromark-util-decode-string'
 import type { Code, Construct, Effects, Extension as MicromarkExtension, State } from 'micromark-util-types'
 import type { Processor } from 'unified'
 import type { MarkdownRef } from './types'
+import { decodeString } from 'micromark-util-decode-string'
 
 /**
  * mdast node for a ref.

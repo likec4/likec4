@@ -1,6 +1,7 @@
+import type { MouseEvent } from 'react'
+import type { ProjectsOverviewTypes } from '../_types'
 import { useCallbackRef } from '@mantine/hooks'
 import { IconZoomScan } from '@tabler/icons-react'
-import type { MouseEvent } from 'react'
 import {
   DefaultHandles,
   ElementActionButtons,
@@ -8,7 +9,6 @@ import {
   ElementNodeContainer,
   ElementShape,
 } from '../../base-primitives'
-import type { ProjectsOverviewTypes } from '../_types'
 import { useProjectsOverviewActor } from '../context'
 
 export function ProjectNode(props: ProjectsOverviewTypes.NodeProps<'project'>) {

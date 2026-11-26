@@ -1,6 +1,6 @@
+import type { Types, XYStoreState } from '@likec4/diagram/custom'
 import { type Fqn, nonexhaustive } from '@likec4/core'
 import { useDiagram } from '@likec4/diagram'
-import type { Types, XYStoreState } from '@likec4/diagram/custom'
 import { type NodeData, navigateToDef, readUiStateDef, updateUiStateDef } from '@likec4/vite-plugin/ai/tools'
 import {
   type UIMessage,

@@ -1,7 +1,7 @@
+import type { Segment } from './segment'
 import { describe, expect, it } from 'vitest'
 import { BBox } from './bbox'
 import { type LabelRoute, placeLabelAlongSegments, placeLabelsAlongRoutes } from './label'
-import type { Segment } from './segment'
 
 const seg = (x1: number, y1: number, x2: number, y2: number): Segment => [{ x: x1, y: y1 }, { x: x2, y: y2 }]
 const size = { width: 60, height: 20 }

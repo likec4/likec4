@@ -1,3 +1,4 @@
+import type { RelationshipsBrowserTypes } from './_types'
 import {
   type Fqn,
   GroupElementKind,
@@ -8,7 +9,6 @@ import {
 import { useDeepCompareMemo } from '@react-hookz/web'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
-import type { RelationshipsBrowserTypes } from './_types'
 import { LayoutRelationshipsViewResult } from './layout'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)

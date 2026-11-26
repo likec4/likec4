@@ -1,6 +1,6 @@
+import type { Column } from './ResultRows'
 import { type FocusEvent, type RefObject, useCallback, useRef } from 'react'
 import { PendingMove } from './pendingMove'
-import type { Column } from './ResultRows'
 
 /**
  * Brings row `k` of a column into view and focuses it; returns the row it went to, null for an empty column.

@@ -1,5 +1,5 @@
-import { styled } from '@likec4/styles/jsx'
 import type { ComponentProps } from 'react'
+import { styled } from '@likec4/styles/jsx'
 
 const Scroll = styled('div', {
   base: {

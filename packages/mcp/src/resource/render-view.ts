@@ -1,5 +1,5 @@
-import { registerAppResource, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { registerAppResource, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { readRenderViewClientBundle, readRenderViewClientStyles } from '../appAssets'
 import { renderViewResourceUri } from '../tools/render-view'
 

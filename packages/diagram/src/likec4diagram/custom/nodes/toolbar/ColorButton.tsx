@@ -1,4 +1,5 @@
 import type { LikeC4Theme, ThemeColor } from '@likec4/core'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { Flex } from '@likec4/styles/jsx'
 import {
   type PopoverProps,
@@ -17,7 +18,6 @@ import {
   TooltipGroup,
 } from '@mantine/core'
 import { useUpdateEffect } from '@react-hookz/web'
-import type { MouseEvent as ReactMouseEvent } from 'react'
 import { useState } from 'react'
 import { keys } from 'remeda'
 import { useLikeC4Styles } from '../../../../hooks/useLikeC4Styles'

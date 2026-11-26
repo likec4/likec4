@@ -1,15 +1,3 @@
-import {
-  type RelationshipArrowType,
-  type RelationshipLineType,
-  BorderStyles,
-  ElementShapes,
-  IconPositions,
-  RelationshipArrowTypes,
-  RelationshipLineTypes,
-  Sizes,
-  Sizings,
-  ThemeColors,
-} from '@likec4/core/styles'
 import type {
   BorderStyle,
   Color,
@@ -31,6 +19,18 @@ import type {
   ThemeColor,
   ViewId,
 } from '@likec4/core/types'
+import {
+  type RelationshipArrowType,
+  type RelationshipLineType,
+  BorderStyles,
+  ElementShapes,
+  IconPositions,
+  RelationshipArrowTypes,
+  RelationshipLineTypes,
+  Sizes,
+  Sizings,
+  ThemeColors,
+} from '@likec4/core/styles'
 import { exact } from '@likec4/core/types'
 import { isNonNullish, pickBy } from 'remeda'
 import * as z from 'zod/v4'

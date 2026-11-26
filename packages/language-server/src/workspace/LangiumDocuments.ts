@@ -1,11 +1,11 @@
 import type { NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LangiumDocument, Stream, URI } from 'langium'
+import type { LikeC4SharedServices } from '../module'
+import type { ProjectsManager } from './ProjectsManager'
 import { DefaultLangiumDocuments, stream } from 'langium'
 import { groupBy, map, pipe, prop } from 'remeda'
 import { type LikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
-import type { LikeC4SharedServices } from '../module'
 import { compareByUri } from '../utils/compareByUri'
-import type { ProjectsManager } from './ProjectsManager'
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
   constructor(protected override services: LikeC4SharedServices) {

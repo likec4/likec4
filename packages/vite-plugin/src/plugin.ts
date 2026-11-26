@@ -7,16 +7,17 @@
 
 import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
-import { fromWorkspace } from '@likec4/language-services/node'
-import { loggable } from '@likec4/log'
-import { existsSync } from 'node:fs'
-import { limitFunction } from 'p-limit'
-import { resolve } from 'pathe'
-import { funnel, isBoolean } from 'remeda'
 import type {
   Plugin,
   PluginOption,
 } from 'vite'
+import type { AIOptions, LikeC4VitePluginOptions } from './types'
+import { existsSync } from 'node:fs'
+import { fromWorkspace } from '@likec4/language-services/node'
+import { loggable } from '@likec4/log'
+import { limitFunction } from 'p-limit'
+import { resolve } from 'pathe'
+import { funnel, isBoolean } from 'remeda'
 import { detectAI } from './ai/detect-ai'
 import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
@@ -25,7 +26,6 @@ import { enableOpenProjectInEditor } from './openProjectInEditor'
 import { reloadModuleInEnvironments } from './reloadModule'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
-import type { AIOptions, LikeC4VitePluginOptions } from './types'
 import {
   type ProjectVirtualModule,
   type SharedVirtualModuleOptions,

@@ -1,4 +1,6 @@
 import type { AnyAux, aux, IteratorLike } from '../../../types'
+import type { RelationshipModel } from '../../RelationModel'
+import type { Connection } from '../Connection'
 import { invariant, stringHash } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { equals } from '../../../utils/set'
@@ -8,8 +10,6 @@ import {
   DeploymentNodeModel,
   RelationshipsAccum,
 } from '../../DeploymentElementModel'
-import type { RelationshipModel } from '../../RelationModel'
-import type { Connection } from '../Connection'
 
 /**
  * Connection is ephemeral entity, result of a resolving relationships between source and target.

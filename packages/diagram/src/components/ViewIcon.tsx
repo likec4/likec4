@@ -1,7 +1,7 @@
+import type { JSX } from 'react/jsx-runtime'
 import { type ViewType, nonexhaustive } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { type IconProps, IconDirectionSignFilled, IconStack2, IconStarFilled, IconZoomScan } from '@tabler/icons-react'
-import type { JSX } from 'react/jsx-runtime'
 
 const viewTypeIconCss = css({
   verticalAlign: 'middle',

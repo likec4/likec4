@@ -1,10 +1,10 @@
-import { codeSplittingGroup, defineConfig, outputOptions } from '@likec4/devops/tsdown'
-import nodePolyfills from '@rolldown/plugin-node-polyfills'
+import type { Rolldown } from 'tsdown'
 import { existsSync, readdirSync } from 'node:fs'
 import { copyFile, cp, mkdir, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { Rolldown } from 'tsdown'
+import { codeSplittingGroup, defineConfig, outputOptions } from '@likec4/devops/tsdown'
+import nodePolyfills from '@rolldown/plugin-node-polyfills'
 import { $, fs } from 'zx'
 
 $.verbose = true

@@ -1,5 +1,5 @@
-import { hc } from 'hono/client'
 import type { ApiType } from './index'
+import { hc } from 'hono/client'
 
 // this is a trick to calculate the type when compiling
 const client = hc<ApiType>('')

@@ -1,6 +1,6 @@
+import type { schemas } from '../schemas'
 import { Builder } from '@likec4/core/builder'
 import { describe, it } from 'vitest'
-import type { schemas } from '../schemas'
 import { materialize, withctx } from './base'
 import { likec4data } from './likec4data'
 

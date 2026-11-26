@@ -1,9 +1,9 @@
-import { beforeAll, describe, expect, it } from 'vitest'
-import { CancellationToken } from 'vscode-languageserver'
 import type { LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
-import { createTestServices } from '../test'
 import type { LikeC4SemanticTokenProvider } from './SemanticTokenProvider'
+import { beforeAll, describe, expect, it } from 'vitest'
+import { CancellationToken } from 'vscode-languageserver'
+import { createTestServices } from '../test'
 
 type DecodedToken = {
   line: number

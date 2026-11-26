@@ -1,5 +1,5 @@
-import { defineCommand } from 'citty'
 import type { PackageJson } from 'type-fest'
+import { defineCommand } from 'citty'
 import { $, chalk, echo, fs, path } from 'zx'
 
 type PnpmPackage = {

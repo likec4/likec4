@@ -1,3 +1,4 @@
+import type { MarkdownOrString } from './scalar'
 import { invariant, nonexhaustive } from '../utils/invariant'
 import {
   type MarkdownRefTitleResolver,
@@ -7,7 +8,6 @@ import {
 import { memoizeProp } from '../utils/memoize-prop'
 import { DefaultWeakMap, LRUMap } from '../utils/mnemonist'
 import { hasProp } from './guards'
-import type { MarkdownOrString } from './scalar'
 
 const symb_text = Symbol.for('text')
 const symb_html = Symbol.for('html')

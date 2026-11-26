@@ -1,7 +1,7 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { JSX } from 'react/jsx-runtime'
 import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect, useState } from 'react'
-import type { JSX } from 'react/jsx-runtime'
 import { LikeC4ProjectsContextProvider, useOptionalProjectsContext } from './context/LikeC4ProjectsContext'
 import { useCallbackRef } from './hooks/useCallbackRef'
 

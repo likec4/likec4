@@ -1,5 +1,5 @@
-import { getHotkeyHandler } from '@mantine/hooks'
 import type { AnyEventObject, CallbackActorLogic, NonReducibleUnknown } from 'xstate'
+import { getHotkeyHandler } from '@mantine/hooks'
 import { fromCallback } from 'xstate'
 
 export type HotKeyEvent = { type: 'undo' | 'redo' }

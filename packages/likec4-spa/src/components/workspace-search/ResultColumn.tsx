@@ -1,13 +1,13 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { ResultGroup, SearchElement, SearchView } from './search-index'
+import type { RegisterFocus } from './useRowFocus'
 import { useCallbackRef } from '@likec4/diagram'
 import { styled } from '@likec4/styles/jsx'
 import { type Range, defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
 import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef } from 'react'
 import { Count, Truncate } from '../ui/Text'
 import { ProjectMonogram } from '../workspace-overview/ProjectMonogram'
-import type { ResultGroup, SearchElement, SearchView } from './search-index'
 import { SearchPanel } from './SearchPanel'
-import type { RegisterFocus } from './useRowFocus'
 const HEAD_HEIGHT = 32
 const ROW_GAP = 6
 const GROUP_GAP = 16

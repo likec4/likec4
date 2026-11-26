@@ -1,6 +1,6 @@
+import type { DiffId, LayoutedView, ParsedLikeC4ModelData } from '@likec4/core/types'
 import { type CompareViewMode, applyModelDiff } from '@likec4/core/compute-view'
 import { ElementModel, LikeC4Model, LikeC4ViewModel } from '@likec4/core/model'
-import type { DiffId, LayoutedView, ParsedLikeC4ModelData } from '@likec4/core/types'
 
 function idOf(value: string | { id: string }): string {
   return typeof value === 'string' ? value : value.id

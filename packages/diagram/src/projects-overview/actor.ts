@@ -1,11 +1,15 @@
-import { type NodeId, type ProjectId, BBox, invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import type { LayoutedProjectsView } from '@likec4/core/compute-view'
+import type { EdgeChange, NodeChange } from '@xyflow/system'
+import type { MouseEvent } from 'react'
+import type { Simplify } from 'type-fest'
+import type { ViewPadding } from '../LikeC4Diagram.props'
+import type { ProjectsOverviewTypes, ProjectsOverviewXYFLowInstance, ProjectsOverviewXYStoreApi } from './_types'
+import { type NodeId, type ProjectId, BBox, invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import {
   applyEdgeChanges,
   applyNodeChanges,
   getViewportForBounds,
 } from '@xyflow/react'
-import type { EdgeChange, NodeChange } from '@xyflow/system'
 import {
   animate,
   mapValue,
@@ -13,9 +17,7 @@ import {
   stagger,
   styleEffect,
 } from 'motion'
-import type { MouseEvent } from 'react'
 import { clamp } from 'remeda'
-import type { Simplify } from 'type-fest'
 import {
   type ActorRef,
   type SnapshotFrom,
@@ -26,8 +28,6 @@ import {
 import { assign, emit } from 'xstate/actions'
 import { MinZoom } from '../base'
 import { Base } from '../base/Base'
-import type { ViewPadding } from '../LikeC4Diagram.props'
-import type { ProjectsOverviewTypes, ProjectsOverviewXYFLowInstance, ProjectsOverviewXYStoreApi } from './_types'
 import { layoutedProjectsViewToXYFlow } from './layouted-to-xyflow'
 import { ProjectsOverviewViewportPersistence } from './persistence'
 

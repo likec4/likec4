@@ -1,7 +1,7 @@
+import type { NonEmptyArray } from '../types/_common'
 import { set as mnemonistSet } from 'mnemonist'
 
 import { hasAtLeast } from 'remeda'
-import type { NonEmptyArray } from '../types/_common'
 
 const _intersection = mnemonistSet.intersection
 const _symmetricDifference = mnemonistSet.symmetricDifference

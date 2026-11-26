@@ -565,7 +565,8 @@ const scanPy = join(HERE, 'scan.py')
 let pyBudgetExceeded = false
 if (!hasPyFiles(args.root, args, gitignore)) {
   console.error('scan.mjs: no Python files, skipping scan.py')
-} else {try {
+} else {
+  try {
     const remainingBudget = Math.max(0, args.maxFiles - files.length)
     const r = spawnSync('python3', [
       scanPy,
@@ -602,7 +603,8 @@ if (!hasPyFiles(args.root, args, gitignore)) {
     }
   } catch (e) {
     console.error(`scan.py spawn failed (continuing with TS/JS only): ${String(e).slice(0, 200)}`)
-  }}
+  }
+}
 
 // P2b: infra + actor proposals (stdlib only, YAML via line-regex — no pyyaml dep).
 // Never auto-added to the model; the labeling step promotes/drops each.

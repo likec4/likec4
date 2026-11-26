@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { RelationshipsBrowserSnapshot } from './actor'
 import { type Fqn, ancestorsFqn } from '@likec4/core'
 import {
   ActionIcon,
@@ -26,7 +27,6 @@ import { memo, useEffect, useRef } from 'react'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useLikeC4ElementsTree } from '../../hooks/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import type { RelationshipsBrowserSnapshot } from './actor'
 import { useRelationshipsBrowser, useRelationshipsBrowserState } from './hooks'
 import * as classes from './SelectElement.css'
 

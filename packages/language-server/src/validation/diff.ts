@@ -1,9 +1,9 @@
+import type { LikeC4Services } from '../module'
 import { type ProjectId, DiffId, FqnRef } from '@likec4/core'
 import { type ValidationCheck, AstUtils, DocumentState, WorkspaceCache } from 'langium'
 import { ast } from '../ast'
 import { type DiffOverlap, findDiffOverlaps, overlapsOf } from '../model-diff/overlaps'
 import { relationFingerprint } from '../model/relationFingerprint'
-import type { LikeC4Services } from '../module'
 import { projectIdFrom, safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 

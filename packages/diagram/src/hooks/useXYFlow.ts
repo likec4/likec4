@@ -1,3 +1,4 @@
+import type { Types } from '../likec4diagram/types'
 import {
   type InternalNode,
   type ReactFlowInstance,
@@ -9,7 +10,6 @@ import {
 } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
-import type { Types } from '../likec4diagram/types'
 
 export type XYFlowInstance = ReactFlowInstance<Types.AnyNode, Types.AnyEdge>
 export function useXYFlow(): XYFlowInstance {

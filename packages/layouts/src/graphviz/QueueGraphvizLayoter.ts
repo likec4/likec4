@@ -1,11 +1,11 @@
 import type { AnyAux } from '@likec4/core'
 import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
+import type { CancellationToken } from './types'
 import { promiseNextTick } from '@likec4/core/utils'
 import { rootLogger } from '@likec4/log'
 import PQueue from 'p-queue'
 import { chunk, only, randomString } from 'remeda'
 import { type GraphvizPort, type LayoutResult, type LayoutTaskParams, GraphvizLayouter } from './GraphvizLayoter'
-import type { CancellationToken } from './types'
 
 export class QueueGraphvizLayoter extends GraphvizLayouter {
   private queue: PQueue

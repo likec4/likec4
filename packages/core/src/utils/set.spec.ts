@@ -1,6 +1,6 @@
+import type { NTuple } from '../types'
 import { map, range } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { NTuple } from '../types'
 import { difference, equals, intersection, symmetricDifference, union } from './set'
 
 const [

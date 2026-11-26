@@ -1,6 +1,6 @@
-import { Builder } from '@likec4/core/builder'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, LayoutedView, ProcessedView } from '@likec4/core/types'
+import { Builder } from '@likec4/core/builder'
 import { expect, test, vi } from 'vitest'
 import { fakeComputedView3Levels, fakeComputedViewWithGroups, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import { generateD2 } from './generate-d2'

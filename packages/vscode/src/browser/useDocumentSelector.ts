@@ -1,5 +1,5 @@
-import { computed, defineService, shallowRef } from 'reactive-vscode'
 import type { TextDocumentFilter } from 'vscode-languageclient'
+import { computed, defineService, shallowRef } from 'reactive-vscode'
 import { languageId } from '../const'
 
 const useDocumentSelector = defineService(() => {

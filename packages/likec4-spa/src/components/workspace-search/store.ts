@@ -1,4 +1,5 @@
 import type { ProjectId } from '@likec4/core/types'
+import type { SearchElement } from './search-index'
 import {
   type StandardSchemaV1,
   type StoreFromStoreLogicCreator,
@@ -7,7 +8,6 @@ import {
 } from '@xstate/store-react'
 import { shallowEqual } from 'fast-equals'
 import { createContext, use } from 'react'
-import type { SearchElement } from './search-index'
 
 /**
  * Removes the `@project` prefix that picks a scope

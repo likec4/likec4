@@ -1,10 +1,10 @@
+import type { LikeC4Services } from '../module'
+import type { LikeC4NameProvider } from '../references'
 import { FqnRef, isSameHierarchy, nonNullable } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
-import type { LikeC4NameProvider } from '../references'
 import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 

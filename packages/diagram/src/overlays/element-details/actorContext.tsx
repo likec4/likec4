@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'react'
 import type { ElementDetailsActorRef } from './actor'
+import { createContext, useContext } from 'react'
 
 /**
  * To improve experience with HMR, we use `createSafeContext` as a boundary for hooks

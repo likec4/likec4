@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 import { css } from '@likec4/styles/css'
 import { Box, VStack } from '@likec4/styles/jsx'
 import { searchOverlay } from '@likec4/styles/recipes'
@@ -25,7 +26,6 @@ import { SearchByTags } from './components/SearchByTags'
 import { LikeC4SearchInput } from './components/SearchInput'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './components/utils'
 import { ViewsColumn } from './components/ViewsColum'
-import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 import { useSearchContext } from './SearchContext'
 import { XStateSearchAdapter } from './XStateSearchAdapter'
 

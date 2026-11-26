@@ -3,11 +3,11 @@
 // Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
+import type { AnyTypes, ElementViewBuilder, ElementViewRulesBuilder, Types, ViewPredicate } from '../../builder'
+import type { Expression, WhereOperator } from '../../types'
 import { describe, it } from 'vitest'
 import { Builder } from '../../builder'
-import type { AnyTypes, ElementViewBuilder, ElementViewRulesBuilder, Types, ViewPredicate } from '../../builder'
 import { FqnExpr, RelationExpr } from '../../types'
-import type { Expression, WhereOperator } from '../../types'
 import { TestHelper } from './__test__/TestHelper'
 
 type ElementExpr<T extends AnyTypes> = ViewPredicate.Expression<T> | Expression<Types.ToAux<T>>
