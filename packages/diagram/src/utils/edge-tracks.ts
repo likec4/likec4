@@ -11,6 +11,7 @@ import {
   editedEdgePath,
   editedEdgeRoute,
   END_INSET,
+  stretchAxis,
 } from './edge-path'
 
 // Track separation, in diagram units
@@ -50,16 +51,9 @@ function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
   const runs: Run[] = []
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1]!, b = points[i]!
-    let axis: Axis
-    switch (true) {
-      case nearlyEqual(a.y, b.y) && !nearlyEqual(a.x, b.x):
-        axis = 'h'
-        break
-      case nearlyEqual(a.x, b.x) && !nearlyEqual(a.y, b.y):
-        axis = 'v'
-        break
-      default:
-        continue
+    const axis = stretchAxis(a, b)
+    if (!axis) {
+      continue
     }
     const at = axis === 'h' ? a.y : a.x
     const [lo, hi] = axis === 'h' ? [Math.min(a.x, b.x), Math.max(a.x, b.x)] : [Math.min(a.y, b.y), Math.max(a.y, b.y)]

@@ -1,8 +1,8 @@
-import { polylineToSegments } from '@likec4/core/geometry'
 import type { NonEmptyArray, Point } from '@likec4/core/types'
+import { polylineToSegments } from '@likec4/core/geometry'
 import { describe, expect, it } from 'vitest'
 import { type SavedEditedEdge, orthoRoutingEdges, orthoSpline, source, spline, target } from './__fixtures__/edges'
-import { convertLegacyCorners, initialControlPoints, insertCorner, snapCorner } from './edge-corners'
+import { convertLegacyCorners, dragCorner, initialControlPoints, insertCorner, snapCorner } from './edge-corners'
 import { type EdgeEnd, editedEdgeRoute } from './edge-path'
 
 describe('initial control points', () => {
@@ -101,6 +101,310 @@ describe('corner editing', () => {
   })
 })
 
+// 320 x 180 around the centre
+const box = (x: number, y: number): EdgeEnd => ({
+  center: { x, y },
+  node: { x: x - 160, y: y - 90, width: 320, height: 180 },
+})
+
+describe('corner drag', () => {
+  // node centres (150,150) and (550,450), too far from the corners below to snap to
+  const edge = { source, target }
+  // "gets product data" in the Boutique view, from Frontend at (868,117) to Product Catalogue at (48,717)
+  const boutique = {
+    source: box(1028, 207),
+    target: box(208, 807),
+    controlPoints: [{ x: 344, y: 207 }, { x: 208, y: 207 }],
+  }
+
+  it('keeps the corner next to an element level with the dragged corner', () => {
+    const controlPoints = dragCorner({
+      ...boutique,
+      index: 0,
+      point: { x: 344, y: 237 },
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(controlPoints).toEqual([{ x: 344, y: 237 }, { x: 208, y: 237 }])
+    expect(editedEdgeRoute({ ...boutique, controlPoints })?.points).toEqual([
+      { x: 866, y: 237 },
+      { x: 344, y: 237 },
+      { x: 208, y: 237 },
+      { x: 208, y: 715 },
+    ])
+  })
+
+  it('moves both neighbours of a corner where the line turns', () => {
+    const controlPoints = [{ x: 400, y: 0 }, { x: 400, y: 300 }, { x: 700, y: 300 }]
+    const result = dragCorner({
+      ...edge,
+      index: 1,
+      point: { x: 420, y: 330 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 420, y: 0 }, { x: 420, y: 330 }, { x: 700, y: 330 }])
+  })
+
+  it('follows along corners that are each within 1 unit of the one before', () => {
+    // the third corner is 2 units off the dragged one, but level with the corner before it
+    const controlPoints = [{ x: 300, y: 200 }, { x: 500, y: 201 }, { x: 700, y: 202 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 230 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 230 }, { x: 500, y: 230 }, { x: 700, y: 230 }])
+  })
+
+  it('leaves a corner at the same point as the dragged one, so the two can be pulled apart', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 300, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 230 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 230 }, { x: 300, y: 200 }, { x: 700, y: 200 }])
+  })
+
+  it('holds the level of the stretch when a target past it is just as near', () => {
+    // dragged to y 204: the level at the press (200) and the corner past the stretch (208) are both 4 away
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }, { x: 700, y: 208 }, { x: 900, y: 208 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 204 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual(controlPoints)
+  })
+
+  it('leaves a neighbour that is off the level', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 205 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 230 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 230 }, { x: 700, y: 205 }])
+  })
+
+  it('leaves the neighbour when the corner is dragged along the stretch', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 320, y: 200 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 320, y: 200 }, { x: 700, y: 200 }])
+  })
+
+  it('makes a self-loop taller', () => {
+    const element = box(0, 0)
+    const result = dragCorner({
+      source: element,
+      target: element,
+      index: 0,
+      point: { x: -32, y: -200 },
+      controlPoints: [{ x: -32, y: -170 }, { x: 32, y: -170 }],
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: -32, y: -200 }, { x: 32, y: -200 }])
+  })
+
+  it('moves only the dragged corner under spline routing', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 230 },
+      controlPoints,
+      alone: false,
+      routing: 'spline',
+    })
+    expect(result).toEqual([{ x: 300, y: 230 }, { x: 700, y: 200 }])
+  })
+
+  it('moves every corner on the stretch', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 500, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 230 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 230 }, { x: 500, y: 230 }, { x: 700, y: 230 }])
+  })
+
+  it('stops following at the corner where the line turns', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }, { x: 700, y: 400 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 230 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 230 }, { x: 700, y: 230 }, { x: 700, y: 400 }])
+  })
+
+  // the line enters the left side of the target 20 below its middle
+  const beside = { ...edge, target: box(800, 600), controlPoints: [{ x: 300, y: 620 }, { x: 500, y: 620 }] }
+
+  it('slides the end along the side beside the stretch', () => {
+    const controlPoints = dragCorner({ ...beside, index: 0, point: { x: 300, y: 650 }, alone: false, routing: 'ortho' })
+    expect(controlPoints).toEqual([{ x: 300, y: 650 }, { x: 500, y: 650 }])
+    expect(editedEdgeRoute({ ...beside, controlPoints })?.points.at(-1)).toEqual({ x: 638, y: 650 })
+  })
+
+  it('moves the end to the middle of the bottom side when the stretch passes the end of the side', () => {
+    const controlPoints = dragCorner({ ...beside, index: 0, point: { x: 300, y: 720 }, alone: false, routing: 'ortho' })
+    expect(controlPoints).toEqual([{ x: 300, y: 720 }, { x: 500, y: 720 }])
+    expect(editedEdgeRoute({ ...beside, controlPoints })?.points.at(-1)).toEqual({ x: 800, y: 692 })
+  })
+
+  it('snaps back to the middle of the element, and the corner that follows copies it', () => {
+    const controlPoints = dragCorner({
+      ...boutique,
+      index: 0,
+      point: { x: 344, y: 212 },
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(controlPoints).toEqual([{ x: 344, y: 207 }, { x: 208, y: 207 }])
+    expect(editedEdgeRoute({ ...boutique, controlPoints })?.points[0]).toEqual({ x: 866, y: 207 })
+  })
+
+  it('snaps a stretch to the middle of the element at its far end', () => {
+    const controlPoints = dragCorner({
+      ...boutique,
+      index: 1,
+      point: { x: 208, y: 209 },
+      controlPoints: [{ x: 344, y: 212 }, { x: 208, y: 212 }],
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(controlPoints).toEqual([{ x: 344, y: 207 }, { x: 208, y: 207 }])
+    expect(editedEdgeRoute({ ...boutique, controlPoints })?.points[0]).toEqual({ x: 866, y: 207 })
+  })
+
+  it('snaps a stretch to the corner just beyond its far end', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }, { x: 700, y: 400 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 395 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 400 }, { x: 700, y: 400 }, { x: 700, y: 400 }])
+  })
+
+  it('holds the level of a stretch within the snapping distance', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 205 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 200 }, { x: 700, y: 200 }])
+  })
+
+  it('moves a stretch dragged past the snapping distance', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 212 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 212 }, { x: 700, y: 212 }])
+  })
+
+  it('does not pull a stretch dragged along itself onto a nearby target', () => {
+    const controlPoints = [{ x: 400, y: 0 }, { x: 400, y: 300 }, { x: 700, y: 300 }]
+    const result = dragCorner({
+      ...edge,
+      target: box(1000, 305),
+      index: 1,
+      point: { x: 420, y: 300 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 420, y: 0 }, { x: 420, y: 300 }, { x: 700, y: 300 }])
+  })
+
+  it('keeps a small step past a stretch dragged along itself', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }, { x: 700, y: 204 }, { x: 900, y: 204 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 320, y: 200 },
+      controlPoints,
+      alone: false,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 320, y: 200 }, { x: 700, y: 200 }, { x: 700, y: 204 }, { x: 900, y: 204 }])
+  })
+
+  it('moves the dragged corner alone', () => {
+    const controlPoints = dragCorner({
+      ...boutique,
+      index: 0,
+      point: { x: 344, y: 237 },
+      alone: true,
+      routing: 'ortho',
+    })
+    expect(controlPoints).toEqual([{ x: 344, y: 237 }, { x: 208, y: 207 }])
+    expect(editedEdgeRoute({ ...boutique, controlPoints })?.points).toEqual([
+      { x: 866, y: 237 },
+      { x: 344, y: 237 },
+      { x: 208, y: 237 },
+      { x: 208, y: 207 },
+      { x: 208, y: 715 },
+    ])
+  })
+
+  it('snaps a corner dragged alone to its neighbour', () => {
+    const controlPoints = [{ x: 300, y: 200 }, { x: 700, y: 200 }]
+    const result = dragCorner({
+      ...edge,
+      index: 0,
+      point: { x: 300, y: 205 },
+      controlPoints,
+      alone: true,
+      routing: 'ortho',
+    })
+    expect(result).toEqual([{ x: 300, y: 200 }, { x: 700, y: 200 }])
+  })
+})
+
 describe('corner insertion', () => {
   // nodes 100 x 100 around the centres (150,150) and (550,450)
   const edge = { source, target }
@@ -137,12 +441,6 @@ describe('corner insertion', () => {
     const controlPoints = [{ x: 300, y: 200 }]
     const result = insertCorner({ point: { x: 200, y: 172 }, controlPoints, ...edge, routing: 'spline' })
     expect(result).toEqual([{ x: 200, y: 172 }, { x: 300, y: 200 }])
-  })
-
-  // 320 x 180 around the centre
-  const box = (x: number, y: number): EdgeEnd => ({
-    center: { x, y },
-    node: { x: x - 160, y: y - 90, width: 320, height: 180 },
   })
 
   it('keeps the start of the line when the new corner faces a side of the element', () => {

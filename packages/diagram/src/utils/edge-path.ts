@@ -31,6 +31,18 @@ export type Endpoints<T> = {
 /** The axis of a straight segment: horizontal (`h`) or vertical (`v`). */
 export type Axis = 'h' | 'v'
 
+/** The axis of the straight stretch between two points, level on one axis and apart on the other, or `null`. */
+export function stretchAxis(a: XYPosition, b: XYPosition): Axis | null {
+  switch (true) {
+    case nearlyEqual(a.y, b.y) && !nearlyEqual(a.x, b.x):
+      return 'h'
+    case nearlyEqual(a.x, b.x) && !nearlyEqual(a.y, b.y):
+      return 'v'
+    default:
+      return null
+  }
+}
+
 type EdgeEndpoints = Endpoints<EdgeEnd>
 
 /** Endpoints in drawing order, reversed for `dir: 'back'`. */

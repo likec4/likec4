@@ -1,7 +1,15 @@
 import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { isOrthoSpline, nearlyEqual, projectOnSegment, splineToPolyline } from '@likec4/core/geometry'
-import { type EdgeEnd, type Endpoints, editedOrthoPolyline, inDrawingOrder, orthoPolyline } from './edge-path'
+import {
+  type Axis,
+  type EdgeEnd,
+  type Endpoints,
+  editedOrthoPolyline,
+  inDrawingOrder,
+  orthoPolyline,
+  stretchAxis,
+} from './edge-path'
 import { bezierControlPoints, isEqualRects } from './xyflow'
 
 /** Interior corners of an orthogonal Graphviz spline. */
@@ -77,18 +85,32 @@ type CornerEditing = Endpoints<EdgeEnd> & {
 
 /**
  * Snaps a dragged corner to the axes of its neighbours, or the node centers at the ends, within
- * `SNAP_TOLERANCE`. Returns the point unchanged for splines.
+ * `SNAP_TOLERANCE`. Returns the point unchanged for splines. `followers` names the corners that move with
+ * it, by index and the axis of their stretch, and needs `controlPoints` as they were at the press.
  */
-export function snapCorner({ index, point, controlPoints, routing, ...edge }: CornerEditing & {
+export function snapCorner({ index, point, controlPoints, routing, followers, ...edge }: CornerEditing & {
   index: number
   point: XYPosition
+  followers?: ReadonlyMap<number, Axis>
 }): XYPosition {
   if (routing !== 'ortho') {
     return point
   }
   const [from, to] = inDrawingOrder(edge)
-  const prev = controlPoints[index - 1] ?? from.center
-  const next = controlPoints[index + 1] ?? to.center
+  // Corners that follow move with the dragged corner, so the target on a side is the anchor past them.
+  const anchor = (step: -1 | 1, axis: Axis): XYPosition => {
+    let i = index + step
+    while (followers?.get(i) === axis) {
+      i += step
+    }
+    return controlPoints[i] ?? (step < 0 ? from : to).center
+  }
+  // A stretch that moves holds its level at the press, as one corner does next to a level neighbour.
+  // That level comes first, so it wins a tie.
+  const targets = (axis: Axis): XYPosition[] => {
+    const moves = followers?.get(index - 1) === axis || followers?.get(index + 1) === axis
+    return [...(moves ? [controlPoints[index]!] : []), anchor(-1, axis), anchor(1, axis)]
+  }
   const snap = (value: number, candidates: number[]) => {
     let best = value, bestDistance = SNAP_TOLERANCE + 1
     for (const raw of candidates) {
@@ -103,9 +125,51 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
     return best
   }
   return {
-    x: snap(point.x, [prev.x, next.x]),
-    y: snap(point.y, [prev.y, next.y]),
+    x: snap(point.x, targets('v').map(p => p.x)),
+    y: snap(point.y, targets('h').map(p => p.y)),
   }
+}
+
+/**
+ * Moves a dragged corner from the corners at the press and returns all corners. Under ortho routing, unless
+ * `alone`, the corners on each straight stretch it shares with a neighbour follow it across the stretch,
+ * up to and including the corner where the line turns. The dragged corner snaps as in {@link snapCorner}
+ * and the corners that follow copy its snapped value.
+ */
+export function dragCorner({ index, point, controlPoints, alone, routing, ...edge }: CornerEditing & {
+  index: number
+  point: XYPosition
+  alone: boolean
+}): XYPosition[] {
+  const followers = new Map<number, Axis>()
+  if (routing === 'ortho' && !alone) {
+    for (const step of [-1, 1] as const) {
+      const neighbour = controlPoints[index + step]
+      const axis = neighbour && stretchAxis(controlPoints[index]!, neighbour)
+      if (!axis) {
+        continue
+      }
+      const shared = axis === 'h' ? 'y' : 'x'
+      let i = index + step
+      while (controlPoints[i] && nearlyEqual(controlPoints[i]![shared], controlPoints[i - step]![shared])) {
+        followers.set(i, axis)
+        i += step
+      }
+    }
+  }
+  const snapped = snapCorner({ index, point, controlPoints, routing, followers, ...edge })
+  return controlPoints.map((corner, i) => {
+    switch (true) {
+      case i === index:
+        return snapped
+      case followers.get(i) === 'h':
+        return { x: corner.x, y: snapped.y }
+      case followers.get(i) === 'v':
+        return { x: snapped.x, y: corner.y }
+      default:
+        return corner
+    }
+  })
 }
 
 /**
