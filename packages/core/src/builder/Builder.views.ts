@@ -7,6 +7,7 @@ import type {
   $include,
   $rules,
   $style,
+  AutoLayoutMargins,
 } from './Builder.view-common'
 import type { $step, AddDynamicViewHelper, DynamicViewBuilder } from './Builder.view-dynamic'
 import {
@@ -386,12 +387,13 @@ export function mkViewBuilder(
   // 1. Define all shared methods in a base object
   const baseBuilder = {
     $expr: view[_type] === 'deployment' ? $deploymentExpr : $expr,
-    autoLayout(direction: AutoLayoutDirection, margins: { rank: number; node: number } | undefined) {
+    autoLayout(direction: AutoLayoutDirection, margins: AutoLayoutMargins | undefined) {
       view.rules.push(
         exact({
           direction,
           rankSep: margins?.rank,
           nodeSep: margins?.node,
+          compoundSep: margins?.compound,
         }) satisfies ViewRuleAutoLayout,
       )
       return this // <-- Use 'this' for chaining

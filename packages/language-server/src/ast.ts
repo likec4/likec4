@@ -557,6 +557,7 @@ export function toAutoLayout(
 ): c4.ViewRuleAutoLayout {
   const rankSep = rule.rankSep
   const nodeSep = rule.nodeSep
+  const compoundSep = rule.compoundSep
 
   let direction: c4.ViewRuleAutoLayout['direction']
   switch (rule.direction) {
@@ -584,6 +585,7 @@ export function toAutoLayout(
     direction,
     ...(nodeSep && { nodeSep }),
     ...(rankSep && { rankSep }),
+    ...(compoundSep && { compoundSep }),
   }
 }
 

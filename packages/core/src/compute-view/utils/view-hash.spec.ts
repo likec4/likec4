@@ -117,6 +117,23 @@ describe('calcViewLayoutHash', () => {
     expect(rankMin).not.toBe(rankSame)
   })
 
+  it('changes when compoundSep changes, keeps hashes of views without it', () => {
+    const view = builder
+      .views(v => v.view('test', v.$include('*')))
+      .toLikeC4Model()
+      .view('test').$view
+    const withoutCompoundSep = calcViewLayoutHash({
+      ...view,
+      autoLayout: { direction: 'TB', rankSep: 120, nodeSep: 110 },
+    }).hash
+    const withCompoundSep = calcViewLayoutHash({
+      ...view,
+      autoLayout: { direction: 'TB', rankSep: 120, nodeSep: 110, compoundSep: 80 },
+    }).hash
+    expect(view.autoLayout).not.toHaveProperty('compoundSep')
+    expect(withCompoundSep).not.toBe(withoutCompoundSep)
+  })
+
   it('ignores navigation order metadata', () => {
     const view = builder
       .views(v => v.view('test', v.$include('*')))

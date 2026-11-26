@@ -31,6 +31,7 @@ export namespace ViewChange {
       direction: AutoLayoutDirection
       nodeSep?: number | null
       rankSep?: number | null
+      compoundSep?: number | null
     }
   }
 

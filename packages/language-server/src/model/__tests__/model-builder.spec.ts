@@ -1892,6 +1892,68 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds autoLayout spacing of element, dynamic and deployment views', async ({ expect, t }) => {
+    const { validate, buildLikeC4Model } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      deploymentNode node
+    }
+    model {
+      a = component 'A'
+      b = component 'B'
+      a -> b
+    }
+    deployment {
+      node env {
+        instanceOf a
+        instanceOf b
+      }
+    }
+    views {
+      view index {
+        include *
+        autoLayout TopBottom 120 110 80
+      }
+      view twoValues {
+        include *
+        autoLayout TopBottom 120 110
+      }
+      dynamic view flow {
+        a -> b
+        autoLayout LeftRight 120 110 80 ortho
+      }
+      deployment view infra {
+        include env.**
+        autoLayout TopBottom 120 110 80
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildLikeC4Model()
+    expect(model.view('index').$view.autoLayout).toEqual({
+      direction: 'TB',
+      rankSep: 120,
+      nodeSep: 110,
+      compoundSep: 80,
+    })
+    expect(model.view('twoValues').$view.autoLayout).toEqual({
+      direction: 'TB',
+      rankSep: 120,
+      nodeSep: 110,
+    })
+    expect(model.view('flow').$view).toMatchObject({
+      routing: 'ortho',
+      autoLayout: { direction: 'LR', rankSep: 120, nodeSep: 110, compoundSep: 80 },
+    })
+    expect(model.view('infra').$view.autoLayout).toEqual({
+      direction: 'TB',
+      rankSep: 120,
+      nodeSep: 110,
+      compoundSep: 80,
+    })
+  })
+
   it('uses relationship kind style for dynamic view steps', async ({ expect, t }) => {
     const { validate, buildLikeC4Model } = t
     const { diagnostics } = await validate(`

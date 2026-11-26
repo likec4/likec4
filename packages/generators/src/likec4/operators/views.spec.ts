@@ -268,6 +268,19 @@ describe('view', () => {
         }
       }"
     `)
+
+    expect(
+      view(
+        'index',
+        $autoLayout('TB', { rank: 101, node: 102, compound: 103 }),
+      ),
+    ).toMatchInlineSnapshot(`
+      "views {
+        view index {
+          autoLayout TopBottom 101 102 103
+        }
+      }"
+    `)
   })
 
   it('should print scoped element view', () => {

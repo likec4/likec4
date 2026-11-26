@@ -154,7 +154,13 @@ export const viewRuleAutoLayout = zodOp(schemas.views.viewRuleAutoLayout)(
       hasProp('rankSep'),
       spaceBetween(
         printProperty('rankSep'),
-        printProperty('nodeSep'),
+        guard(
+          hasProp('nodeSep'),
+          spaceBetween(
+            printProperty('nodeSep'),
+            printProperty('compoundSep'),
+          ),
+        ),
       ),
     ),
   ),

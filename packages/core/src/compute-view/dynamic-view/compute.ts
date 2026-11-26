@@ -378,6 +378,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         direction: autoLayoutRule?.direction ?? 'LR',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
         ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
+        ...(autoLayoutRule?.compoundSep && { compoundSep: autoLayoutRule.compoundSep }),
       },
       nodes: map(nodes, n => {
         if (n.icon === 'none') {

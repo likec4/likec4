@@ -243,6 +243,7 @@ export function computeDeploymentView<M extends AnyAux>(
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
       ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
+      ...(autoLayoutRule?.compoundSep && { compoundSep: autoLayoutRule.compoundSep }),
     },
     edges: applyCustomRelationProperties(
       flatRules as any,

@@ -498,7 +498,9 @@ ViewRuleStyleOrGlobalRef:
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection (
     rankSep=Number (
-      nodeSep=Number)?
+      nodeSep=Number (
+        compoundSep=Number)?
+      )?
     )? (routing=EdgeRoutingValue)?;
 
 NotationProperty:

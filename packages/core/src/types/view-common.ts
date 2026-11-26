@@ -79,6 +79,11 @@ export interface ViewRuleAutoLayout {
   direction: AutoLayoutDirection
   nodeSep?: number
   rankSep?: number
+  /**
+   * Space between a top-level compound node (element with children, deployment node or group)
+   * and its neighbours on the same rank
+   */
+  compoundSep?: number
 }
 
 export function isViewRuleAutoLayout(rule: object): rule is ViewRuleAutoLayout {
@@ -89,6 +94,10 @@ export interface ViewAutoLayout {
   direction: ViewRuleAutoLayout['direction']
   rankSep?: number
   nodeSep?: number
+  /**
+   * Space between a top-level compound node and its neighbours on the same rank
+   */
+  compoundSep?: number
 }
 
 export type ViewType = 'element' | 'dynamic' | 'deployment'

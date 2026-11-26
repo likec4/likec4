@@ -16,6 +16,16 @@ import type { AnyTypes, Types } from './_types'
 import { isArray, isString, map } from 'remeda'
 import { FqnExpr } from '../types'
 
+/**
+ * Spacing of `autoLayout`: `rank` and `node` set rankSep and nodeSep,
+ * `compound` sets the space between top-level compound nodes and their neighbours on the same rank.
+ */
+export interface AutoLayoutMargins {
+  rank: number
+  node: number
+  compound?: number
+}
+
 export interface LikeC4ViewBuilder<
   Types extends AnyTypes,
   Fqn extends string,
@@ -33,7 +43,7 @@ export interface LikeC4ViewBuilder<
   exclude(...exprs: TypedExpr[]): this
   style(rule: ViewRuleStyle<any>): this
   step(step: Omit<Step.Any, 'id'>): this
-  autoLayout(layout: AutoLayoutDirection, margins: { rank: number; node: number } | undefined): this
+  autoLayout(layout: AutoLayoutDirection, margins: AutoLayoutMargins | undefined): this
 }
 
 export namespace ViewPredicate {
@@ -275,7 +285,7 @@ function $style<B extends LikeC4ViewBuilder<any, any, any>>(
 
 function $autoLayout<B extends LikeC4ViewBuilder<any, any, any>>(
   layout: AutoLayoutDirection,
-  margins?: { rank: number; node: number },
+  margins?: AutoLayoutMargins,
 ): (b: B) => B {
   return (b) => b.autoLayout(layout, margins)
 }
