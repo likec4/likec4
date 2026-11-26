@@ -101,7 +101,7 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 - VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`. Do not add `.github/copilot-instructions.md`; any future adapter must be generated from `AGENTS.md` and added together with drift validation.
 - The `.cursor/` directory is gitignored. Contributors may add local `.cursor/rules/` files for personal use, but do not commit them.
 - Repo-local developer workflow skills live in `.agents/skills/`.
-- The public LikeC4 DSL skill lives in `skills/likec4-dsl/`.
+- The public LikeC4 skills live in `skills/`: `likec4-dsl` for DSL syntax and `code-to-likec4` for generating a model from code.
 - Claude Code discovers project skills from `.claude/skills/`; keep each tracked `.claude/skills/*` entry as a per-skill symlink to one canonical skill directory.
 - Do not duplicate skill bodies into `.claude/skills/`; add or update the symlink adapter and `devops/check-agent-skills.mjs` together.
 - Use `.tool-versions` for expected Node and pnpm versions.
