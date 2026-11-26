@@ -47,7 +47,7 @@ export function predicateToPatch(
       // Custom properties are applied to the computed edges, see computeDeploymentView
       return predicateToPatch(op, { ...ctx, expr: expr.customRelation.expr, where })
     case FqnExpr.isCustom(expr):
-      if (op === 'include' && expr.custom.navigateTo != null) {
+      if (op === 'include') {
         return predicateToPatch(op, { ...ctx, expr: expr.custom.expr, where })
       }
       return undefined
