@@ -15,7 +15,9 @@ const cache = new WeakMap<
  * Relationship routes by edge id before track separation: edited routes may move, unedited ones keep
  * their Graphviz position. Cached per store `edges` and `nodes`.
  */
-export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, TrackRoute> {
+export function selectTrackRoutes(
+  state: Pick<XYStoreState, 'edges' | 'nodes' | 'nodeLookup'>,
+): ReadonlyMap<string, TrackRoute> {
   const cached = cache.get(state.edges)
   if (cached && cached.nodes === state.nodes) {
     return cached.routes
@@ -50,7 +52,7 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
 }
 
 /** Visible orthogonal routes and labels after track separation, including edited self-loops. */
-export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
+export function selectLabelRoutes(state: Pick<XYStoreState, 'edges' | 'nodes' | 'nodeLookup'>): LabelRoute[] {
   const trackRoutes = selectTrackRoutes(state)
   const others = [...trackRoutes.values()]
   return state.edges.flatMap((edge): LabelRoute[] => {

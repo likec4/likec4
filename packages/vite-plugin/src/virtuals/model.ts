@@ -4,7 +4,7 @@ import { constants } from 'node:fs'
 import { access } from 'node:fs/promises'
 import { resolve } from 'pathe'
 import { logGenerating } from '../logger'
-import { type ProjectData, type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectData, type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 
 /**
  * Absolute paths of the files in `styles.customCss`.
@@ -66,7 +66,8 @@ if (import.meta.hot) {
 }
 
 export const projectModelModule: ProjectVirtualModule = {
-  ...generateMatches('model'),
+  name: 'model',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('model', project.id)
     const model = await likec4.layoutedModel(project.id)

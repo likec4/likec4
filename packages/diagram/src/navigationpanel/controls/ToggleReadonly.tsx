@@ -2,7 +2,7 @@ import { css, cx } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import { UnstyledButton } from '@mantine/core'
 import { IconLock, IconLockOpen2 } from '@tabler/icons-react'
-import { type HTMLMotionProps, m } from 'motion/react'
+import { type HTMLMotionProps, AnimatePresence, m } from 'motion/react'
 import { useDiagram } from '../../hooks/useDiagram'
 
 const easeOut = [0.23, 1, 0.32, 1] as const
@@ -29,6 +29,40 @@ const motionProps = {
   },
 } satisfies HTMLMotionProps<'button'>
 
+const buttonStyle = css({
+  overflow: 'hidden',
+  transition: 'colors',
+  transitionDuration: 'medium',
+  transitionTimingFunction: 'out',
+})
+
+const iconTransition = { type: 'spring', duration: 0.35, bounce: 0.4 } as const
+
+const labelTransition = { duration: 0.18, ease: easeOut } as const
+
+const editingStyle = css({
+  color: 'warning.text',
+  backgroundColor: {
+    base: 'warning.body',
+    _light: 'mantine.yellow[5]',
+  },
+  _notDisabled: {
+    _hover: {
+      color: 'warning.text',
+      backgroundColor: {
+        base: 'warning.body',
+        _light: 'mantine.yellow[5]',
+      },
+      filter: '[brightness(1.08)]',
+    },
+  },
+  // Keep the "editing" hint, but muted, while the toggle is unavailable
+  _disabled: {
+    opacity: '0.3!',
+    filter: '[saturate(0.3)]',
+  },
+})
+
 export function ToggleReadonly({ disabled, isReadOnly }: { disabled: boolean; isReadOnly: boolean }) {
   const diagram = useDiagram()
 
@@ -36,13 +70,18 @@ export function ToggleReadonly({ disabled, isReadOnly }: { disabled: boolean; is
     <UnstyledButton
       component={m.button}
       layout="position"
-      layoutDependency={isReadOnly}
       disabled={disabled}
       onClick={e => {
         e.stopPropagation()
         !disabled && diagram.toggleFeature('ReadOnly')
       }}
       {...motionProps}
+      aria-pressed={!isReadOnly}
+      title={disabled
+        ? 'Editing is not available in this mode'
+        : isReadOnly
+        ? 'Enable editing'
+        : 'Editing is on, click to lock'}
       className={cx(
         'group',
         hstack({
@@ -52,24 +91,38 @@ export function ToggleReadonly({ disabled, isReadOnly }: { disabled: boolean; is
           userSelect: 'none',
           layerStyle: 'likec4.panel.action',
         }),
+        buttonStyle,
+        !isReadOnly && editingStyle,
       )}>
-      {/* Open lock icon when editing is enabled */}
-      <IconLockOpen2 size={14} stroke={2} style={{ display: isReadOnly ? 'none' : undefined }} />
-      {/* Closed lock icon when editing is disabled */}
-      <IconLock size={14} stroke={2} style={{ display: !isReadOnly ? 'none' : undefined }} />
-      {isReadOnly && (
+      <AnimatePresence mode="popLayout" initial={false}>
+        <m.span
+          key={isReadOnly ? 'locked' : 'unlocked'}
+          className={css({ display: 'flex' })}
+          initial={{ opacity: 0, scale: 0.4, rotate: isReadOnly ? 30 : -30 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.4 }}
+          transition={iconTransition}
+        >
+          {isReadOnly ? <IconLock size={14} stroke={2} /> : <IconLockOpen2 size={14} stroke={2} />}
+        </m.span>
+      </AnimatePresence>
+
+      <AnimatePresence mode="popLayout" initial={false}>
         <m.div
-          layout="position"
+          key={isReadOnly ? 'edit' : 'editing'}
           className={css({
             fontSize: 'xxs',
             fontWeight: 'bold',
             lineHeight: 'snug',
-            opacity: '0.9',
           })}
+          initial={{ opacity: 0, y: isReadOnly ? -8 : 8 }}
+          animate={{ opacity: 0.9, y: 0 }}
+          exit={{ opacity: 0, y: isReadOnly ? 8 : -8 }}
+          transition={labelTransition}
         >
-          Edit
+          {isReadOnly ? 'Edit' : 'Editing'}
         </m.div>
-      )}
+      </AnimatePresence>
     </UnstyledButton>
   )
 }

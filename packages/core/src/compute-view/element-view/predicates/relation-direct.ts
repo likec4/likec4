@@ -3,7 +3,7 @@ import type { ElementModel, RelationshipModel } from '../../../model'
 import { ConnectionModel } from '../../../model'
 import { type AnyAux, type ModelRelationExpr, FqnRef, ModelFqnExpr } from '../../../types'
 import { invariant, isSameHierarchy } from '../../../utils'
-import { ifilter, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
+import { ifilter, ifind, iflat, iunique, toArray, toSet } from '../../../utils/iterable'
 import { intersection, union } from '../../../utils/set'
 import type { Elem, PredicateCtx, PredicateExecutor } from '../_types'
 import { NoWhere } from '../utils'
@@ -18,6 +18,20 @@ import {
 const isWildcard = ModelFqnExpr.isWildcard
 const isAncestorOrDescendantOf = (a: ElementModel<AnyAux>, b: ElementModel<AnyAux>) =>
   a.isAncestorOf(b) || a.isDescendantOf(b)
+
+/**
+ * The deepest of `selected` that is `element` itself or one of its ancestors,
+ * so a relation to a nested element is attached to one selected element only.
+ */
+const closestSelected = (
+  element: ElementModel<AnyAux>,
+  selected: ReadonlySet<ElementModel<AnyAux>>,
+): ElementModel<AnyAux> | undefined => {
+  if (selected.has(element)) {
+    return element
+  }
+  return ifind(element.ancestors(), ancestor => selected.has(ancestor))
+}
 
 export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Direct<AnyAux>> = {
   include: ({ expr: { source, target, isBidirectional = false }, memory, model, stage, where, filterWhere }) => {
@@ -60,6 +74,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
       // element -> *; Where clause
       case !sourceIsWildcard && targetIsWildcard && where !== NoWhere: {
         const sources = resolveElements(model, source)
+        const selected = new Set(sources)
         const connections = pipe(
           sources,
           flatMap(source =>
@@ -72,7 +87,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
               ifilter(where),
               iunique(),
               toArray(),
-              partition(r => r.source === source),
+              partition(r => closestSelected(r.source, selected) === source),
               ([outgoing, incoming]) =>
                 concat(
                   pipe(
@@ -121,6 +136,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
       // * -> element; Where clause
       case sourceIsWildcard && !targetIsWildcard && where !== NoWhere: {
         const targets = resolveElements(model, target)
+        const selected = new Set(targets)
         const connections = pipe(
           targets,
           flatMap(target =>
@@ -132,7 +148,7 @@ export const DirectRelationExprPredicate: PredicateExecutor<ModelRelationExpr.Di
               }),
               ifilter(where),
               toArray(),
-              partition(r => r.target === target),
+              partition(r => closestSelected(r.target, selected) === target),
               ([incoming, outgoing]) =>
                 concat(
                   pipe(

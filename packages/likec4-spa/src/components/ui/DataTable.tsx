@@ -54,6 +54,9 @@ const Table = styled('table', {
     '& tbody tr': {
       cursor: 'pointer',
     },
+    '& tbody tr[aria-disabled="true"]': {
+      cursor: 'default',
+    },
     '& tbody tr:hover td': {
       backgroundColor: 'surface.hover',
     },

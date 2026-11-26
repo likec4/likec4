@@ -2,7 +2,7 @@
 //
 // Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { Fqn, ViewId } from '@likec4/core/types'
+import type { Fqn, RelationId, ViewId } from '@likec4/core/types'
 import { useSelector } from '@xstate/react'
 import { type PropsWithChildren, useMemo } from 'react'
 import { useCallbackRef } from '../hooks/useCallbackRef'
@@ -12,6 +12,7 @@ import { type SearchContextValue, normalizeSearch, SearchContext } from './Searc
 
 const selectSearchValue = (s: SearchActorSnapshot) => s.context.searchValue
 const selectPickViewFor = (s: SearchActorSnapshot) => s.context.pickViewFor
+const selectPickViewForRelationship = (s: SearchActorSnapshot) => s.context.pickViewForRelationship
 const selectOpenedWithSearch = (s: SearchActorSnapshot) => s.context.openedWithSearch
 
 export function XStateSearchAdapter({
@@ -20,6 +21,7 @@ export function XStateSearchAdapter({
 }: PropsWithChildren<{ searchActorRef: SearchActorRef }>) {
   const searchValue = useSelector(searchActorRef, selectSearchValue)
   const pickViewFor = useSelector(searchActorRef, selectPickViewFor)
+  const pickViewForRelationship = useSelector(searchActorRef, selectPickViewForRelationship)
   const openedWithSearch = useSelector(searchActorRef, selectOpenedWithSearch)
   const currentViewId = useCurrentViewId()
 
@@ -39,6 +41,10 @@ export function XStateSearchAdapter({
     searchActorRef.send({ type: 'pickview.open', elementFqn })
   })
 
+  const openPickViewForRelationship = useCallbackRef((relationId: RelationId) => {
+    searchActorRef.send({ type: 'pickview.open.relationship', relationId })
+  })
+
   const closePickView = useCallbackRef(() => {
     searchActorRef.send({ type: 'pickview.close' })
   })
@@ -53,20 +59,24 @@ export function XStateSearchAdapter({
     normalizedSearch: normalizeSearch(searchValue),
     navigateTo,
     openPickView,
+    openPickViewForRelationship,
     closePickView,
     pickViewFor,
+    pickViewForRelationship,
     close,
     currentViewId,
     openedWithSearch,
   }), [
     searchValue,
     pickViewFor,
+    pickViewForRelationship,
     currentViewId,
     openedWithSearch,
     // stable refs from useCallbackRef — listed for exhaustive-deps lint rule
     setSearchValue,
     navigateTo,
     openPickView,
+    openPickViewForRelationship,
     closePickView,
     close,
   ])

@@ -258,4 +258,35 @@ describe('relation-expr', () => {
       expect(nodeIds).toEqual(['cloud.frontend.dashboard', 'cloud.backend.graphql'])
     })
   })
+
+  // Issue #2033
+  describe('where keeps relations of nested elements', () => {
+    it('* -> cloud.backend', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('* -> cloud.backend', {
+          where: { tag: { eq: 'next' } },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.frontend.dashboard:cloud.backend'])
+      expect(nodeIds).toEqual(['cloud.frontend.dashboard', 'cloud.backend'])
+    })
+    it('cloud.frontend -> *', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('cloud.frontend -> *', {
+          where: { tag: { eq: 'next' } },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.frontend:cloud.backend.graphql'])
+      expect(nodeIds).toEqual(['cloud.frontend', 'cloud.backend.graphql'])
+    })
+    it('cloud.backend <-> *', () => {
+      const { nodeIds, edgeIds } = computeView([
+        $include('cloud.backend <-> *', {
+          where: { tag: { eq: 'aws' } },
+        }),
+      ])
+      expect(edgeIds).toEqual(['cloud.backend:amazon.s3'])
+      expect(nodeIds).toEqual(['cloud.backend', 'amazon.s3'])
+    })
+  })
 })

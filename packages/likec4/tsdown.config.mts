@@ -21,53 +21,6 @@ async function emptyDir(dir: string) {
 
 export default defineConfig([
   {
-    entry: [
-      'src/vite-plugin/index.ts',
-      'src/config/index.ts',
-      'src/model/builder.ts',
-      'src/model/index.ts',
-      'src/cli/index.ts',
-      'src/generators/likec4.ts',
-      'src/index.ts',
-    ],
-    platform: 'node',
-    dts: {
-      build: true,
-    },
-    // @likec4/core is built separately (see below), share a single copy of it
-    deps: {
-      onlyBundle: false,
-      neverBundle: [
-        /^likec4\/core/,
-        /^likec4\/layouts/,
-      ],
-    },
-    plugins: [aliasCore(), aliasLayouts()],
-    hooks: {
-      'build:done': async ({ options: { logger } }) => {
-        logger.info('\n----- Copy artifacts ------\n')
-
-        await mkdir('./config', { recursive: true })
-        await copyFile('../config/schema.json', './config/schema.json')
-
-        await copyVitePluginModules()
-        logger.success('Copied vite-plugin-modules.d.ts\n')
-
-        await copyReact()
-        logger.success('Copied @likec4/react\n')
-
-        await bundleApp()
-        logger.success('Bundled likec4-spa\n')
-
-        await copyMcpAppAssets()
-        logger.success('Copied mcp-app assets\n')
-
-        await copySkills()
-        logger.success('Copied skills\n')
-      },
-    },
-  },
-  {
     entry: {
       'index': './src/vite-plugin/internal.ts',
     },
@@ -103,6 +56,9 @@ export default defineConfig([
     platform: 'neutral',
     target: false,
     nodeProtocol: 'strip',
+    dts: {
+      build: true,
+    },
     outputOptions: outputOptions({
       codeSplitting: {
         groups: [
@@ -126,12 +82,76 @@ export default defineConfig([
     target: false,
     // graphology needs `events`
     nodeProtocol: 'strip',
-    dts: true,
+    dts: {
+      build: true,
+    },
     deps: {
       onlyBundle: false,
       neverBundle: [/^likec4\/core/],
     },
     plugins: [aliasCore(), nodePolyfills()],
+  },
+  {
+    entry: [
+      'src/vite-plugin/index.ts',
+      'src/config/index.ts',
+      'src/model/builder.ts',
+      'src/model/index.ts',
+      'src/cli/index.ts',
+      'src/generators/likec4.ts',
+      'src/index.ts',
+    ],
+    platform: 'node',
+    nodeProtocol: true,
+    dts: {
+      build: true,
+    },
+    // @likec4/core is built separately (see below), share a single copy of it
+    deps: {
+      onlyBundle: false,
+      neverBundle: [
+        '@likec4/log',
+        /^likec4\/core/,
+        /^likec4\/layouts/,
+      ],
+      resolveDepSubpath: true,
+    },
+    plugins: [aliasCore(), aliasLayouts()],
+    hooks: {
+      'build:done': async ({ options: { logger } }) => {
+        // Workaround for handling @likec4/core imports correctly in d.ts files
+        const generatorsDts = fs.globSync(['dist/**/*.d.mts', '!dist/core/**'])
+        for (const file of generatorsDts) {
+          const content = fs.readFileSync(file, 'utf-8')
+          if (!content.includes('@likec4/core')) {
+            continue
+          }
+          logger.info(`Updating imports in ${file} (replace @likec4/core with likec4/core)`)
+          const updated = content.replaceAll('@likec4/core', 'likec4/core')
+          fs.writeFileSync(file, updated)
+        }
+
+        logger.info('\n----- Copy artifacts ------\n')
+
+        await mkdir('./config', { recursive: true })
+        await copyFile('../config/schema.json', './config/schema.json')
+
+        await copyVitePluginModules()
+        logger.success('Copied vite-plugin-modules.d.ts\n')
+
+        await copyReact()
+        logger.success('Copied @likec4/react\n')
+
+        await bundleApp()
+        logger.success('Bundled likec4-spa\n')
+
+        await copyMcpAppAssets()
+        logger.success('Copied mcp-app assets\n')
+
+        await copySkills()
+        logger.success('Copied skills\n')
+      },
+    },
   },
 ])
 

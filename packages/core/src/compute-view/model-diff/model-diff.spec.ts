@@ -2,8 +2,8 @@ import { values } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder'
 import { LikeC4Model } from '../../model'
-import type { ModelDiff, ParsedLikeC4ModelData, ParsedView } from '../../types'
-import { _stage, _type, DiffId, ViewId } from '../../types'
+import type { LayoutedDynamicView, LayoutedView, ModelDiff, ParsedLikeC4ModelData, ParsedView } from '../../types'
+import { _stage, _type, DiffId, dynamicViewFlow, ViewId } from '../../types'
 import { computeAdhocView } from '../adhoc-view/compute'
 import { applyModelDiff } from './apply-model-diff'
 import {
@@ -260,6 +260,77 @@ describe('computeCompareView', () => {
     expect(filterCompareView(view, 'changes')).toBe(view)
   })
 
+  it('drops sequence steps hidden by the mode', () => {
+    const node = (id: string, diffStatus?: 'added') => ({
+      id,
+      parent: null,
+      children: [] as string[],
+      inEdges: [] as string[],
+      outEdges: [] as string[],
+      ...(diffStatus ? { diffStatus } : {}),
+    })
+    const edge = (id: string, source: string, target: string, diffStatus?: 'added' | 'removed') => ({
+      id,
+      source,
+      target,
+      ...(diffStatus ? { diffStatus } : {}),
+    })
+    const view = {
+      [_type]: 'dynamic',
+      id: 'seq',
+      nodes: [node('a'), node('b'), node('c', 'added')],
+      edges: [
+        edge('step-01', 'a', 'b', 'removed'),
+        edge('step-02', 'a', 'b'),
+        edge('step-03', 'b', 'c', 'added'),
+      ],
+      flow: [
+        'step-01',
+        'step-02',
+        { _type: 'opt', id: 'step-04:opt', flow: ['step-03'] },
+      ],
+      sequenceLayout: {
+        actors: [
+          { id: 'a', ports: [{ id: 'step-01_source' }, { id: 'step-02_source' }] },
+          { id: 'b', ports: [{ id: 'step-01_target' }, { id: 'step-02_target' }, { id: 'step-03_source' }] },
+          { id: 'c', ports: [{ id: 'step-03_target' }] },
+        ],
+        steps: [{ id: 'step-01' }, { id: 'step-02' }, { id: 'step-03' }],
+        compounds: [{ id: 'c', origin: 'c' }],
+        parallelAreas: [],
+        subflows: [],
+        bounds: { x: 0, y: 0, width: 0, height: 0 },
+      },
+    } as unknown as LayoutedView
+
+    const asIs = filterCompareView(view, 'as-is')
+    const toBe = filterCompareView(view, 'to-be')
+
+    expect(asIs.edges.map(e => e.id)).toEqual(['step-01', 'step-02'])
+    expect(asIs).toMatchObject({
+      flow: ['step-01', 'step-02', { _type: 'opt', id: 'step-04:opt', flow: [] }],
+      sequenceLayout: { steps: [{ id: 'step-01' }, { id: 'step-02' }] },
+    })
+    expect(asIs).toMatchObject({
+      sequenceLayout: {
+        actors: [
+          { id: 'a', ports: [{ id: 'step-01_source' }, { id: 'step-02_source' }] },
+          { id: 'b', ports: [{ id: 'step-01_target' }, { id: 'step-02_target' }] },
+        ],
+        compounds: [],
+      },
+    })
+    expect(toBe.edges.map(e => e.id)).toEqual(['step-02', 'step-03'])
+    expect(toBe).toMatchObject({
+      flow: ['step-02', { _type: 'opt', id: 'step-04:opt', flow: ['step-03'] }],
+      sequenceLayout: { steps: [{ id: 'step-02' }, { id: 'step-03' }] },
+    })
+    const stale = { ...asIs, flow: (view as LayoutedDynamicView).flow }
+    expect(() => dynamicViewFlow(stale as never)).toThrow(/Expected defined value/)
+    expect(dynamicViewFlow(asIs as never).stepsCount).toBe(2)
+    expect(dynamicViewFlow(toBe as never).stepsCount).toBe(2)
+  })
+
   it('shows modified nodes as they were before the diff in the as-is mode', () => {
     const { view } = compare('cloud')
     const api = (mode: 'as-is' | 'to-be') => filterCompareView(view, mode).nodes.find(n => n.id === 'cloud.api')
@@ -279,6 +350,39 @@ describe('computeCompareView', () => {
     expect(withoutDiffOnlyReferences(view, data)).toMatchObject({
       rules: [{ include: [{ ref: { model: 'customer' } }] }],
     })
+  })
+})
+
+describe('computeCompareViews', () => {
+  it('marks every actor and step of a view that exists only in the diff as added', () => {
+    const data = modelData()
+    const diff = data.diffs![DiffId('rfc1')]!
+    const withView = {
+      ...data,
+      diffs: {
+        [diff.id]: {
+          ...diff,
+          views: {
+            [ViewId('pays')]: {
+              [_type]: 'dynamic',
+              [_stage]: 'parsed',
+              id: ViewId('pays'),
+              title: 'Pays',
+              description: null,
+              variant: 'sequence',
+              rules: [],
+              steps: [{ source: 'customer', target: 'cloud.payments', astPath: '/s1', title: 'pays' }],
+            },
+          },
+        },
+      },
+    } as unknown as ParsedLikeC4ModelData
+    const models = createCompareModels(withView, DiffId('rfc1'))!
+    const result = computeCompareViews(withView, models).find(item => item.view.id === 'pays')
+    expect(result?.isAffected).toBe(true)
+    expect(result?.view.nodes.every(node => node.diffStatus === 'added')).toBe(true)
+    expect(result?.view.edges.every(edge => edge.diffStatus === 'added')).toBe(true)
+    expect(applyModelDiff(withView, withView.diffs![DiffId('rfc1')]!).views[ViewId('pays')]?.id).toBe('pays')
   })
 })
 

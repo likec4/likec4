@@ -7,11 +7,14 @@ import { runExportJson } from './handler'
 
 // Runs against real language services. The package runs specs with `--no-isolate`,
 // so the mock is shared with the publish specs, see `publish/__doubles__.ts`.
-vi.mock('@likec4/language-services/node', async importOriginal => {
-  const actual = await importOriginal<typeof import('@likec4/language-services/node')>()
+vi.mock(import('@likec4/language-services/node'), async importOriginal => {
+  const actual = await importOriginal()
   const doubles = await import('../../publish/__doubles__')
   doubles.rememberRealWorkspace(actual.fromWorkspace)
-  return { ...actual, fromWorkspace: doubles.fromWorkspace }
+  return {
+    ...actual,
+    fromWorkspace: doubles.fromWorkspace as typeof actual.fromWorkspace,
+  }
 })
 
 const logger = {

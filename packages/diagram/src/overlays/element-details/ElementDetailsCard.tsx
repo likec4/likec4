@@ -546,11 +546,7 @@ export function ElementDetailsCard({
                       enableRelationshipBrowser: false,
                       enableNavigateTo: false,
                     }}>
-                    {opened && activeTab === 'Relationships' && (
-                      <TabPanelRelationships
-                        element={logicalElement}
-                        node={nodeModel ?? null} />
-                    )}
+                    {opened && activeTab === 'Relationships' && <TabPanelRelationships element={logicalElement} />}
                   </DiagramFeatures>
                 </TabsPanel>
               )}

@@ -72,10 +72,6 @@ export default defineConfig({
     ],
   },
   plugins: [
-    react({
-      compiler: true,
-      exclude: [/\.d\.[cm]?ts$/],
-    }),
     viteAliasPlugin({
       entries: [
         {
@@ -91,6 +87,10 @@ export default defineConfig({
           replacement: join(process.cwd(), 'styled-system', '$1', 'index.mjs'),
         },
       ],
+    }),
+    react({
+      compiler: true,
+      exclude: [/\.d\.[cm]?ts$/],
     }),
   ],
   hooks: {

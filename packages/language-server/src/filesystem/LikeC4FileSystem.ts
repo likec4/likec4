@@ -6,10 +6,13 @@ import { NodeFileSystemProvider } from 'langium/node'
 import { mkdirSync, statSync } from 'node:fs'
 import { readFile as fsReadFile, unlink, writeFile as fsWriteFile } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
+import { createStorage } from 'unstorage'
+import fsLite from 'unstorage/drivers/fs-lite'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { compareByUri, compareByUriDeepFirst } from '../utils'
+import type { UnstorageModuleContext } from '../workspace'
 import { isDependencyUri } from '../workspace/dependency-uri'
 import { WithChokidarWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './noop'
@@ -30,6 +33,16 @@ export const WithFileSystem = (
   ...(enableWatcher ? WithChokidarWatcher : NoFileSystemWatcher),
 })
 
+export const WithUnstorageCache = (cacheDir: string): UnstorageModuleContext => ({
+  unstorage: () => {
+    rootLogger.debug`unstorage at ${cacheDir}`
+    return createStorage({
+      driver: fsLite({
+        base: cacheDir,
+      }),
+    })
+  },
+})
 /**
  * A file system provider that follows symbolic links.
  * @see https://github.com/likec4/likec4/pull/1213

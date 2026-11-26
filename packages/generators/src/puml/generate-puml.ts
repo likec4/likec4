@@ -117,7 +117,8 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   const printHeader = () => {
     return new CompositeGeneratorNode()
-      .append('title "', viewmodel.titleOrId, '"', NL)
+      // escaped like element titles, so a title with a line break stays on one line
+      .append('title "', escapeLabel(viewmodel.titleOrId) ?? '', '"', NL)
       .append(pumlDirection(view), ' direction', NL)
   }
 

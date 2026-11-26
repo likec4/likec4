@@ -7,4 +7,7 @@ export default defineConfig({
   ],
   unbundle: true,
   minify: false,
+  dts: {
+    build: true,
+  },
 })

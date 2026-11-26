@@ -5,7 +5,7 @@ const rpcCode = ({ isAIAvailable, ai, rpcEnabled }: SharedVirtualModuleOptions) 
   ` 
 import { createRpc } from 'likec4/vite-plugin/internal'
 
-export const isRpcAvailable = !!import.meta.hot && ${rpcEnabled}
+export const isRpcAvailable = import.meta.hot && ${rpcEnabled}
 export const isAIAvailable = isRpcAvailable && ${isAIAvailable}
 export const AIAdapter = ${JSON.stringify(ai?.adapter.name)}
 
@@ -57,8 +57,7 @@ export const likec4rpc = {
 `
 
 export const rpcModule: VirtualModule = {
-  id: 'likec4:rpc',
-  virtualId: 'likec4:plugin/rpc.js',
+  name: 'rpc',
   async load(opts) {
     if (opts.rpcEnabled) {
       logGenerating('rpc')

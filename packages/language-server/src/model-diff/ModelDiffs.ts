@@ -12,7 +12,7 @@ import { type Position, type Range, DiagnosticSeverity } from 'vscode-languagese
 import type { ast } from '../ast'
 import { relationFingerprint } from '../model/relationFingerprint'
 import type { LikeC4Services } from '../module'
-import { diffRange, mergeDiffAdds, modelBlockWith } from './merge-apply'
+import { diffRange, mergeDiffAdds, mergeDiffViews, modelBlockWith, viewsBlockWith } from './merge-apply'
 import { findDiffOverlaps, overlapsOf } from './overlaps'
 import type { DocumentEdits } from './text-edits'
 
@@ -166,7 +166,7 @@ export class LikeC4ModelDiffs {
    * Computes edits that apply the diff to the model or discard it.
    *
    * Apply: removes elements and relations listed in `remove` (with everything that references them),
-   * merges the `add` blocks into the model definitions, and deletes the diff.
+   * merges the `add` blocks into the model definitions, moves dynamic views into a `views` block, and deletes the diff.
    * Discard: deletes the diff.
    * The comment lines right above the diff are deleted with it.
    */
@@ -197,9 +197,14 @@ export class LikeC4ModelDiffs {
         continue
       }
       const unmerged = action === 'apply' ? mergeDiffAdds(edits, node, documents) : []
+      const unmergedViews = action === 'apply' ? mergeDiffViews(edits, node, documents) : []
+      const replacement = [
+        unmerged.length > 0 ? modelBlockWith(unmerged) : '',
+        unmergedViews.length > 0 ? viewsBlockWith(unmergedViews) : '',
+      ].filter(text => text !== '').join('\n')
       edits.add(AstUtils.getDocument(node), {
         range,
-        newText: unmerged.length > 0 ? modelBlockWith(unmerged) : '',
+        newText: replacement,
       })
     }
     return true

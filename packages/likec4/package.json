@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.61.0",
+  "version": "1.61.1",
   "description": "Toolchain for your architecture diagrams",
   "keywords": [
     "likec4",
@@ -265,8 +265,6 @@
     "clsx": "catalog:react",
     "conf": "^16.0.0",
     "defu": "catalog:utils",
-    "esbuild-node-externals": "catalog:esbuild",
-    "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "get-port": "^7.2.0",
     "is-inside-container": "^1.0.0",
@@ -278,12 +276,11 @@
     "npm-run-all2": "^9.0.4",
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
+    "p-queue": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
     "postcss": "catalog:css",
     "pretty-ms": "^9.3.1",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
@@ -311,9 +308,7 @@
     "@tanstack/ai-gemini": "catalog:ai",
     "@tanstack/ai-ollama": "catalog:ai",
     "@tanstack/ai-openai": "catalog:ai",
-    "@tanstack/ai-openrouter": "catalog:ai",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "@tanstack/ai-openrouter": "catalog:ai"
   },
   "peerDependenciesMeta": {
     "@tanstack/ai": {

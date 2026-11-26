@@ -14,6 +14,7 @@ const expectedClaudeSkillLinks = new Map([
   ['.claude/skills/add-new-element-shape', '../../.agents/skills/add-new-element-shape'],
   ['.claude/skills/changeset-generator', '../../.agents/skills/changeset-generator'],
   ['.claude/skills/likec4-cli-codegen-regression', '../../.agents/skills/likec4-cli-codegen-regression'],
+  ['.claude/skills/code-to-likec4', '../../skills/code-to-likec4'],
   ['.claude/skills/likec4-dsl', '../../skills/likec4-dsl'],
   ['.claude/skills/likec4-gh-pr-triage', '../../.agents/skills/likec4-gh-pr-triage'],
   ['.claude/skills/likec4-issue-repro', '../../.agents/skills/likec4-issue-repro'],
@@ -128,6 +129,21 @@ function expectFail(root, message) {
 void describe('check-agent-skills', () => {
   void it('accepts canonical Claude skill symlink adapters', () => {
     expectPass(createFixture())
+  })
+
+  void it('accepts the skills .gitignore written by pnpm', () => {
+    expectPass(createFixture(root => {
+      writeFixtureFile(root, '.claude/skills/.gitignore', '# pnpm\n/ai-core\n# pnpm end\n')
+    }))
+  })
+
+  void it('rejects unexpected tracked files in Claude skills', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(root, '.claude/skills/README.md', 'not a skill\n')
+      }),
+      /Unexpected tracked Claude skill adapter: \.claude\/skills\/README\.md/,
+    )
   })
 
   void it('rejects missing Claude skill adapters', () => {

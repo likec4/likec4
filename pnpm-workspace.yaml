@@ -116,7 +116,6 @@ catalogs:
     postcss-import: ^17.0.0
   esbuild:
     esbuild: 0.28.2
-    esbuild-node-externals: 2.0.0
     esbuild-plugins-node-modules-polyfill: 1.8.3
   externals:
     "@hpcc-js/wasm-graphviz": 1.29.2
@@ -193,7 +192,6 @@ catalogs:
     consola: ^3.4.2
     date-fns: ^4.4.0
     defu: ^6.1.7
-    esm-env: ^1.2.2
     fast-equals: ^6.2.2
     fuse.js: ^7.5.0
     immer: ^11.1.21
@@ -202,7 +200,6 @@ catalogs:
     khroma: 2.1.0
     nanoid: 6.0.2
     natural-compare-lite: ^1.4.1
-    object-hash: ^3.0.0
     ohash: ^2.0.12
     p-debounce: 5.1.1
     p-limit: 7.3.3
@@ -344,3 +341,5 @@ permissions:
     skills: true
   '@tanstack/react-router':
     skills: true
+  likec4:
+    skills: false

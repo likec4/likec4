@@ -79,6 +79,8 @@ export const markdownBlock = defineRecipe({
 
     fontSize: 'var(--text-fz-md)',
     lineHeight: mantine.lineHeight,
+    // break long unbroken words (paths, URLs) instead of overflowing the container
+    overflowWrap: 'break-word',
 
     '& :first-child': {
       marginTop: '0',

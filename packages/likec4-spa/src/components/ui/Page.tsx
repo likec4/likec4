@@ -85,6 +85,45 @@ export function PageLogo() {
 }
 
 /**
+ * Tabs between the header and the toolbar, the selected one underlined over the toolbar border
+ */
+export const PageTabs = styled('div', {
+  base: {
+    display: 'flex',
+    gap: '6',
+    paddingX: padX,
+    marginBottom: '[-1px]',
+  },
+})
+
+export const PageTab = styled('button', {
+  base: {
+    position: 'relative',
+    zIndex: '[1]',
+    appearance: 'none',
+    background: 'none',
+    border: 'none',
+    padding: '0',
+    paddingBottom: '2.5',
+    borderBottomWidth: '2',
+    borderBottomStyle: 'solid',
+    borderBottomColor: 'transparent',
+    fontFamily: 'body',
+    fontSize: 'sm',
+    fontWeight: 'medium',
+    color: 'text.dimmed',
+    cursor: 'pointer',
+    _hover: {
+      color: 'text',
+    },
+    '&[aria-selected="true"]': {
+      color: 'text.bright',
+      borderBottomColor: 'primary.border',
+    },
+  },
+})
+
+/**
  * Full-width bar under the header
  */
 export const Toolbar = styled('div', {

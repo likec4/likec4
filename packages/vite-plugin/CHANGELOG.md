@@ -1,5 +1,30 @@
 # @likec4/vite-plugin
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3612](https://github.com/likec4/likec4/pull/3612) [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c) Thanks [@davydkov](https://github.com/davydkov)! - The projects overview page in a multi-project workspace is redesigned. Projects now open as cards by default, each showing the project's contact person, its folder in the workspace, and which projects it depends on or is used by; element, relationship and view counts appear when you hover a card. The page also has a table view, sorting and workspace totals; the previous diagram is still available as the Map view.
+  
+  A single-project workspace gets the same look: the project's views as cards with diagram previews or as a table, with the project totals, sorting by name, folder or type, and the same search.
+  
+  The projects page can now search inside every project: press `⌘K` or `/` to find elements and views across the whole workspace, grouped by project. Type `@name` to limit the search to one project; `kind:` and `#tag` work as in the diagram search.
+  
+  `Overlay` from `@likec4/diagram/custom` accepts `motionPreset="lift"`: a short fade with an 8px drop instead of the scale-in, for full-screen palettes.
+  
+  `likec4:projects` now includes each project's `contactPerson` from its config.
+  
+  In dev mode, clicking a project's folder on its card opens the project config in your editor, and "go to source" in a diagram opens the element, relationship or view at its exact position.
+  
+  Project cards flag views whose manual layout has drifted; hover the warning to see which views and jump to them.
+- Updated dependencies [[`4e082a2`](https://github.com/likec4/likec4/commit/4e082a2eb642cb4a323c6e5de2d6ff5e92cb3db6), [`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550), [`a7ff6e6`](https://github.com/likec4/likec4/commit/a7ff6e6f706246783105b0ff31535b29469bb393), [`1e9df9c`](https://github.com/likec4/likec4/commit/1e9df9cb4e4b1c14b8401678fc1e5886562663fe), [`71b60d8`](https://github.com/likec4/likec4/commit/71b60d80eb3f38228be491c1b2da4dbb82553e43), [`e6f5c74`](https://github.com/likec4/likec4/commit/e6f5c740f11e3f9fb40c7ded148c92d09b82916f), [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534), [`55955d7`](https://github.com/likec4/likec4/commit/55955d7e20cbf5a6f8a377e4b68e50f0cd771ba3), [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706), [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c), [`dbd2e22`](https://github.com/likec4/likec4/commit/dbd2e224870f810587ecc1eb050da350f53faffb)]:
+  - @likec4/generators@1.61.1
+  - @likec4/core@1.61.1
+  - @likec4/language-services@1.61.1
+  - @likec4/config@1.61.1
+  - @likec4/layouts@1.61.1
+  - @likec4/log@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes

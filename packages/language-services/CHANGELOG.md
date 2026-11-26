@@ -1,5 +1,17 @@
 # @likec4/language-services
 
+## 1.61.1
+
+### Patch Changes
+
+- Updated dependencies [[`4e082a2`](https://github.com/likec4/likec4/commit/4e082a2eb642cb4a323c6e5de2d6ff5e92cb3db6), [`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550), [`a7ff6e6`](https://github.com/likec4/likec4/commit/a7ff6e6f706246783105b0ff31535b29469bb393), [`1e9df9c`](https://github.com/likec4/likec4/commit/1e9df9cb4e4b1c14b8401678fc1e5886562663fe), [`27b3257`](https://github.com/likec4/likec4/commit/27b3257302ce40318b241b298e92825623e34391), [`0c3b152`](https://github.com/likec4/likec4/commit/0c3b152276de46705d6f47bf53e281d32a29e7c8), [`71b60d8`](https://github.com/likec4/likec4/commit/71b60d80eb3f38228be491c1b2da4dbb82553e43), [`2cd6b32`](https://github.com/likec4/likec4/commit/2cd6b32b02480093fd760ebaab94b566afbe0081), [`1f8f1e7`](https://github.com/likec4/likec4/commit/1f8f1e7c2b777126ba3b649814d568e1cd5b219d), [`e6f5c74`](https://github.com/likec4/likec4/commit/e6f5c740f11e3f9fb40c7ded148c92d09b82916f), [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534), [`55955d7`](https://github.com/likec4/likec4/commit/55955d7e20cbf5a6f8a377e4b68e50f0cd771ba3), [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706), [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c), [`dbd2e22`](https://github.com/likec4/likec4/commit/dbd2e224870f810587ecc1eb050da350f53faffb)]:
+  - @likec4/generators@1.61.1
+  - @likec4/core@1.61.1
+  - @likec4/language-server@1.61.1
+  - @likec4/config@1.61.1
+  - @likec4/layouts@1.61.1
+  - @likec4/log@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes

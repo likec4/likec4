@@ -1,4 +1,3 @@
-import { nonNullable } from '@likec4/core'
 import {
   type BBox,
   type DiagramEdge,
@@ -84,12 +83,14 @@ export function sequenceLayoutToXY(
   >
   const xyedges = [] as Array<Types.SequenceStepEdge>
 
-  const getNode = (id: NodeId): DiagramNode => {
-    return nonNullable(view.nodes.find((n) => n.id === id))
-  }
+  const findNode = (id: NodeId): DiagramNode | undefined => view.nodes.find((n) => n.id === id)
 
   for (const compound of compounds) {
-    xynodes.push(toCompoundArea(compound, getNode(compound.origin), view))
+    const node = findNode(compound.origin)
+    if (!node) {
+      continue
+    }
+    xynodes.push(toCompoundArea(compound, node, view))
   }
 
   // In manual snapshots, subflows are emtpy
@@ -104,7 +105,11 @@ export function sequenceLayoutToXY(
   //
 
   for (const actor of actors) {
-    xynodes.push(toSeqActorNode(actor, getNode(actor.id), bounds, view))
+    const node = findNode(actor.id)
+    if (!node) {
+      continue
+    }
+    xynodes.push(toSeqActorNode(actor, node, bounds, view))
   }
 
   let stepnum = 1
@@ -228,6 +233,7 @@ function toSeqActorNode(
   return {
     id: id,
     type: 'seq-actor',
+    ...(actor.diffStatus && { className: `likec4-diff likec4-diff-${actor.diffStatus}` }),
     data: {
       id: actor.id,
       x,
@@ -273,6 +279,7 @@ function toSeqStepEdge(
   return {
     id,
     type: 'seq-step',
+    ...(edge.diffStatus && { className: `likec4-diff likec4-diff-${edge.diffStatus}` }),
     data: {
       id,
       label: edge.label,

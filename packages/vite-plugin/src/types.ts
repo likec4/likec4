@@ -46,6 +46,11 @@ export type LikeC4WorkspaceOptions = {
    */
   workspace?: string
   /**
+   * Cache directory. If not provided, vite cache directory will be used.
+   * Disable caching by setting this option to null.
+   */
+  cacheDir?: string | null | undefined
+  /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.
    *
@@ -87,6 +92,7 @@ export type LikeC4WorkspaceOptions = {
    */
   languageServices: LikeC4LanguageServices
   workspace?: never
+  cacheDir?: never
   printErrors?: never
   throwIfInvalid?: never
   graphviz?: never

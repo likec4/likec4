@@ -31,6 +31,9 @@ jobs:
       - name: 📦 react bundle dependencies
         run: pnpm check:react-bundle-deps
 
+      - name: 🧩 skills
+        run: pnpm check:skills
+
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 

@@ -1,0 +1,188 @@
+#!/usr/bin/env node
+// auto-label.mjs — best-effort deterministic labeling for `discover.sh quick`.
+// Fills titles (prettified), wires imports (relative + alias + through barrels),
+// promotes all proposals. Titles are raw, nothing is pruned: for curated
+// diagrams, label manually instead (see references/ir-schema.md).
+// Stdlib only. Usage: node auto-label.mjs --in <ir.json> --out <labeled.json> --system <name>
+import { readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join, normalize } from 'node:path'
+import { sanitize } from './emit.mjs'
+
+/** Parse CLI arguments for the labeler. */
+function parseArgs(argv) {
+  const o = { in: '', out: '', system: 'cloud', keepSymbols: null }
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--in') o.in = argv[++i]
+    else if (argv[i] === '--out') o.out = argv[++i]
+    else if (argv[i] === '--system') o.system = argv[++i]
+    else if (argv[i] === '--drop-symbols') o.keepSymbols = ['route']
+    else if (argv[i] === '--keep-symbols') {
+      o.keepSymbols = String(argv[++i]).split(',').map((s) => s.trim()).filter(Boolean)
+    }
+    else if (argv[i] === '-h' || argv[i] === '--help') {
+      console.log(
+        'Usage: node auto-label.mjs --in <ir.json> --out <labeled.json> --system <name> [--drop-symbols | --keep-symbols <csv>]',
+      )
+      console.log('  --drop-symbols: file-level + routes only (shorthand for --keep-symbols route).')
+      console.log('  --keep-symbols <csv>: keep only these symbolKinds (e.g. route,class).')
+      process.exit(0)
+    }
+  }
+  if (!o.in || !o.out) {
+    console.error('auto-label.mjs: --in and --out required')
+    process.exit(2)
+  }
+  return o
+}
+
+/** Turn an identifier or route into a human-readable title. */
+const pretty = (s) =>
+  String(s || '').replace(/^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /, '')
+    .replace(/[-_]/g, ' ').split(' ').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ') || 'Unnamed'
+/** Derive the area segment from the first path segment. */
+const areaOf = (f) => {
+  const p = String(f || '').split('/')
+  return p.length > 1 ? sanitize(p[0]) : 'app'
+}
+/** Extract the sanitized filename stem. */
+const fileLeaf = (f) => sanitize(String(f || '').split('/').pop().split('.')[0])
+/** Build the default FQN for a file or symbol. */
+const autoFqn = (sys, f, symbol) =>
+  `${sanitize(sys)}.${areaOf(f)}.${fileLeaf(f)}${symbol ? `.${sanitize(symbol)}` : ''}`
+
+const MODULE_EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py']
+
+/**
+ * Resolve extensionless imports, explicit ESM extensions, and NodeNext-style
+ * `.js` specifiers that point at `.ts` sources through one candidate search.
+ */
+function resolveModule(base, exists) {
+  const stem = base.replace(/\.(m|c)?jsx?$/, '')
+  const candidates = [
+    base,
+    ...MODULE_EXTS.map((ext) => `${stem}${ext}`),
+    ...MODULE_EXTS.map((ext) => `${base}/index${ext}`),
+  ]
+  for (const cand of candidates) if (exists(cand)) return cand
+  return null
+}
+
+/**
+ * Resolve a relative import to a root-relative module path. Mirrors emit.mjs
+ * default FQN assignment (structural leaves) so wired targets match.
+ */
+function resolveRel(fromFile, spec, exists) {
+  if (!spec.startsWith('.')) return null
+  const base = normalize(join(dirname(fromFile), spec)).replace(/\\/g, '/')
+  return resolveModule(base, exists)
+}
+
+const args = parseArgs(process.argv.slice(2))
+const ir = JSON.parse(readFileSync(args.in, 'utf8'))
+let elements = ir.elements ?? []
+if (args.keepSymbols) {
+  const keep = new Set(args.keepSymbols)
+  const kindOf = (e) => e.symbolKind || (e.route ? 'route' : '')
+  const before = elements.length
+  elements = elements.filter((e) => !e.symbol || keep.has(kindOf(e)))
+  console.error(
+    `auto-label.mjs: dropped ${before - elements.length} symbol elements (keep: ${
+      args.keepSymbols.join(',') || 'none'
+    })`,
+  )
+}
+const byFile = new Map()
+for (const e of elements) if (!e.symbol && !byFile.has(e.file)) byFile.set(e.file, e)
+
+const realCache = new Map()
+/** Follow barrel re-exports until reaching real implementation files. */
+function realTargets(file, seen = new Set()) {
+  if (realCache.has(file)) return realCache.get(file)
+  const rec = byFile.get(file)
+  const out = []
+  if (rec?.barrelTargets && !seen.has(file)) {
+    seen.add(file)
+    for (const spec of rec.barrelTargets) {
+      const r = resolveRel(file, spec, (c) => byFile.has(c))
+      if (r) out.push(...realTargets(r, seen))
+    }
+  }
+  const res = out.length ? out : [file]
+  realCache.set(file, res)
+  return res
+}
+
+const fq = new Map()
+const used = new Set()
+for (const e of elements) {
+  if (e.symbol) continue
+  const base = e.fqn || autoFqn(args.system, e.file, null)
+  let uniq = base, n = 2
+  while (used.has(uniq)) uniq = `${base}_${n++}`
+  used.add(uniq)
+  e.fqn = uniq
+  fq.set(e, uniq)
+}
+const fileFqn = new Map()
+for (const e of elements) if (!e.symbol && !fileFqn.has(e.file)) fileFqn.set(e.file, fq.get(e))
+// Symbol FQNs mirror emit.mjs nesting under the (possibly deduped) file parent.
+for (const e of elements) {
+  if (!e.symbol) continue
+  const parentFqn = fileFqn.get(e.parent || e.file)
+  fq.set(e, e.fqn || (parentFqn ? `${parentFqn}.${sanitize(e.symbol)}` : autoFqn(args.system, e.file, e.symbol)))
+}
+
+// Python scan records absolute dotted module names; map them back to files.
+const pyModules = new Map()
+for (const e of elements) if (!e.symbol && e.lang === 'py' && e._module) pyModules.set(e._module, e.file)
+
+for (const e of elements) {
+  if (!e.title) e.title = pretty(e.symbol || fileLeaf(e.file))
+  const seen = new Set((e.imports || []).map((r) => (typeof r === 'string' ? r : r.to)))
+  /** Add an import edge to every real target of `file`, avoiding duplicates. */
+  const wire = (file) => {
+    for (const real of realTargets(file)) {
+      const to = fileFqn.get(real)
+      if (to && to !== fq.get(e) && !seen.has(to)) {
+        seen.add(to)
+        e.imports.push(to)
+      }
+    }
+  }
+  for (const spec of e._rawImports || []) {
+    const hit = e.lang === 'py'
+      // Symbol candidates (pkg.mod.Symbol) fall back to their module file.
+      ? pyModules.get(spec) ?? pyModules.get(spec.split('.').slice(0, -1).join('.')) ?? null
+      : resolveRel(e.file, spec, (c) => fileFqn.has(c))
+    if (hit) wire(hit)
+  }
+  for (const a of e.aliasImports || []) {
+    const hit = resolveModule(a.to, (c) => fileFqn.has(c))
+    if (hit) wire(hit)
+  }
+  delete e._module
+  delete e._rawImports
+  delete e.barrelTargets
+}
+
+// Promote every proposal as-is (best-effort: no LLM triage in quick mode).
+for (const p of ir.proposals || []) {
+  elements.push({
+    fqn: p.kind === 'person' ? sanitize(p.title || 'actor') : '',
+    kind: p.kind,
+    title: p.title,
+    file: p.source || '',
+    lang: '',
+    technology: p.technology || '',
+    tags: ['autogenerated'],
+    imports: [],
+    calls: [],
+    extends: [],
+  })
+}
+
+if (elements.length > 200) {
+  console.error(`auto-label.mjs: warning: ${elements.length} elements > 200 default cap (nothing pruned in quick mode)`)
+}
+writeFileSync(args.out, JSON.stringify({ elements }, null, 2))
+console.error(`auto-label.mjs: ${elements.length} elements -> ${args.out}`)

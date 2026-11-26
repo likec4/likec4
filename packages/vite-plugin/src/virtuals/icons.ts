@@ -10,7 +10,7 @@ import { filter, isTruthy, map, pipe, sort, unique, values } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
+import type { ProjectVirtualModule, VirtualModule } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 const startsWithHttp = /^(https?:)?\/\//i
@@ -191,12 +191,13 @@ export function IconRenderer({ node, ...props }) {
 }
 
 export const projectIconsModule: ProjectVirtualModule = {
-  ...generateMatches('icons', '.jsx'),
+  name: 'icons',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('icons', project.id)
     const model = await likec4.computedModel(project.id)
     return {
-      moduleType: 'jsx',
+      moduleType: 'js',
       code: generateIconRendererCode(model.$data),
     }
   },
@@ -213,14 +214,9 @@ function embedProjectIdAsJsString(projectId: string): string {
   return JSON.stringify(projectId)
 }
 
-/** Embed URL as JS string literal; URL is built from allowlisted project id so only escape needed. */
-function embedUrlAsJsString(url: string): string {
-  return JSON.stringify(url)
-}
-
 export const iconsModule = {
-  id: 'likec4:icons',
-  virtualId: 'likec4:plugin/icons.js',
+  name: 'icons',
+  hmr: true,
   async load({ projects, logger }) {
     logGenerating('icons')
 
@@ -237,10 +233,8 @@ export const iconsModule = {
       const idLiteral = hardenJsonStringLiteralForEmbeddedScript(
         embedProjectIdAsJsString(p.id),
       )
-      const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
-        embedUrlAsJsString(joinURL('likec4:icons', p.id)),
-      )
-      return `  ${idLiteral}: () => import(${pkgLiteral})`
+      const pkgLiteral = joinURL('likec4:icons', p.id)
+      return `  ${idLiteral}: () => import(${JSON.stringify(pkgLiteral)})`
     })
 
     const code = `

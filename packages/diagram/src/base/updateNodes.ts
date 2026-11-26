@@ -39,37 +39,12 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
       }
     }
 
-    const { width: existingWidth, height: existingHeight } = getNodeDimensions(existing)
-
     const haveHandles = Object.hasOwn(existing, 'handles') || Object.hasOwn(update, 'handles')
     const isSameHandles = !haveHandles || eq(existing.handles ?? [], update.handles ?? [])
 
-    if (
-      isSameData
-      && isSameHandles
-      && eq(existingWidth, update.width ?? update.initialWidth)
-      && eq(existingHeight, update.height ?? update.initialHeight)
-      && eq(existing.parentId ?? null, update.parentId ?? null)
-      && eq(existing.hidden, update.hidden ?? existing.hidden)
-      && eq(existing.selected, update.selected ?? existing.selected)
-      && eq(existing.selectable, update.selectable ?? existing.selectable)
-      && eq(existing.focusable, update.focusable ?? existing.focusable)
-      && eq(existing.draggable, update.draggable ?? existing.draggable)
-      && eq(existing.ariaLabel, update.ariaLabel ?? existing.ariaLabel)
-      && eq(existing.ariaRole, update.ariaRole ?? existing.ariaRole)
-      && eq(existing.dragHandle, update.dragHandle)
-      && eq(existing.className, update.className)
-      && eq(existing.zIndex, update.zIndex ?? existing.zIndex)
-      && eq(existing.position, update.position)
-      && eq(existing.domAttributes ?? EMPTY_OBJ, update.domAttributes ?? EMPTY_OBJ)
-      && eq(existing.style ?? EMPTY_OBJ, update.style ?? EMPTY_OBJ)
-    ) {
-      return existing
-    }
-
     const handles = haveHandles && isSameHandles ? existing.handles : update.handles
 
-    return {
+    const merged = {
       // Retain existing properties that are defined, except parentId and handles
       ...pickBy(existing, (v, k) => isDefined(v) && k !== 'parentId' && k !== 'handles'),
       // Retain measured dimensions from existing if present
@@ -81,12 +56,16 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
       }),
       // Apply updates, omitting undefined values
       ...pickBy(update, isDefined) as unknown as N,
-      // Force dimensions
-      width: update.width ?? update.initialWidth,
-      height: update.height ?? update.initialHeight,
       ...(handles && { handles }),
       data,
     } as N
+    if (isSameData && isSameHandles && eq(merged, existing)) {
+      return existing
+    }
+    // Force dimensions
+    merged.width = update.width ?? update.initialWidth
+    merged.height = update.height ?? update.initialHeight
+    return merged
   })
   return isShallowEqual(current, updated) ? current : updated
 }

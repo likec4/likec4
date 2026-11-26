@@ -8,6 +8,7 @@ import type {
   AnyViewRuleStyle,
   BaseParsedViewProperties,
   ViewRuleAutoLayout,
+  ViewRuleRank,
 } from './view-common'
 import type { ElementViewRuleGroup } from './view-parsed.element'
 
@@ -25,6 +26,13 @@ export type DeploymentViewPredicate<A extends AnyAux = Unknown> =
 
 export interface DeploymentViewRuleStyle<A extends AnyAux = Unknown> extends AnyViewRuleStyle<FqnExpr<A>> {}
 
+export interface DeploymentViewRuleRank<A extends AnyAux = Unknown> extends ViewRuleRank<FqnExpr<A>> {}
+export function isDeploymentViewRuleRank<A extends AnyAux>(
+  rule: DeploymentViewRule<A>,
+): rule is DeploymentViewRuleRank<A> {
+  return 'rank' in rule && Array.isArray(rule.targets)
+}
+
 export interface DeploymentViewRuleGroup<A extends AnyAux = Unknown> extends Omit<ElementViewRuleGroup<A>, 'groupRules'>
 {
   groupRules: Array<DeploymentViewPredicate<A> | DeploymentViewRuleGroup<A>>
@@ -37,6 +45,7 @@ export type DeploymentViewRule<A extends AnyAux = Unknown> = ExclusiveUnion<{
   AutoLayout: ViewRuleAutoLayout
   IncludeAncestors: ParsedViewRuleAncestors
   Group: DeploymentViewRuleGroup<A>
+  Rank: DeploymentViewRuleRank<A>
 }>
 
 export interface ParsedViewRuleAncestors {

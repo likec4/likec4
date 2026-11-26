@@ -589,23 +589,5 @@ describe('updateNodes', () => {
       expect(result).not.toBe(current)
       expect(result).toHaveLength(0)
     })
-
-    it('preserves other node properties not explicitly checked', () => {
-      const current = [
-        createNode('node1', {
-          connectable: false,
-          deletable: true,
-        }),
-      ]
-      const update = [createNode('node1', {
-        connectable: true,
-        deletable: false,
-      })]
-
-      const result = updateNodes(current, update)
-
-      expect(result).toBe(current)
-      expect(result[0]).toBe(current[0])
-    })
   })
 })

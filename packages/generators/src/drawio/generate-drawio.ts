@@ -1,5 +1,6 @@
 import { LikeC4Styles } from '@likec4/core'
 import type { BBox } from '@likec4/core'
+import { isOrthoSpline, splineToPolyline } from '@likec4/core/geometry'
 import type {
   aux,
   DiagramNode,
@@ -531,21 +532,152 @@ function buildLikec4StyleForEdge(params: {
   return parts.length > 0 ? parts.join(';') + ';' : ''
 }
 
-/** Escaped edge label for mxCell value (single responsibility). */
+/** Escaped edge label for mxCell value (single responsibility). The edge style has html=1, so the label is HTML. */
 function buildEdgeLabelValue(edge: Edge): string {
-  return edge.label ? escapeXml(edge.label) : ''
+  return edge.label ? escapeXml(escapeHtml(edge.label)) : ''
+}
+
+/**
+ * The layouted path of an edge (bezier points, absolute coordinates), or null when the view is not layouted.
+ * Points are in drawing order: first at the source, unless the layout drew the edge from the target.
+ */
+function layoutedEdgePath(edge: Edge): ReadonlyArray<readonly [number, number]> | null {
+  const points = (edge as { points?: ReadonlyArray<readonly [number, number]> }).points
+  if (!Array.isArray(points) || points.length < 4 || (points.length - 1) % 3 !== 0) return null
+  return points
+}
+
+/** Point at t = 0.5 of one cubic bezier piece. */
+function cubicMidpoint(
+  p0: readonly [number, number],
+  p1: readonly [number, number],
+  p2: readonly [number, number],
+  p3: readonly [number, number],
+): [number, number] {
+  return [
+    (p0[0] + 3 * p1[0] + 3 * p2[0] + p3[0]) / 8,
+    (p0[1] + 3 * p1[1] + 3 * p2[1] + p3[1]) / 8,
+  ]
+}
+
+type Pt = readonly [number, number]
+
+/** Where the line through `a` along `da` meets the line through `b` along `db`, if ahead of `a`. */
+function rayLineIntersection(a: Pt, da: Pt, b: Pt, db: Pt): [number, number] | null {
+  const cross = da[0] * db[1] - da[1] * db[0]
+  if (Math.abs(cross) < 1e-9 * Math.hypot(...da) * Math.hypot(...db)) return null
+  const s = ((b[0] - a[0]) * db[1] - (b[1] - a[1]) * db[0]) / cross
+  return s > 0 ? [a[0] + s * da[0], a[1] + s * da[1]] : null
+}
+
+/**
+ * draw.io waypoints for one cubic bezier piece. draw.io's curved style (mxPolyline.paintCurvedLine) draws
+ * quadratic curves that use the waypoints as control points and pass through the midpoints between them.
+ * Two waypoints where the end tangents meet the tangent at t = 0.5 make the drawn curve pass through the
+ * piece's ends and its middle with the same tangents there. S-shaped pieces, and pieces where those points are
+ * missing or far out (nearly straight ones), are split in half and each half is placed the same way.
+ */
+function curvedPieceWaypoints(p0: Pt, c1: Pt, c2: Pt, p3: Pt, depth = 0): [number, number][] {
+  const sub = (a: Pt, b: Pt): [number, number] => [a[0] - b[0], a[1] - b[1]]
+  const half = (a: Pt, b: Pt): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
+  const mid = cubicMidpoint(p0, c1, c2, p3)
+  const midTangent = sub(sub(p3, p0), sub(c1, c2))
+  const w1 = rayLineIntersection(p0, sub(c1, p0), mid, midTangent)
+  const w2 = rayLineIntersection(p3, sub(c2, p3), mid, midTangent)
+  const chord = sub(p3, p0)
+  const cross = (u: Pt, v: Pt) => u[0] * v[1] - u[1] * v[0]
+  const sShaped = cross(chord, sub(c1, p0)) * cross(chord, sub(c2, p0)) < 0
+  const reach = Math.hypot(...chord) / 2
+  if (!sShaped && w1 && w2 && Math.hypot(...sub(w1, p0)) <= reach && Math.hypot(...sub(w2, p3)) <= reach) {
+    return [w1, w2]
+  }
+  if (depth >= 2) return [[c1[0], c1[1]], [c2[0], c2[1]]]
+  const a = half(p0, c1), b = half(c1, c2), c = half(c2, p3)
+  const d = half(a, b), e = half(b, c)
+  return [
+    ...curvedPieceWaypoints(p0, a, d, mid, depth + 1),
+    ...curvedPieceWaypoints(mid, e, c, p3, depth + 1),
+  ]
+}
+
+/**
+ * Waypoints that follow the layouted path: the corners of an orthogonal path, or for a curved path two
+ * waypoints per bezier piece that make draw.io's curved style follow it (see curvedPieceWaypoints).
+ * Without them, edges between the same two nodes share their anchors and are drawn on top of each other.
+ */
+function layoutedEdgeWaypoints(points: ReadonlyArray<readonly [number, number]>): {
+  waypoints: [number, number][]
+  ortho: boolean
+} {
+  if (isOrthoSpline(points as ReadonlyArray<[number, number]>)) {
+    const corners = splineToPolyline(points as ReadonlyArray<[number, number]>).slice(1, -1)
+    return { waypoints: corners.map(({ x, y }): [number, number] => [x, y]), ortho: true }
+  }
+  const waypoints: [number, number][] = []
+  for (let i = 0; i + 3 < points.length; i += 3) {
+    waypoints.push(...curvedPieceWaypoints(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 3]!))
+  }
+  return { waypoints, ortho: false }
+}
+
+/** Anchor (0–1) of a point on a node's bounds, for draw.io's exit/entry style. */
+function anchorOf(point: readonly [number, number], bbox: BBox): { x: number; y: number } {
+  const clamp01 = (v: number) => Math.round(Math.min(1, Math.max(0, v)) * 1000) / 1000
+  return {
+    x: bbox.width > 0 ? clamp01((point[0] - bbox.x) / bbox.width) : 0.5,
+    y: bbox.height > 0 ? clamp01((point[1] - bbox.y) / bbox.height) : 0.5,
+  }
+}
+
+function distanceToBBox(point: readonly [number, number], bbox: BBox): number {
+  const dx = Math.max(bbox.x - point[0], 0, point[0] - (bbox.x + bbox.width))
+  const dy = Math.max(bbox.y - point[1], 0, point[1] - (bbox.y + bbox.height))
+  return Math.hypot(dx, dy)
+}
+
+/** Edge route for draw.io: explicit round-trip waypoints, or the layouted path with anchors where it meets the nodes. */
+type EdgeRoute = {
+  points: [number, number][]
+  anchors?: { exitX: number; exitY: number; entryX: number; entryY: number }
+  ortho?: boolean
+}
+
+function computeEdgeRoute(
+  edge: Edge,
+  layout: DiagramLayoutState,
+  edgeWaypoints: GenerateDrawioOptions['edgeWaypoints'],
+  layoutOverride?: GenerateDrawioOptions['layoutOverride'],
+): EdgeRoute {
+  const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}|${edge.id}`] ??
+    edgeWaypoints?.[`${edge.source}|${edge.target}`]
+  if (Array.isArray(rawEdgePoints)) {
+    return { points: rawEdgePoints.flatMap(normalizeEdgePoint) }
+  }
+  const path = layoutedEdgePath(edge)
+  const sourceBbox = layout.bboxes.get(edge.source)
+  const targetBbox = layout.bboxes.get(edge.target)
+  // If either endpoint's bbox was overridden, edge.points still reflect the original layout and
+  // no longer match the new node positions. Fall back to bbox-derived anchors (empty points).
+  if (
+    !path || !sourceBbox || !targetBbox
+    || layoutOverride?.[edge.source] || layoutOverride?.[edge.target]
+  ) return { points: [] }
+  // The layout may draw the edge from the target (e.g. dir: back), draw.io always goes from source to target
+  const first = path[0]!
+  const ordered = distanceToBBox(first, sourceBbox) <= distanceToBBox(first, targetBbox) ? path : [...path].reverse()
+  const { waypoints, ortho } = layoutedEdgeWaypoints(ordered)
+  const exit = anchorOf(ordered[0]!, sourceBbox)
+  const entry = anchorOf(ordered[ordered.length - 1]!, targetBbox)
+  return {
+    points: waypoints.map(([x, y]): [number, number] => [x + layout.offsetX, y + layout.offsetY]),
+    anchors: { exitX: exit.x, exitY: exit.y, entryX: entry.x, entryY: entry.y },
+    ortho,
+  }
 }
 
 /** Edge waypoints → mxGeometry XML (single responsibility). */
-function buildEdgeGeometryXml(
-  edge: Edge,
-  edgeWaypoints: GenerateDrawioOptions['edgeWaypoints'],
-): string {
-  const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}|${edge.id}`] ??
-    edgeWaypoints?.[`${edge.source}|${edge.target}`]
-  const edgePoints: [number, number][] = Array.isArray(rawEdgePoints)
-    ? rawEdgePoints.flatMap(normalizeEdgePoint)
-    : []
+function buildEdgeGeometryXml(route: EdgeRoute): string {
+  const edgePoints = route.points
   const hasPoints = edgePoints.length > 0
   if (!hasPoints) return '<mxGeometry relative="1" as="geometry" />'
   const pointsXml = '<Array as="points">' +
@@ -563,14 +695,21 @@ function buildEdgeStyleString(
   viewmodel: DrawioViewModelLike,
   label: string,
   options: GenerateDrawioOptions | undefined,
+  route: EdgeRoute,
 ): string {
   const { bboxes, fontFamily } = layout
   const sourceBbox = bboxes.get(edge.source)
   const targetBbox = bboxes.get(edge.target)
-  const anchors = sourceBbox && targetBbox
+  const anchors = route.anchors ?? (sourceBbox && targetBbox
     ? edgeAnchors(sourceBbox, targetBbox)
-    : { exitX: 1, exitY: 0.5, entryX: 0, entryY: 0.5 }
+    : { exitX: 1, exitY: 0.5, entryX: 0, entryY: 0.5 })
   const anchorStyle = `exitX=${anchors.exitX};exitY=${anchors.exitY};entryX=${anchors.entryX};entryY=${anchors.entryY};`
+  // A layouted route: orthogonal segments through its corners, or a smooth curve through its waypoints
+  const routeStyle = route.anchors == null || route.points.length === 0
+    ? ''
+    : route.ortho
+    ? 'edgeStyle=orthogonalEdgeStyle;'
+    : 'curved=1;'
   const strokeColor = getEdgeStrokeColor(viewmodel, edge.color)
   const dashStyle = edge.line === 'dashed'
     ? 'dashed=1;'
@@ -606,7 +745,7 @@ function buildEdgeStyleString(
     : `fontColor=${edgeLabelColors.font};fontSize=12;align=center;verticalAlign=middle;labelBackgroundColor=none;fontFamily=${
       encodeURIComponent(fontFamily)
     };`
-  return `endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}${edgeBridgeStyle}`
+  return `endArrow=${endArrow};startArrow=${startArrow};html=1;rounded=0;${routeStyle}${anchorStyle}strokeColor=${strokeColor};strokeWidth=2;${dashStyle}${edgeLabelStyle}${edgeLikec4Style}${edgeBridgeStyle}`
 }
 
 /** Build a single edge mxCell XML (orchestrator: label + geometry + style + assembly). */
@@ -622,8 +761,9 @@ function buildEdgeCellXml(
   const sourceId = getCellId(edge.source)
   const targetId = getCellId(edge.target)
   const label = buildEdgeLabelValue(edge)
-  const edgeGeometryXml = buildEdgeGeometryXml(edge, options?.edgeWaypoints)
-  const styleStr = buildEdgeStyleString(edge, layout, viewmodel, label, options)
+  const route = computeEdgeRoute(edge, layout, options?.edgeWaypoints, options?.layoutOverride)
+  const edgeGeometryXml = buildEdgeGeometryXml(route)
+  const styleStr = buildEdgeStyleString(edge, layout, viewmodel, label, options, route)
   const edgeCustomData = edgeOptionalFields.getCustomData(edge)
   const edgeUserObjectXml = buildMxUserObjectXml(edgeCustomData)
   return `<mxCell id="${edgeCellId}" value="${label}" style="${styleStr}" edge="1" parent="${defaultParentId}" source="${sourceId}" target="${targetId}">

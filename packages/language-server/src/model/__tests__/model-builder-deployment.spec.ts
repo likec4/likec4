@@ -59,6 +59,52 @@ describe('LikeC4ModelBuilder - Deployment', () => {
     ]))
   })
 
+  it('builds rank constraints of deployment views', async ({ expect }) => {
+    using t = createTestServices()
+    const { diagnostics } = await t.validate(`
+      specification {
+        element component
+        deploymentNode environment
+        deploymentNode zone
+      }
+      model {
+        component lb
+        component api
+        component db
+        lb -> api
+        api -> db
+      }
+      deployment {
+        environment prod {
+          zone eu {
+            instanceOf lb
+            instanceOf api
+            instanceOf db
+          }
+          zone us {
+            instanceOf lb
+            instanceOf api
+          }
+        }
+      }
+      views {
+        deployment view prod {
+          include prod.**
+          rank min { prod.eu.lb, prod.us.lb }
+          rank same { prod.eu.api, prod.us.api }
+          rank sink { db }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await t.buildModel()
+    expect(model.views['prod']).toHaveProperty('ranks', [
+      { type: 'min', nodes: ['prod.eu.lb', 'prod.us.lb'] },
+      { type: 'same', nodes: ['prod.eu.api', 'prod.us.api'] },
+      { type: 'sink', nodes: ['prod.eu.db'] },
+    ])
+  })
+
   it('navigates from deployment nodes and instances to deployment views', async ({ expect }) => {
     using t = createTestServices()
     const { diagnostics } = await t.validate(`

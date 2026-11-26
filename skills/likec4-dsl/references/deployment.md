@@ -150,6 +150,23 @@ The target must be an existing view. Overrides are view-local, support selectors
 and the last matching navigation override wins. Other element `with` properties remain unsupported;
 use local `style` rules for deployment-view styling.
 
+## Deployment View Rank
+
+`rank` blocks work as in element views, with deployment nodes and instances as targets:
+
+```likec4
+views {
+  deployment view prod {
+    include prod.**
+    rank same { prod.eu.db, prod.us.dbReplica }   // targets may have different parents
+  }
+}
+```
+
+An instance listed in a `rank` block leaves the automatic alignment of instances of the same element.
+A logical element as a target refers to its instances; container deployment nodes are ignored.
+For targets inside other nodes Graphviz can ignore `min`/`max`/`source`/`sink`, as for nested elements; `same` always applies.
+
 ## Named vs. Anonymous: When It Matters
 
 | Scenario                                        | Use                                           |

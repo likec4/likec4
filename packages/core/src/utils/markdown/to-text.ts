@@ -1,9 +1,18 @@
 import type { Nodes } from 'mdast'
-import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toString } from 'mdast-util-to-string'
-import { likec4RefFromMarkdown, likec4RefSyntax } from './refs'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import { unified } from 'unified'
+import { remarkLikeC4Refs } from './refs'
 import { resolveRefNodes } from './resolve-refs'
 import type { MarkdownRefTitleResolver } from './types'
+
+// Same syntax as markdownToHtml (GFM tables, strikethrough, task lists, etc.)
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkLikeC4Refs)
+  .freeze()
 
 const options = {
   includeHtml: false,
@@ -47,10 +56,7 @@ function collectBlocks(node: Nodes, blocks: string[]): void {
  */
 export function markdownToText(markdown: string, resolve?: MarkdownRefTitleResolver): string {
   const blocks: string[] = []
-  const tree = fromMarkdown(markdown, {
-    extensions: [likec4RefSyntax],
-    mdastExtensions: [likec4RefFromMarkdown],
-  })
+  const tree = processor.parse(markdown)
   if (resolve) {
     resolveRefNodes(tree, resolve)
   }

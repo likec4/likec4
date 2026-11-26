@@ -8,15 +8,16 @@ import type {
   OnNodeDrag,
 } from '@xyflow/react'
 import { type EdgeLookup, getNodeDimensions } from '@xyflow/system'
+import { deepEqual } from 'fast-equals'
 import { produce } from 'immer'
 import { useMemo, useRef } from 'react'
-import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } from 'remeda'
+import { clamp, difference, filter, hasAtLeast, map, pipe } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import type { DiagramApi } from '../hooks/useDiagram'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import { leafNodeRects, nodeToRect } from '../utils/xyflow'
+import { bezierControlPoints, leafNodeRects, nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -75,7 +76,9 @@ abstract class Rect {
 
   get isResized(): boolean {
     const dim = this.dimensions
-    return dim.width !== this.initial.width || dim.height !== this.initial.height
+    const diffWidth = Math.abs(dim.width - this.initial.width)
+    const diffHeight = Math.abs(dim.height - this.initial.height)
+    return diffWidth > 1 || diffHeight > 1
   }
 
   // Position relative to parent
@@ -110,8 +113,7 @@ abstract class Rect {
     this.initial = {
       x: this.minX,
       y: this.minY,
-      width: Math.ceil(width),
-      height: Math.ceil(height),
+      ...this.dimensions,
     }
 
     if (parent) {
@@ -123,11 +125,42 @@ abstract class Rect {
 class CompoundRect extends Rect {
   public readonly children = [] as Rect[]
 
+  // Default padding values
+  leftPadding = Rect.LeftPadding
+  rightPadding = Rect.RightPadding
+  topPadding = Rect.TopPadding
+  bottomPadding = Rect.BottomPadding
+
   constructor(
     xynode: InternalNode,
     public readonly parent: CompoundRect | null = null,
   ) {
     super(xynode, parent)
+  }
+
+  public rememberPaddings() {
+    const children = this.childrenArea()
+    this.leftPadding = Math.max(Rect.LeftPadding, children.minX - this.minX)
+    this.rightPadding = Math.max(Rect.RightPadding, this.maxX - children.maxX)
+    this.topPadding = Math.max(Rect.TopPadding, children.minY - this.minY)
+    this.bottomPadding = Math.max(Rect.BottomPadding, this.maxY - children.maxY)
+  }
+
+  childrenArea(): { minX: number; minY: number; maxX: number; maxY: number } {
+    const childrenBB = {
+      minX: Infinity,
+      minY: Infinity,
+      maxX: -Infinity,
+      maxY: -Infinity,
+    }
+
+    for (const child of this.children) {
+      childrenBB.minX = Math.min(childrenBB.minX, child.minX)
+      childrenBB.minY = Math.min(childrenBB.minY, child.minY)
+      childrenBB.maxX = Math.max(childrenBB.maxX, child.maxX)
+      childrenBB.maxY = Math.max(childrenBB.maxY, child.maxY)
+    }
+    return childrenBB
   }
 }
 
@@ -144,44 +177,55 @@ class Leaf extends Rect {
 type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange<Types.AnyEdge> | null
 
 /**
+ * Creates an edge replacement change if the edge geometry has changed.
+ */
+const createChange = (current: Types.AnyEdge, next: Types.AnyEdge): EdgeReplaceChange<Types.AnyEdge> | null => {
+  return deepEqual(current.data.points, next.data.points) &&
+      deepEqual(current.data.controlPoints, next.data.controlPoints) &&
+      deepEqual(current.data.labelBBox, next.data.labelBBox) ?
+    null :
+    { id: current.id, type: 'replace', item: next }
+}
+
+/**
  * Creates a modifier function that moves edge points according to the given rectangle's diff.
  */
 function makeEdgeModifier(
   edge: Types.AnyEdge,
   anchor: Rect,
+  isEndpointResized: () => boolean,
 ): EdgeModifier {
-  const controlPoints = edge.data.controlPoints ?? null
   return (edgeLookup) => {
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
+    // Edges without control points follow fixed points, control points make them attach to the resized node border
+    const canDeriveControlPoints = edge.data.points.length >= 4 && (edge.data.points.length - 1) % 3 === 0
+    const controlPoints = edge.data.controlPoints
+      ?? (isEndpointResized() && canDeriveControlPoints ? bezierControlPoints(edge.data.points) : null)
     const { x: dx, y: dy } = anchor.diff
+
+    let next
     if (dx === 0 && dy === 0) {
-      const item = produce(current, draft => {
+      next = produce(current, draft => {
         draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
         draft.data.controlPoints = controlPoints
         draft.data.labelBBox = edge.data.labelBBox
       })
-      return item === current ? null : { id: edge.id, type: 'replace', item }
-    }
-    return {
-      id: edge.id,
-      type: 'replace',
-      item: produce(current, draft => {
+    } else {
+      next = produce(current, draft => {
         draft.data.points = map(edge.data.points, pt => [pt[0] + dx, pt[1] + dy] satisfies [number, number])
-        if (controlPoints) {
-          draft.data.controlPoints = controlPoints.map(pt => ({
-            x: pt.x + dx,
-            y: pt.y + dy,
-          }))
-        } else {
-          draft.data.controlPoints = null
-        }
+        draft.data.controlPoints = controlPoints?.map(pt => ({
+          x: pt.x + dx,
+          y: pt.y + dy,
+        })) ?? null
+
         if (edge.data.labelBBox) {
-          draft.data.labelBBox ??= edge.data.labelBBox
+          draft.data.labelBBox ??= { ...edge.data.labelBBox }
           draft.data.labelBBox.x = edge.data.labelBBox.x + dx
           draft.data.labelBBox.y = edge.data.labelBBox.y + dy
         }
-      }),
+      })
     }
+    return createChange(current, next)
   }
 }
 
@@ -193,6 +237,7 @@ function makeRelativeEdgeModifier(
   movingRect: Rect,
   ends: { source: BBox; target: BBox; isSourceMoving: boolean },
   routing: EdgeRouting,
+  isEndpointResized: () => boolean,
 ): EdgeModifier {
   const [anchorNode, staticNode] = ends.isSourceMoving ? [ends.source, ends.target] : [ends.target, ends.source]
   const controlPoints = edge.data.controlPoints ?? initialControlPoints(edge.data.points, routing)
@@ -208,10 +253,10 @@ function makeRelativeEdgeModifier(
     if (dx === 0 && dy === 0) {
       const item = produce(current, draft => {
         draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
-        draft.data.controlPoints = edge.data.controlPoints
+        draft.data.controlPoints = edge.data.controlPoints ?? (isEndpointResized() ? controlPoints : null)
         draft.data.labelBBox = edge.data.labelBBox
       })
-      return item === current ? null : { id: edge.id, type: 'replace', item }
+      return createChange(current, item)
     }
     const d = vector(dx, dy)
 
@@ -239,24 +284,24 @@ function makeRelativeEdgeModifier(
       }
     }
 
-    return {
-      id: edge.id,
-      type: 'replace',
-      item: produce(current, draft => {
-        draft.data.controlPoints = controlPoints.map(relativePoint)
-        draft.data.points = map(edge.data.points, ([x, y]) => {
+    return createChange(
+      current,
+      produce(current, draft => {
+        const draftData = draft.data
+        draftData.controlPoints = controlPoints?.map(relativePoint) ?? null
+        draftData.points = map(edge.data.points, ([x, y]) => {
           const point = relativePoint({ x, y })
           return [point.x, point.y] satisfies [number, number]
         })
 
         if (edge.data.labelBBox) {
-          draft.data.labelBBox ??= edge.data.labelBBox
+          draftData.labelBBox ??= { ...edge.data.labelBBox }
           const { x, y } = relativePoint(edge.data.labelBBox)
-          draft.data.labelBBox.x = x
-          draft.data.labelBBox.y = y
+          draftData.labelBBox.x = x
+          draftData.labelBBox.y = y
         }
       }),
-    }
+    )
   }
 }
 
@@ -266,8 +311,6 @@ export function createLayoutConstraints(
   routing: EdgeRouting,
 ) {
   const { parentLookup, nodeLookup, edges } = xyflowApi.getState()
-  const initialNodeRects = new Map([...nodeLookup].map(([id, node]) => [id, nodeToRect(node)]))
-  const rects = new Map<string, Leaf | CompoundRect>()
 
   /** Maps node id to all its ancestors */
   const ancestorsOf = new DefaultMap<string, string[]>((nodeId): string[] => {
@@ -297,14 +340,15 @@ export function createLayoutConstraints(
 
   // If multiple nodes are being edited, ensure they are not nested within each other
   if (hasAtLeast(editingNodeIds, 2)) {
-    const leafsOnly = pipe(
-      editingNodeIds,
-      flatMap(id => [...nestedOf.get(id)]),
-      unique(),
-      exclude => difference(editingNodeIds, exclude),
-    )
-    invariant(hasAtLeast(leafsOnly, 1), 'All editing nodes are nested within each other')
-    editingNodeIds = leafsOnly
+    const allNested = [
+      ...new Set(
+        editingNodeIds.flatMap(id => [...nestedOf.get(id)]),
+      ),
+    ]
+    // Remove nested nodes from editing list
+    const toplevels = difference(editingNodeIds, allNested)
+    invariant(hasAtLeast(toplevels, 1), 'All editing nodes are nested within each other')
+    editingNodeIds = toplevels
   }
 
   const ancestorsOfDraggingNodes = new Set(
@@ -312,24 +356,45 @@ export function createLayoutConstraints(
   )
 
   // Build Rects tree, starting from root nodes
-  const traverse: Array<{ xynode: InternalNode; parent: CompoundRect | null }> = [...nodeLookup.values()].flatMap(x =>
-    !x.parentId ? { xynode: x, parent: null } : []
-  )
+  const traverse: Array<{ xynode: InternalNode; parent: CompoundRect | null }> = []
 
+  const initialNodeRects = new Map([...nodeLookup.values()].map(xynode => {
+    // Add root nodes to traversal queue
+    // Include both editing nodes and their ancestors to ensure proper layout
+    if (!xynode.parentId) {
+      if (editingNodeIds.includes(xynode.id) || ancestorsOfDraggingNodes.has(xynode.id)) {
+        traverse.push({ xynode, parent: null })
+      }
+    }
+    return [
+      xynode.id,
+      nodeToRect(xynode),
+    ]
+  }))
+  invariant(hasAtLeast(traverse, 1), 'Must have at least one node to traverse')
+
+  const rects = new Map<string, Leaf | CompoundRect>()
   while (traverse.length > 0) {
     const { xynode, parent } = traverse.shift()!
     const isEditing = editingNodeIds.includes(xynode.id)
 
-    // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
+    // Traverse children if the node is not being edited and is an ancestor of the dragging node
     const shouldTraverse = !isEditing && ancestorsOfDraggingNodes.has(xynode.id)
 
     if (shouldTraverse) {
+      const children = parentLookup.get(xynode.id)
+      if (!children || children.size === 0) {
+        // This should not happen, but just in case - log and create a leaf
+        console.error(`useLayoutConstraints(traverse): Node ${xynode.id} has no children`)
+        rects.set(xynode.id, new Leaf(xynode, parent))
+        continue
+      }
       const rect = new CompoundRect(xynode, parent)
       rects.set(xynode.id, rect)
-      parentLookup.get(xynode.id)?.forEach(child => {
+      children.forEach(child => {
         traverse.push({
           xynode: child,
-          parent: rect as CompoundRect,
+          parent: rect,
         })
       })
       continue
@@ -337,6 +402,12 @@ export function createLayoutConstraints(
     rects.set(xynode.id, new Leaf(xynode, parent))
   }
   const rectsToUpdate = [...rects.values()]
+  // Remember paddings of compound nodes
+  for (const rect of rectsToUpdate) {
+    if (rect instanceof CompoundRect) {
+      rect.rememberPaddings()
+    }
+  }
 
   /**
    * Edges that need to be updated because both source and target are moved
@@ -360,7 +431,12 @@ export function createLayoutConstraints(
   }
 
   // moving nodes may have nested nodes as well
-  const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
+  const movingNodes = new Set(
+    editingNodeIds.flatMap(id => [
+      id,
+      ...nestedOf.get(id),
+    ]),
+  )
 
   for (const edge of edges) {
     const isSourceMoving = movingNodes.has(edge.source)
@@ -370,6 +446,10 @@ export function createLayoutConstraints(
       continue
     }
 
+    const sourceRect = rects.get(edge.source)
+    const targetRect = rects.get(edge.target)
+    const isEndpointResized = () => !!sourceRect?.isResized || !!targetRect?.isResized
+
     // We update edges, where both source and target are moving nodes
     if (isSourceMoving && isTargetMoving) {
       // Find the anchor rectangle for the edge
@@ -378,7 +458,7 @@ export function createLayoutConstraints(
         ?? findMovingAncestor(edge.source)
         ?? findMovingAncestor(edge.target)
       invariant(!!r, 'At least one of the edge nodes should have a moving ancestor')
-      edgeModifiers.set(edge, makeEdgeModifier(edge, r))
+      edgeModifiers.set(edge, makeEdgeModifier(edge, r, isEndpointResized))
       continue
     }
 
@@ -390,8 +470,7 @@ export function createLayoutConstraints(
 
     const [sourceNode, targetNode] = pipe(
       [edge.source, edge.target] as const,
-      map(id => nonNullable(nodeLookup.get(id), `Node ${id} not found`)),
-      map(nodeToRect),
+      map(id => nonNullable(initialNodeRects.get(id), `Node ${id} not found`)),
     )
 
     edgeModifiers.set(
@@ -401,6 +480,7 @@ export function createLayoutConstraints(
         movingRect,
         { source: sourceNode, target: targetNode, isSourceMoving },
         routing,
+        isEndpointResized,
       ),
     )
   }
@@ -410,31 +490,14 @@ export function createLayoutConstraints(
       if (!(r instanceof CompoundRect)) {
         continue
       }
-
       applyConstraints(r.children)
-
-      const childrenBB = {
-        minX: Infinity,
-        minY: Infinity,
-        maxX: -Infinity,
-        maxY: -Infinity,
-      }
-
-      for (const child of r.children) {
-        childrenBB.minX = Math.min(childrenBB.minX, child.minX)
-        childrenBB.minY = Math.min(childrenBB.minY, child.minY)
-        childrenBB.maxX = Math.max(childrenBB.maxX, child.maxX)
-        childrenBB.maxY = Math.max(childrenBB.maxY, child.maxY)
-      }
-
-      r.minX = childrenBB.minX - Rect.LeftPadding
-      r.minY = childrenBB.minY - Rect.TopPadding
-      r.maxX = childrenBB.maxX + Rect.RightPadding
-      r.maxY = childrenBB.maxY + Rect.BottomPadding
+      const childrenBB = r.childrenArea()
+      r.minX = childrenBB.minX - r.leftPadding
+      r.minY = childrenBB.minY - r.topPadding
+      r.maxX = childrenBB.maxX + r.rightPadding
+      r.maxY = childrenBB.maxY + r.bottomPadding
     }
   }
-
-  const _edgeModifiers = [...edgeModifiers.values()]
 
   /**
    * Read current node positions from XYFlow internal state into rects.
@@ -458,13 +521,22 @@ export function createLayoutConstraints(
   }
 
   function updateXYFlow(): void {
-    const { edgeLookup, triggerNodeChanges, triggerEdgeChanges } = xyflowApi.getState()
+    const {
+      edgeLookup,
+      nodeLookup,
+      triggerNodeChanges,
+      triggerEdgeChanges,
+      edges: currentEdges,
+      nodes: currentNodes,
+    } = xyflowApi.getState()
     applyConstraints(rectsToUpdate)
 
     const nodeUpdates: NodeChange<Types.Node>[] = []
-    let edgeUpdates: EdgeReplaceChange<Types.AnyEdge>[] = []
+
+    let hasChanges = false
 
     for (const r of rectsToUpdate) {
+      hasChanges = hasChanges || r.isResized || r.isMoved
       nodeUpdates.push({
         id: r.id,
         type: 'position',
@@ -472,7 +544,7 @@ export function createLayoutConstraints(
         position: r.position,
         positionAbsolute: r.positionAbsolute,
       })
-      if (r instanceof CompoundRect) {
+      if (r instanceof CompoundRect || r.isResized) {
         nodeUpdates.push({
           id: r.id,
           type: 'dimensions',
@@ -486,13 +558,17 @@ export function createLayoutConstraints(
       triggerNodeChanges(nodeUpdates)
     }
 
-    for (const fm of _edgeModifiers) {
+    let edgeUpdates: EdgeReplaceChange<Types.AnyEdge>[] = []
+    for (const fm of edgeModifiers.values()) {
       const change = fm(edgeLookup)
       if (change) {
         edgeUpdates.push(change)
       }
     }
-    if (routing === 'ortho' && edgeUpdates.length > 0 && hasChanges()) {
+    if (edgeUpdates.length === 0) {
+      return
+    }
+    if (routing === 'ortho' && hasChanges) {
       // Place labels only after every edge and node has its final geometry for this frame.
       // React might not have applied triggerNodeChanges yet; derive node boxes from the constraints.
       const finalNodeLookup = new Map([...nodeLookup].map(([id, node]) => {
@@ -503,16 +579,18 @@ export function createLayoutConstraints(
         const dimensions = rect?.dimensions ?? initial
         return [id, {
           ...node,
-          measured: { width: dimensions.width, height: dimensions.height },
+          measured: {
+            width: dimensions.width,
+            height: dimensions.height,
+          },
           internals: { ...node.internals, positionAbsolute },
         }]
       }))
       const updatedEdges = new Map(edgeUpdates.map(change => [change.id, change.item]))
-      const state = xyflowApi.getState()
       const routes = selectLabelRoutes({
-        ...state,
+        nodes: currentNodes, // used only for cache
         nodeLookup: finalNodeLookup,
-        edges: state.edges.map(edge => updatedEdges.get(edge.id) ?? edge),
+        edges: currentEdges.map(edge => updatedEdges.get(edge.id) ?? edge),
       }).map(route => ({ ...route, fixed: route.fixed || !updatedEdges.has(route.id) }))
       const labels = placeLabelsAlongRoutes(routes, leafNodeRects(finalNodeLookup.values()))
       edgeUpdates = edgeUpdates.map(change => {
@@ -527,9 +605,7 @@ export function createLayoutConstraints(
           change
       })
     }
-    if (edgeUpdates.length > 0) {
-      triggerEdgeChanges(edgeUpdates)
-    }
+    triggerEdgeChanges(edgeUpdates)
   }
 
   let animationFrameId: number | null = null
@@ -559,8 +635,30 @@ export function createLayoutConstraints(
     return isome(rectsToUpdate, r => r.isMoved || r.isResized)
   }
 
+  /**
+   * Resizes a node, keeping its top-left corner.
+   * Compound nodes are not shrunk below the size required to fit their children.
+   */
+  function resize(id: string, { width, height }: Partial<Dimensions>): void {
+    const rect = nonNullable(rects.get(id), `Rect ${id} not found`)
+    let minWidth = 0
+    let minHeight = 0
+    for (const child of parentLookup.get(id)?.values() ?? []) {
+      const childDimensions = getNodeDimensions(child)
+      minWidth = Math.max(minWidth, child.position.x + childDimensions.width + Rect.RightPadding)
+      minHeight = Math.max(minHeight, child.position.y + childDimensions.height + Rect.BottomPadding)
+    }
+    if (width !== undefined) {
+      rect.maxX = rect.minX + Math.ceil(Math.max(width, minWidth))
+    }
+    if (height !== undefined) {
+      rect.maxY = rect.minY + Math.ceil(Math.max(height, minHeight))
+    }
+  }
+
   return {
     rects: rects as ReadonlyMap<string, Leaf | CompoundRect>,
+    resize,
     onMove,
     updateXYFlow,
     hasChanges,

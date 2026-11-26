@@ -18,11 +18,13 @@ import { ProjectIndexPage } from '../pages/ProjectIndex'
 
 export const Route = createFileRoute('/single-index')({
   validateSearch: z.object({
+    section: z.enum(['views', 'elements']).optional().catch('views'),
     view: z.enum(['cards', 'table']).optional().catch('cards'),
   }),
   search: {
     middlewares: [
       stripSearchParams({
+        section: 'views',
         view: 'cards',
       }),
     ],
@@ -47,6 +49,7 @@ export const Route = createFileRoute('/single-index')({
 
 function RouteComponent() {
   const { $likec4model, $diffs, projectId } = Route.useLoaderData()
+  const section = Route.useSearch({ select: s => s.section ?? 'views' })
   const mode = Route.useSearch({ select: s => s.view ?? 'cards' })
   const navigate = Route.useNavigate()
   return (
@@ -55,6 +58,10 @@ function RouteComponent() {
         <LikeC4ModelContext likec4model={$likec4model}>
           <ModelDiffsContext diffs={$diffs}>
             <ProjectIndexPage
+              section={section}
+              onSectionChange={next => {
+                void navigate({ search: prev => ({ ...prev, section: next }), replace: true })
+              }}
               mode={mode}
               onModeChange={next => {
                 void navigate({ search: prev => ({ ...prev, view: next }), replace: true })

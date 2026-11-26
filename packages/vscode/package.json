@@ -1,7 +1,7 @@
 {
   "name": "likec4-vscode",
   "displayName": "LikeC4",
-  "version": "1.61.0",
+  "version": "1.61.1",
   "private": true,
   "description": "Support for the LikeC4 modeling language",
   "categories": [
@@ -405,7 +405,6 @@
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^1.5.2",
-    "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
     "nano-spawn": "catalog:externals",

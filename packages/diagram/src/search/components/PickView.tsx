@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { Fqn } from '@likec4/core/types'
+import type { Fqn, RelationId } from '@likec4/core/types'
 import { ActionIcon, FocusTrap, Group, ScrollAreaAutosize, Stack, Title } from '@mantine/core'
 import { useCallbackRef, useWindowEvent } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
@@ -21,8 +21,6 @@ export function PickView({
 }: {
   elementFqn: Fqn
 }) {
-  const ctx = useSearchContext()
-  const currentViewId = ctx.currentViewId ?? ''
   const element = useLikeC4Model().element(elementFqn)
   const scoped = [] as LikeC4ViewModel[]
   const others = [] as LikeC4ViewModel[]
@@ -34,6 +32,44 @@ export function PickView({
       others.push(view)
     }
   }
+
+  return (
+    <PickViewDialog
+      focusOnElement={elementFqn}
+      groups={[
+        { title: 'scoped views of the element', views: scoped },
+        { title: 'views including this element', views: others },
+      ]}
+    />
+  )
+}
+
+export function PickRelationshipView({
+  relationId,
+}: {
+  relationId: RelationId
+}) {
+  const relationship = useLikeC4Model().relationship(relationId, 'model')
+
+  return (
+    <PickViewDialog
+      groups={[
+        { title: 'views including this relationship', views: [...relationship.views()] },
+      ]}
+    />
+  )
+}
+
+function PickViewDialog({
+  groups,
+  focusOnElement,
+}: {
+  groups: ReadonlyArray<{ title: string; views: ReadonlyArray<LikeC4ViewModel> }>
+  focusOnElement?: Fqn | undefined
+}) {
+  const ctx = useSearchContext()
+  const currentViewId = ctx.currentViewId ?? ''
+  const autofocusGroup = groups.findIndex(group => group.views.length > 0)
 
   const closePickView = () => {
     ctx.closePickView()
@@ -105,42 +141,25 @@ export function PickView({
             </ActionIcon>
           </Group>
           <ScrollAreaAutosize mah={'calc(100vh - 110px)'} type="never">
-            {scoped.length > 0 && (
-              <Stack gap={'sm'} px={'sm'} className={styles.pickviewGroup}>
-                <Title order={6} c={'dimmed'}>scoped views of the element</Title>
-                {scoped.map((view, i) => (
-                  <ViewButton
-                    key={view.id}
-                    view={view}
-                    currentViewId={currentViewId}
-                    search={''}
-                    loop
-                    focusOnElement={elementFqn}
-                    mod={{
-                      autofocus: i === 0,
-                    }}
-                  />
-                ))}
-              </Stack>
-            )}
-
-            {others.length > 0 && (
-              <Stack gap={'sm'} px={'sm'} className={styles.pickviewGroup}>
-                <Title order={6} c={'dimmed'}>views including this element</Title>
-                {others.map((view, i) => (
-                  <ViewButton
-                    key={view.id}
-                    view={view}
-                    currentViewId={currentViewId}
-                    search={''}
-                    loop
-                    focusOnElement={elementFqn}
-                    mod={{
-                      autofocus: i === 0 && scoped.length === 0,
-                    }}
-                  />
-                ))}
-              </Stack>
+            {groups.map((group, groupIndex) =>
+              group.views.length > 0 && (
+                <Stack key={group.title} gap={'sm'} px={'sm'} className={styles.pickviewGroup}>
+                  <Title order={6} c={'dimmed'}>{group.title}</Title>
+                  {group.views.map((view, i) => (
+                    <ViewButton
+                      key={view.id}
+                      view={view}
+                      currentViewId={currentViewId}
+                      search={''}
+                      loop
+                      {...focusOnElement && { focusOnElement }}
+                      mod={{
+                        autofocus: groupIndex === autofocusGroup && i === 0,
+                      }}
+                    />
+                  ))}
+                </Stack>
+              )
             )}
           </ScrollAreaAutosize>
         </m.div>

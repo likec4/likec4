@@ -248,6 +248,7 @@ export default defineConfig({
       LikeC4VitePlugin({
         ai: 'disabled',
         workspace: 'src/components',
+        cacheDir: null,
       }),
       tailwindcss(),
     ],

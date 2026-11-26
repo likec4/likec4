@@ -7,153 +7,172 @@ importers:
     configDependencies: {}
     packageManagerDependencies:
       pnpm:
-        specifier: 12.14.0
-        version: 12.14.0
+        specifier: 12.23.0
+        version: 12.23.0
 
 packages:
 
-  '@pnpm/exe.android-arm64@12.14.0':
-    resolution: {integrity: sha512-+iSh7x21C3A2hqc+Z0ZmbKTcn6YNlzrXM142PsnQH/dLj0DYxFzoBvc6XAnL/yfQ5nnH2ebBiRj/zVxr61fZbQ==}
+  '@pnpm/exe.android-arm64@12.23.0':
+    resolution: {integrity: sha512-oqZu9yFInENTRA9BKiOnEqOcpr5dNMDbquxq9zKFKJy0nEC385Vw0e4wlsOAlDh90iX94GND6Fc22FVL2O2SmQ==}
     cpu: [arm64]
     os: [android]
 
-  '@pnpm/exe.android-x64@12.14.0':
-    resolution: {integrity: sha512-qT+0LqEr2wBVaxcG2T8cX/R8SSRz2Rvpp8nRR4fh8tnGUZRch87gFmsHUAoSQh7w6j1h0qTjrA384j4xi8frvw==}
+  '@pnpm/exe.android-x64@12.23.0':
+    resolution: {integrity: sha512-fQRjE4Wno8ye0lxhYGmyqdcc6tv+tDGktEmgFzffZ7flp4BG/84VtdXn3i/O4BazgMbNuPdbM75aj7uDZwL7GQ==}
     cpu: [x64]
     os: [android]
 
-  '@pnpm/exe.darwin-arm64@12.14.0':
-    resolution: {integrity: sha512-tnrdUB8ecJoehuKKqi1YHCBVl61xtJ9XVGcx5EviC6fWO4DeGI8GtXrjvJxDBM3nuVjJeWistgsUp/N142x4sw==}
+  '@pnpm/exe.darwin-arm64@12.23.0':
+    resolution: {integrity: sha512-ny5+L92frsfyV3/B3zadYQuU5kBV8o2TXB5WnhBUoJ/9Mz32FVglMr8g1HmUc01yfKkjopZ4rmF1G7vs68JxIg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@pnpm/exe.darwin-x64@12.14.0':
-    resolution: {integrity: sha512-vlBfGkruqQRsEHTW43cPwpYd7QlbIJ//cvpAdb3bVXkI8SgTPoXhCnc05m+ZNiPrrEkBsX/t7KHw9aXpkzPm3Q==}
+  '@pnpm/exe.darwin-x64@12.23.0':
+    resolution: {integrity: sha512-+MNmpJSAzb9yc80d5l4VbZ/3Teh8xtlacATUyTAx6fELUK0xwmgFi05hqzg1sXLdAPij5gcIp82VvrqY5tzPrQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@pnpm/exe.freebsd-x64@12.14.0':
-    resolution: {integrity: sha512-Qg5rxBrGYl6Tfso+EyygPf84fY1Fzy55E/0or+iuYKtnf0vc0MlHJfVIlT7pBukMRntQHRik7hUi0Z4s7AlJsw==}
+  '@pnpm/exe.freebsd-x64@12.23.0':
+    resolution: {integrity: sha512-AGfkooje58I9hh4xdSDyZCPLKvjrjuvlkKTK2gsTtj6wfhVTw1jz33wB1XbERt2/0odJdEfgnBPUIdalRnb7Fw==}
     cpu: [x64]
     os: [freebsd]
 
-  '@pnpm/exe.linux-arm64-musl@12.14.0':
-    resolution: {integrity: sha512-DRIe4yQkXBGA/PhVJdzlbnllxBdAtnMMvTVLLcGpsK5FvJz9kxD2Hyxtn68ovmNkVX06f6p45cQwfm3wx2jn1A==}
+  '@pnpm/exe.linux-arm64-musl@12.23.0':
+    resolution: {integrity: sha512-C09Z3tFnPz7CYiae326dGlJcRUNCBtlJvMc04S9M8YKACebHHyamxCItLAisvGdHVf1BawtU9shV0FngjYxMwA==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-arm64@12.14.0':
-    resolution: {integrity: sha512-7joGShZ44Nk3WpNU+60JoOPjCXlgxhJAq11S2UiVtwCUDgTer1yTPPfxGW8pxaD6046actYLIYDbZNlubHWs0A==}
+  '@pnpm/exe.linux-arm64@12.23.0':
+    resolution: {integrity: sha512-RLby8T0CIWAbljrbmjaX6S3PYhMHnLbUp+IDcOmZIY1/+wy8hJoQpjMPZlV4VJIGl8lZKUXtxJcLJ2XZ1z2SVw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-ppc64@12.14.0':
-    resolution: {integrity: sha512-gSoryn7ySdXd//gjgf3MvvA8ZerJayaSbuMZMtAWq4vb2/wlVEgpl0Kvqt54y58TRj533Qjq2txKgnxd4JyoAQ==}
+  '@pnpm/exe.linux-loong64@12.23.0':
+    resolution: {integrity: sha512-XytxNoKD9/PcugxRHmBptRNDxUYwBtQZwBauJ3lKXFJ3sqHPZSjjFxIMX4HTWQn7FqCVnQlF+tbewjUnvQz0dQ==}
+    cpu: [loong64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-ppc64@12.23.0':
+    resolution: {integrity: sha512-1h9+mBpdmlFA5LW6fAfd5UnLgHakNkEsS1R67mEXY1J6WLLnZcWFJs7Cbde0BD034CRTUa99MaILAuSs2ERf7Q==}
     cpu: [ppc64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-riscv64@12.14.0':
-    resolution: {integrity: sha512-EMjew1H9WqQ7pL+tYqCPwiuB+0PeCiJRV7fyWeuFw0wwYUajFBjcaPO3IGAVu9sdmJDU+e+HYv/Zey6aKae0Vw==}
+  '@pnpm/exe.linux-riscv64@12.23.0':
+    resolution: {integrity: sha512-SlPz2UxUshIxgyBRKT0PHncYr2pIoFOxf6WR68HCkhGmASGljYlYYwRVfefgoIPM603x4Fcge9/B1Z3aIq1bSQ==}
     cpu: [riscv64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-s390x@12.14.0':
-    resolution: {integrity: sha512-shYOj/SFoXD35fHe0pWr2JofwSXulC0BnEIXLj2QokDi0EF//AfKsui35yKIkTEl+s2VJybc3PO4iJNhKIj5Qw==}
+  '@pnpm/exe.linux-s390x@12.23.0':
+    resolution: {integrity: sha512-Hk8jKY0i9sjyKPJFYC71lu7Mq5ahb5sWT2zCqNxzzBCrivvCqv5GVfZurLETC5TsSusE9TRWFpynLgG+iaXmSA==}
     cpu: [s390x]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-x64-musl@12.14.0':
-    resolution: {integrity: sha512-btZiZ2Ot0llKK1ndSfA5i3IRX7/S0VrmzseNH/BJ4c+Cady+S81H6vvU1zByggHMyqQhC8OgxO5PiIY7D9bH0Q==}
+  '@pnpm/exe.linux-x64-musl@12.23.0':
+    resolution: {integrity: sha512-7+9bD4LBQ5r+7nLnIhDgMnvMm7a7cfc28NogU3NY1sM0+0Jz7K+IwxZb4BJDY/AN1s3F26TgZ3az/bjeCshmXA==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-x64@12.14.0':
-    resolution: {integrity: sha512-F6K8e/jWxiuEYJaQtRRUG9ynBSTEHa+t7Lf86MKuOO5UA7WVVMbi+oB8nY6iKW++ncWS2yG6T9faXZGxqNsfoQ==}
+  '@pnpm/exe.linux-x64@12.23.0':
+    resolution: {integrity: sha512-vu/N1nUJxLA0IIumbxL/rR6leGA+++SQY0XL+5KPJ1O2kyvzJoLQYL1ibLGO7TRqsZ90wclboEdhIIWvr3Qsig==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.win32-arm64@12.14.0':
-    resolution: {integrity: sha512-DOjlkVB6TtTKeAAe0hNZXn5S7YqESmo1Z6SGbR4BZNQ4isRg31XVHjX2RFTbY8gnZq68IwzyLmPqlEjMmYxofg==}
+  '@pnpm/exe.netbsd-x64@12.23.0':
+    resolution: {integrity: sha512-c85UPtAJfPR5+ghXS8UGRQlgxwqvz2PFaPaEzIVwUdBU+5DB4X2iuMAMlMXWS6hJ/OjqhKM6tpwyEc4Kkz40Fg==}
+    cpu: [x64]
+    os: [netbsd]
+
+  '@pnpm/exe.win32-arm64@12.23.0':
+    resolution: {integrity: sha512-lx0B8HPaUEG/ovIC0PmA6HhMhXh6ud0pAWVTDNxZvAfAzuGm0RM78SCT/oBY80lbJnwA9al4sTUroqozZK9hVA==}
     cpu: [arm64]
     os: [win32]
 
-  '@pnpm/exe.win32-x64@12.14.0':
-    resolution: {integrity: sha512-/LSX6mew/sLf08XqcjemuklNKf1K/Ftpgj4//hK/HKzI2dKbmxDB27a/2OaQ5a0O3/3OFzlssXDziZsi+yVBwQ==}
+  '@pnpm/exe.win32-x64@12.23.0':
+    resolution: {integrity: sha512-OnbBaQWQcw31m5APFNKcM8kdmM6H7k8MoaOnA2m1LsWAHX7AZKB5cdJfNwhHGBfkURcwWk1bnMXBdllujMiCFw==}
     cpu: [x64]
     os: [win32]
 
-  pnpm@12.14.0:
-    resolution: {integrity: sha512-wYum2HmT09Fky16JSPMrLAbuhUSH4GzY2GeBNC+z5btGNDZwNHEehoArqpw3vqkGzhkprQjXCITJfYAd8TOJpg==}
-    engines: {node: '>=18.*'}
+  pnpm@12.23.0:
+    resolution: {integrity: sha512-AtqU/68TP0YHQyKv5VL5DUC19xriWa77zNrMUIWx1hfpjWXgEx9XSLm2dEWXjuUFXX1ZpHPx7vDVBIVP781ZdQ==}
+    engines: {node: '>=18'}
     hasBin: true
 
 snapshots:
 
-  '@pnpm/exe.android-arm64@12.14.0':
+  '@pnpm/exe.android-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.android-x64@12.14.0':
+  '@pnpm/exe.android-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.darwin-arm64@12.14.0':
+  '@pnpm/exe.darwin-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.darwin-x64@12.14.0':
+  '@pnpm/exe.darwin-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.freebsd-x64@12.14.0':
+  '@pnpm/exe.freebsd-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-arm64-musl@12.14.0':
+  '@pnpm/exe.linux-arm64-musl@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-arm64@12.14.0':
+  '@pnpm/exe.linux-arm64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-ppc64@12.14.0':
+  '@pnpm/exe.linux-loong64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-riscv64@12.14.0':
+  '@pnpm/exe.linux-ppc64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-s390x@12.14.0':
+  '@pnpm/exe.linux-riscv64@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-x64-musl@12.14.0':
+  '@pnpm/exe.linux-s390x@12.23.0':
     optional: true
 
-  '@pnpm/exe.linux-x64@12.14.0':
+  '@pnpm/exe.linux-x64-musl@12.23.0':
     optional: true
 
-  '@pnpm/exe.win32-arm64@12.14.0':
+  '@pnpm/exe.linux-x64@12.23.0':
     optional: true
 
-  '@pnpm/exe.win32-x64@12.14.0':
+  '@pnpm/exe.netbsd-x64@12.23.0':
     optional: true
 
-  pnpm@12.14.0:
+  '@pnpm/exe.win32-arm64@12.23.0':
+    optional: true
+
+  '@pnpm/exe.win32-x64@12.23.0':
+    optional: true
+
+  pnpm@12.23.0:
     optionalDependencies:
-      '@pnpm/exe.android-arm64': 12.14.0
-      '@pnpm/exe.android-x64': 12.14.0
-      '@pnpm/exe.darwin-arm64': 12.14.0
-      '@pnpm/exe.darwin-x64': 12.14.0
-      '@pnpm/exe.freebsd-x64': 12.14.0
-      '@pnpm/exe.linux-arm64': 12.14.0
-      '@pnpm/exe.linux-arm64-musl': 12.14.0
-      '@pnpm/exe.linux-ppc64': 12.14.0
-      '@pnpm/exe.linux-riscv64': 12.14.0
-      '@pnpm/exe.linux-s390x': 12.14.0
-      '@pnpm/exe.linux-x64': 12.14.0
-      '@pnpm/exe.linux-x64-musl': 12.14.0
-      '@pnpm/exe.win32-arm64': 12.14.0
-      '@pnpm/exe.win32-x64': 12.14.0
+      '@pnpm/exe.android-arm64': 12.23.0
+      '@pnpm/exe.android-x64': 12.23.0
+      '@pnpm/exe.darwin-arm64': 12.23.0
+      '@pnpm/exe.darwin-x64': 12.23.0
+      '@pnpm/exe.freebsd-x64': 12.23.0
+      '@pnpm/exe.linux-arm64': 12.23.0
+      '@pnpm/exe.linux-arm64-musl': 12.23.0
+      '@pnpm/exe.linux-loong64': 12.23.0
+      '@pnpm/exe.linux-ppc64': 12.23.0
+      '@pnpm/exe.linux-riscv64': 12.23.0
+      '@pnpm/exe.linux-s390x': 12.23.0
+      '@pnpm/exe.linux-x64': 12.23.0
+      '@pnpm/exe.linux-x64-musl': 12.23.0
+      '@pnpm/exe.netbsd-x64': 12.23.0
+      '@pnpm/exe.win32-arm64': 12.23.0
+      '@pnpm/exe.win32-x64': 12.23.0
 
 ---
 lockfileVersion: '9.0'
@@ -358,9 +377,6 @@ catalogs:
     esbuild:
       specifier: 0.28.2
       version: 0.28.2
-    esbuild-node-externals:
-      specifier: 2.0.0
-      version: 2.0.0
   externals:
     '@hpcc-js/wasm-graphviz':
       specifier: 1.29.2
@@ -535,9 +551,6 @@ catalogs:
     defu:
       specifier: ^6.1.7
       version: 6.1.7
-    esm-env:
-      specifier: ^1.2.2
-      version: 1.2.2
     fast-equals:
       specifier: ^6.2.2
       version: 6.2.2
@@ -712,7 +725,7 @@ importers:
         version: link:devops
       '@vitest/ui':
         specifier: catalog:vitest
-        version: 4.1.12(vitest@4.1.12)
+        version: 4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
       dprint:
         specifier: 'catalog:'
         version: 0.64.3
@@ -1192,12 +1205,21 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      defu:
+        specifier: catalog:utils
+        version: 6.1.7
       json5:
         specifier: catalog:utils
         version: 2.2.3
+      remeda:
+        specifier: catalog:utils
+        version: 2.52.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.4
       zod:
         specifier: catalog:externals
         version: 4.6.7
@@ -1211,18 +1233,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
-      defu:
-        specifier: catalog:utils
-        version: 6.1.7
       jiti:
         specifier: catalog:externals
         version: 2.7.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
-      remeda:
-        specifier: catalog:utils
-        version: 2.52.0
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -1235,9 +1251,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
-      ufo:
-        specifier: catalog:utils
-        version: 1.6.4
       vitest:
         specifier: catalog:vitest
         version: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -1503,7 +1516,7 @@ importers:
         version: 0.7.2(xstate@5.33.3)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/bezier-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -2221,12 +2234,6 @@ importers:
       defu:
         specifier: catalog:utils
         version: 6.1.7
-      esbuild-node-externals:
-        specifier: catalog:esbuild
-        version: 2.0.0(esbuild@0.28.2)
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 6.2.2
@@ -2260,6 +2267,9 @@ importers:
       p-limit:
         specifier: catalog:utils
         version: 7.3.3
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.1
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0
@@ -2425,7 +2435,7 @@ importers:
         version: 1.167.48(@tanstack/react-router@1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.60.1)(supports-color@10.1.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
@@ -2586,6 +2596,9 @@ importers:
 
   packages/lsp:
     dependencies:
+      chokidar:
+        specifier: catalog:externals
+        version: 5.0.0
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
@@ -2734,7 +2747,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitest/ui':
         specifier: catalog:vitest
-        version: 4.1.12(vitest@4.1.12)
+        version: 4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
       citty:
         specifier: catalog:utils
         version: 0.2.2
@@ -2847,9 +2860,12 @@ importers:
       '@react-hookz/web':
         specifier: catalog:react
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tabler/icons-react':
+        specifier: catalog:react
+        version: 3.49.0(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/d3-zoom':
         specifier: ^3.0.9
         version: 3.0.9
@@ -3163,9 +3179,6 @@ importers:
       '@vscode/extension-telemetry':
         specifier: ^1.5.2
         version: 1.5.2(tslib@2.8.1)
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 6.2.2
@@ -3301,9 +3314,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
-      '@types/object-hash':
-        specifier: ^3.0.6
-        version: 3.0.6
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -6636,9 +6646,6 @@ packages:
   '@types/node@24.12.4':
     resolution: {integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==}
 
-  '@types/object-hash@3.0.6':
-    resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
-
   '@types/pako@2.0.4':
     resolution: {integrity: sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==}
 
@@ -6999,6 +7006,11 @@ packages:
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
@@ -7779,12 +7791,6 @@ packages:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
 
-  esbuild-node-externals@2.0.0:
-    resolution: {integrity: sha512-AzLWGYBC2MGvo37iAPv17yVe/r2iOfEZnCEBACR+5HkSrOOnRnVf8+33pJU5VCg7brzGtiSsBLqIp5hxYfItsw==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      esbuild: 0.12 - 0.28
-
   esbuild@0.25.12:
     resolution: {integrity: sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==}
     engines: {node: '>=18'}
@@ -7805,9 +7811,6 @@ packages:
   escape-string-regexp@5.0.0:
     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
     engines: {node: '>=12'}
-
-  esm-env@1.2.2:
-    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
 
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
@@ -11167,18 +11170,22 @@ packages:
   yuku-ast@0.19.0:
     resolution: {integrity: sha512-PyCsiScaelhxBGzL8dyeJkLqvRZycoh78R31Vrt/WqYrm0hMFoKwIw/X7Dx5mBKLWAMlV9I9HEyBOHnj2gZVyw==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-codegen@0.19.0:
     resolution: {integrity: sha512-uymAKHjDuaP4BEpkXC/BSLz4DUEF5oArZ5AuD3888nb2miChjWSgpPdojEJxm3pjpXkgUaCRJQyNAbnMN33wHg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-core@0.19.0:
     resolution: {integrity: sha512-kYK9e1XdfirNhkipzW0wmMcSWcVF/CWnuugodfVYRCUwvoBefweL9HzB96OiKEhsx78V5WbUxbJqlizMX869Qg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-parser@0.19.0:
     resolution: {integrity: sha512-XrBh9ZiQK5mJVRxZBAvD6LwRyAYrK3MFtH3+onyuxFL5hFD44EC3QOmIC1FjTj6H2MMwq46/NAI+NZxLZPZgxg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   zod-to-json-schema@3.25.1:
     resolution: {integrity: sha512-pM/SU9d3YAggzi6MtR4h7ruuQlqKtad8e9S0fmxcMi+ueAK5Korys/aWcV9LIIHTVbj01NdzxcnXSN+O74ZIVA==}
@@ -14146,7 +14153,7 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
+  '@tsdown/css@0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
     dependencies:
       lightningcss: 1.33.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(yaml@2.9.1)
@@ -14156,6 +14163,7 @@ snapshots:
       postcss: 8.5.33
       postcss-import: 17.0.0(postcss@8.5.33)
     transitivePeerDependencies:
+      - '@typescript/native-preview'
       - jiti
       - tsx
       - yaml
@@ -14282,8 +14290,6 @@ snapshots:
   '@types/node@24.12.4':
     dependencies:
       undici-types: 7.16.0
-
-  '@types/object-hash@3.0.6': {}
 
   '@types/pako@2.0.4': {}
 
@@ -14430,7 +14436,21 @@ snapshots:
 
   '@vitest/spy@4.1.12': {}
 
-  '@vitest/ui@4.1.12(vitest@4.1.12)':
+  '@vitest/ui@4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)':
+    dependencies:
+      '@vitest/utils': 4.1.12
+      fflate: 0.8.3
+      flatted: 3.4.4
+      pathe: 2.0.3
+      sirv: 3.0.2
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.2.0
+      vitest: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@types/node'
+      - vite
+
+  '@vitest/ui@4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)':
     dependencies:
       '@vitest/utils': 4.1.12
       fflate: 0.8.3
@@ -14440,6 +14460,9 @@ snapshots:
       tinyglobby: 0.2.17
       tinyrainbow: 3.2.0
       vitest: 4.1.12(@types/node@24.12.4)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@types/node'
+      - vite
 
   '@vitest/utils@4.1.12':
     dependencies:
@@ -15532,11 +15555,6 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
 
-  esbuild-node-externals@2.0.0(esbuild@0.28.2):
-    dependencies:
-      empathic: 2.1.0
-      esbuild: 0.28.2
-
   esbuild@0.25.12:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.25.12
@@ -15600,8 +15618,6 @@ snapshots:
   escape-html@1.0.3: {}
 
   escape-string-regexp@5.0.0: {}
-
-  esm-env@1.2.2: {}
 
   estree-walker@2.0.2: {}
 
@@ -18677,7 +18693,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.5.0
     optionalDependencies:
-      '@tsdown/css': 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+      '@tsdown/css': 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       tsx: 4.23.15
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -19091,7 +19107,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.20.5
-      '@vitest/ui': 4.1.12(vitest@4.1.12)
+      '@vitest/ui': 4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
     transitivePeerDependencies:
       - msw
 
@@ -19119,7 +19135,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.12.4
-      '@vitest/ui': 4.1.12(vitest@4.1.12)
+      '@vitest/ui': 4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
     transitivePeerDependencies:
       - msw
 

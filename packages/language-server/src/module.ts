@@ -66,6 +66,8 @@ import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
 import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
+  type Unstorage,
+  type UnstorageModuleContext,
   DEPENDENCY_URI_SCHEME,
   DependencyResolver,
   ExternalProjects,
@@ -73,6 +75,7 @@ import {
   LangiumDocuments,
   LikeC4DocumentBuilder,
   LikeC4WorkspaceManager,
+  MemoryUnstorage,
   ProjectsLookup,
   ProjectsManager,
 } from './workspace'
@@ -113,6 +116,7 @@ interface LikeC4AddedSharedServices {
     FileSystemProvider: FileSystemProvider
     FileSystemWatcher: FileSystemWatcher
     ManualLayouts: LikeC4ManualLayouts
+    Unstorage: Unstorage
   }
 }
 
@@ -121,6 +125,7 @@ export type LikeC4SharedModuleContext =
   & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
   & FileSystemModuleContext
   & LikeC4ManualLayoutsModuleContext
+  & UnstorageModuleContext
 
 function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
   LikeC4SharedServices,
@@ -148,6 +153,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       FileSystemProvider: services => context.fileSystemProvider(services),
       FileSystemWatcher: services => context.fileSystemWatcher(services),
       ManualLayouts: services => context.manualLayouts(services),
+      Unstorage: services => context.unstorage(services),
     },
   })
 }
@@ -358,6 +364,7 @@ export function createSharedServices(context: Partial<LanguageServicesContext> =
   const moduleContext = {
     ...NoFileSystem,
     ...NoLikeC4ManualLayouts,
+    ...MemoryUnstorage,
     ...context,
   }
   return inject(

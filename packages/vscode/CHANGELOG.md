@@ -1,5 +1,13 @@
 # likec4-vscode
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3584](https://github.com/likec4/likec4/pull/3584) [`0961aef`](https://github.com/likec4/likec4/commit/0961aef10f3b50880103f860435652e6cca84647) Thanks [@gregoreficint](https://github.com/gregoreficint)! - **Copy as PNG** and **Save as PNG** can include the view notation (legend): turn on `likec4.export.notation.enabled`, and choose its corner with `likec4.export.notation.position` and its labels with `likec4.export.notation.text`.
+
+- [#3584](https://github.com/likec4/likec4/pull/3584) [`0961aef`](https://github.com/likec4/likec4/commit/0961aef10f3b50880103f860435652e6cca84647) Thanks [@gregoreficint](https://github.com/gregoreficint)! - Changing a LikeC4 setting no longer restarts the language server, unless it is `likec4.exclude`.
+
 ## 1.61.0
 
 ### Patch Changes

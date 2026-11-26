@@ -19,7 +19,8 @@ import { PortalToContainer } from '../custom'
 import { useDiagram } from '../hooks/useDiagram'
 import { Overlay } from '../overlays/overlay/Overlay'
 import { ElementsColumn } from './components/ElementsColumn'
-import { PickView } from './components/PickView'
+import { PickRelationshipView, PickView } from './components/PickView'
+import { RelationshipsColumn } from './components/RelationshipsColumn'
 import { SearchByTags } from './components/SearchByTags'
 import { LikeC4SearchInput } from './components/SearchInput'
 import { focusToFirstFoundElement, moveFocusToSearchInput } from './components/utils'
@@ -127,7 +128,7 @@ function SearchOverlayBody({ searchActorRef }: { searchActorRef: SearchActorRef 
  */
 export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
   const contentRef = useRef<HTMLDivElement>(null)
-  const { pickViewFor } = useSearchContext()
+  const { pickViewFor, pickViewForRelationship } = useSearchContext()
 
   return (
     <Box ref={useMergedRef(ref, contentRef)} display={'contents'}>
@@ -144,10 +145,13 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
         </VStack>
       </Group>
       <Grid>
-        <GridCol span={6}>
+        <GridCol span={4}>
           <Title component={'div'} order={6} c="dimmed" pl="md">Elements</Title>
         </GridCol>
-        <GridCol span={6}>
+        <GridCol span={4}>
+          <Title component={'div'} order={6} c="dimmed" pl="sm">Relationships</Title>
+        </GridCol>
+        <GridCol span={4}>
           <Title component={'div'} order={6} c="dimmed" pl="sm">Views</Title>
         </GridCol>
       </Grid>
@@ -158,7 +162,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
           overflow: 'hidden',
           flexGrow: 1,
         })}>
-        <GridCol span={6}>
+        <GridCol span={4}>
           <ScrollArea
             type="scroll"
             className={scrollAreaCss}
@@ -171,7 +175,20 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             </LayoutGroup>
           </ScrollArea>
         </GridCol>
-        <GridCol span={6}>
+        <GridCol span={4}>
+          <ScrollArea
+            type="scroll"
+            className={scrollAreaCss}
+            pr="xs"
+            scrollbars="y">
+            <LayoutGroup id="likec4-search-relationships">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <RelationshipsColumn />
+              </AnimatePresence>
+            </LayoutGroup>
+          </ScrollArea>
+        </GridCol>
+        <GridCol span={4}>
           <ScrollArea
             type="scroll"
             className={scrollAreaCss}
@@ -186,6 +203,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
         </GridCol>
       </Grid>
       {pickViewFor && <PickView elementFqn={pickViewFor} />}
+      {pickViewForRelationship && <PickRelationshipView relationId={pickViewForRelationship} />}
     </Box>
   )
 })
