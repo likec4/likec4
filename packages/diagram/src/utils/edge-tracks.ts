@@ -10,11 +10,11 @@ import {
   drawnFromRoute,
   editedEdgePath,
   editedEdgeRoute,
+  END_INSET,
 } from './edge-path'
 
 // Track separation, in diagram units
 const TRACK_SPACING = 12
-const END_INSET = 8
 const SAME_TRACK = 4 // runs this close share a track; handles can sit off the node center
 
 /** An orthogonal edge polyline and whether it may move to another track. */

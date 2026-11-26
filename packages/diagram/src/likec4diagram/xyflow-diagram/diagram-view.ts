@@ -26,6 +26,9 @@ import {
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import { readableText } from '../../utils'
+import { convertLegacyCorners } from '../../utils/edge-corners'
+import { edgeEndAtCenter } from '../../utils/edge-endpoints'
+import { viewRouting } from '../../utils/view-routing'
 
 /**
  * Always defined: node updates keep the previous class name when the new one is undefined
@@ -89,7 +92,7 @@ function edgeAriaLabel(edge: DiagramEdge, source: DiagramNode, target: DiagramNo
  * @returns An object containing an array of XY flow nodes and an array of XY flow edges.
  */
 export function diagramToXY(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'bounds' | 'edges' | '_type' | 'autoLayout'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'bounds' | 'edges' | '_type' | 'autoLayout' | 'routing' | 'edgeEnds'>
   currentViewId: ViewId | undefined
   where: WhereOperator | null
 }): {
@@ -316,6 +319,9 @@ export function diagramToXY(opts: {
 
   let stepnum = 1
 
+  // Corners saved before the ends followed them are converted on every load, until the next save
+  const convertCorners = viewRouting(view) === 'ortho' && !view.edgeEnds
+
   for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
@@ -325,6 +331,15 @@ export function diagramToXY(opts: {
       console.error('edge should have at least 2 points', edge)
       continue
     }
+
+    const controlPoints = edge.controlPoints && convertCorners
+      ? convertLegacyCorners({
+        source: edgeEndAtCenter(nodeById(source)),
+        target: edgeEndAtCenter(nodeById(target)),
+        dir: edge.dir,
+        controlPoints: edge.controlPoints,
+      })
+      : edge.controlPoints ?? null
 
     xyedges.push({
       id,
@@ -342,7 +357,7 @@ export function diagramToXY(opts: {
         technology: edge.technology,
         notes: edge.notes ?? null,
         navigateTo: edge.navigateTo,
-        controlPoints: edge.controlPoints ?? null,
+        controlPoints,
         labelBBox: edge.labelBBox ?? null,
         isLabelCustomized: edge.isLabelCustomized ?? false,
         labelXY: null,

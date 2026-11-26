@@ -281,6 +281,26 @@ describe('LikeC4ManualLayouts', () => {
       expect(writtenContent).not.toContain('manualLayout')
     })
 
+    it('should read back edgeEnds written with the layout', async ({ expect }) => {
+      await using t = await createTestServices()
+
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
+      await t.manualLayouts.write(t.project, createMockView({ id: 'edge-ends', edgeEnds: 'corner' }))
+      const writtenContent = vi.mocked(t.fs.writeFile).mock.calls[0]?.[1]
+      expect(writtenContent).toContain('edgeEnds')
+
+      vi.mocked(t.fs.scanDirectory).mockResolvedValue([{
+        uri: URI.file('/test/workspace/src/test-project/.likec4/edge-ends.likec4.snap'),
+        isFile: true,
+        isDirectory: false,
+      }])
+      vi.mocked(t.fs.readFile).mockResolvedValue(writtenContent ?? '')
+
+      await expect(t.manualLayouts.read(t.project)).resolves.toMatchObject({
+        views: { 'edge-ends': { edgeEnds: 'corner' } },
+      })
+    })
+
     it('should respect custom manualLayouts outDir config when writing', async ({ expect }) => {
       await using t = await createTestServices()
       const projectsManager = t.services.shared.workspace.ProjectsManager

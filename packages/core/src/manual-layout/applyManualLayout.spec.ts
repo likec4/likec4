@@ -77,6 +77,16 @@ describe('applyManualLayout', () => {
     })
   })
 
+  describe('edge ends', () => {
+    it('should keep edgeEnds of the snapshot without drifts when nothing changed', () => {
+      const { snapshot, layouted } = prepareFixtures()
+      const result = applyManualLayout(layouted, { ...snapshot, edgeEnds: 'corner' })
+      expect(result.edgeEnds).toBe('corner')
+      expect(result.drifts).toBeUndefined()
+      expect(result.hash).toBe(layouted.hash)
+    })
+  })
+
   describe('nodes', () => {
     it('should detect nodes-added drift', () => {
       const { result } = testApplyManualLayout({

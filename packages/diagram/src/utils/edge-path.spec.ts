@@ -1,7 +1,15 @@
 import type { NonEmptyArray, Point } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { orthoSpline, source, spline, target } from './__fixtures__/edges'
-import { type DrawnEdge, editedEdgePath, layoutedEdgePath, orthoPolyline } from './edge-path'
+import {
+  type DrawnEdge,
+  drawnFromRoute,
+  editedEdgePath,
+  editedEdgeRoute,
+  layoutedEdgePath,
+  layoutedEdgeRoute,
+  orthoPolyline,
+} from './edge-path'
 
 const controlPoints = [{ x: 300, y: 200 }, { x: 400, y: 380 }]
 
@@ -198,6 +206,30 @@ describe('edge path with ortho routing', () => {
     const arc: NonEmptyArray<Point> = [[100, 100], [150, 40], [250, 40], [300, 100]]
     expect(isAxisAligned(layoutedEdgePath({ points: arc, source, target, routing: 'ortho' }))).toBe(true)
   })
+
+  it('leaves an untouched curved edge from the middle of the side its first handle faces, as before', () => {
+    // down out of the bottom of the source, then right into the target; the handles are (174,253) and (300,397)
+    const curve: NonEmptyArray<Point> = [
+      [170, 200],
+      [170, 240],
+      [175, 270],
+      [190, 300],
+      [220, 360],
+      [350, 450],
+      [500, 450],
+    ]
+    const route = layoutedEdgeRoute({ points: curve, source, target })
+    expect(route).toEqual([
+      { x: 150, y: 202 },
+      { x: 150, y: 253 },
+      { x: 174, y: 253 },
+      { x: 300, y: 253 },
+      { x: 300, y: 397 },
+      { x: 300, y: 450 },
+      { x: 498, y: 450 },
+    ])
+    expect(layoutedEdgePath({ points: curve, source, target, routing: 'ortho' }).d).toBe(drawnFromRoute(route).d)
+  })
 })
 
 describe('ortho polyline without backtracking', () => {
@@ -224,5 +256,85 @@ describe('ortho polyline without backtracking', () => {
     })
     expect(path.d).not.toContain('Q 300,50')
     expect(path.d).toMatch(/L 300,50 L 300,/)
+  })
+})
+
+describe('ends of an edited ortho edge', () => {
+  // 320 x 180, centre (560,390)
+  const element = { center: { x: 560, y: 390 }, node: { x: 400, y: 300, width: 320, height: 180 } }
+  // far above and left, diagonal to every corner below
+  const far = { center: { x: -350, y: -350 }, node: { x: -400, y: -400, width: 100, height: 100 } }
+  const routeOf = (edge: Parameters<typeof editedEdgeRoute>[0]) => editedEdgeRoute(edge)?.points
+
+  it('leaves the left side level with a first corner beside it, below the middle', () => {
+    // 200 left of the element and 40 below its middle
+    const route = routeOf({ source: element, target: far, controlPoints: [{ x: 200, y: 430 }] })
+    expect(route?.slice(0, 2)).toEqual([{ x: 398, y: 430 }, { x: 200, y: 430 }])
+  })
+
+  it('leaves the top side level with a first corner above it', () => {
+    // 100 right of the middle
+    const route = routeOf({ source: element, target: far, controlPoints: [{ x: 660, y: 200 }] })
+    expect(route?.slice(0, 2)).toEqual([{ x: 660, y: 298 }, { x: 660, y: 200 }])
+  })
+
+  it('enters the right side of the target level with the last corner beside it', () => {
+    // the route arrives at the corner going down; the corner is 30 above the middle of the target
+    const source = { center: { x: 900, y: 50 }, node: { x: 850, y: 0, width: 100, height: 100 } }
+    const route = routeOf({ source, target: element, controlPoints: [{ x: 900, y: 360 }] })
+    expect(route?.slice(-2)).toEqual([{ x: 900, y: 360 }, { x: 722, y: 360 }])
+  })
+
+  it('draws one straight vertical line through a corner that faces both elements', () => {
+    // middles 200 apart sideways; the corner faces the bottom of the upper and the top of the lower
+    const upper = { center: { x: 160, y: 90 }, node: { x: 0, y: 0, width: 320, height: 180 } }
+    const lower = { center: { x: 360, y: 490 }, node: { x: 200, y: 400, width: 320, height: 180 } }
+    const route = routeOf({ source: upper, target: lower, controlPoints: [{ x: 260, y: 290 }] })
+    expect(route).toEqual([{ x: 260, y: 182 }, { x: 260, y: 290 }, { x: 260, y: 398 }])
+  })
+
+  it('follows the first corner at the target and the last at the source for an edge drawn from its target', () => {
+    // drawn from the element: the first corner is beside its left side, the last beside the source's left side
+    const source = { center: { x: 560, y: 790 }, node: { x: 400, y: 700, width: 320, height: 180 } }
+    const route = routeOf({
+      source,
+      target: element,
+      dir: 'back',
+      controlPoints: [{ x: 200, y: 430 }, { x: 200, y: 760 }],
+    })
+    expect(route).toEqual([{ x: 398, y: 430 }, { x: 200, y: 430 }, { x: 200, y: 760 }, { x: 398, y: 760 }])
+  })
+
+  it('keeps the route beyond the first corner', () => {
+    // from the middle of the side the route runs (200,390) -> (200,430) -> (200,600) -> (100,600) -> ...
+    const target = { center: { x: -250, y: 850 }, node: { x: -300, y: 800, width: 100, height: 100 } }
+    const route = routeOf({ source: element, target, controlPoints: [{ x: 200, y: 430 }, { x: 100, y: 600 }] })
+    expect(route).toEqual([
+      { x: 398, y: 430 },
+      { x: 200, y: 430 },
+      { x: 200, y: 600 },
+      { x: 100, y: 600 },
+      { x: -250, y: 600 },
+      { x: -250, y: 798 },
+    ])
+  })
+
+  it('leaves from the middle of a side when the first corner is diagonal to the element', () => {
+    // above and left of the top left corner of the element
+    const route = routeOf({ source: element, target: far, controlPoints: [{ x: 300, y: 200 }] })
+    expect(route?.[0]).toEqual({ x: 398, y: 390 })
+  })
+
+  it('leaves from the middle of the left side when the first corner is 5 below its top edge', () => {
+    const route = routeOf({ source: element, target: far, controlPoints: [{ x: 200, y: 305 }] })
+    expect(route?.[0]).toEqual({ x: 398, y: 390 })
+  })
+
+  it('draws an edge without corners along the route from the middles', () => {
+    expect(routeOf({ source, target, controlPoints: [] })).toEqual([
+      { x: 202, y: 150 },
+      { x: 550, y: 150 },
+      { x: 550, y: 398 },
+    ])
   })
 })

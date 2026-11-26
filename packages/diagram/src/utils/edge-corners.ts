@@ -1,8 +1,8 @@
 import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { isOrthoSpline, nearlyEqual, projectOnSegment, splineToPolyline } from '@likec4/core/geometry'
-import { type Endpoints, inDrawingOrder, orthoPolyline } from './edge-path'
-import { bezierControlPoints } from './xyflow'
+import { type EdgeEnd, type Endpoints, editedOrthoPolyline, inDrawingOrder, orthoPolyline } from './edge-path'
+import { bezierControlPoints, isEqualRects } from './xyflow'
 
 /** Interior corners of an orthogonal Graphviz spline. */
 function orthoCorners(points: NonEmptyArray<Point>): XYPosition[] {
@@ -39,9 +39,38 @@ export function initialControlPoints(
   return [{ x: Math.trunc((ax + bx) / 2), y: Math.trunc((ay + by) / 2) }]
 }
 
+const samePoint = (a: XYPosition | undefined, b: XYPosition | undefined): boolean =>
+  !!a && !!b && nearlyEqual(a.x, b.x) && nearlyEqual(a.y, b.y)
+
+/**
+ * Corners of an edited ortho edge saved before its ends followed the corners, in drawing order.
+ * Where the ends following the corners would move an end, the bend the old route had next to that end
+ * becomes a corner, so the edge keeps its route. Converting the result again changes nothing.
+ * A self-loop keeps its corners: its ends never followed them.
+ */
+export function convertLegacyCorners({ controlPoints, ...edge }: Endpoints<EdgeEnd> & {
+  controlPoints: ReadonlyArray<XYPosition>
+}): XYPosition[] {
+  const [from, to] = inDrawingOrder(edge)
+  if (isEqualRects(from.node, to.node)) {
+    return [...controlPoints]
+  }
+  const { points: old } = orthoPolyline(controlPoints, from.center, to.center)
+  const { points: moved } = editedOrthoPolyline(controlPoints, from, to)
+  const result = [...controlPoints]
+  // a moved end means the old route bent between the node center and the corner next to it
+  if (!samePoint(moved[0], old[0]) && !samePoint(moved[0], old[1])) {
+    result.unshift(old[1]!)
+  }
+  if (!samePoint(moved.at(-1), old.at(-1)) && !samePoint(moved.at(-1), old.at(-2))) {
+    result.push(old.at(-2)!)
+  }
+  return result
+}
+
 const SNAP_TOLERANCE = 8 // diagram units
 
-type CornerEditing = Endpoints<XYPosition> & {
+type CornerEditing = Endpoints<EdgeEnd> & {
   controlPoints: ReadonlyArray<XYPosition>
   routing: EdgeRouting
 }
@@ -58,8 +87,8 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
     return point
   }
   const [from, to] = inDrawingOrder(edge)
-  const prev = controlPoints[index - 1] ?? from
-  const next = controlPoints[index + 1] ?? to
+  const prev = controlPoints[index - 1] ?? from.center
+  const next = controlPoints[index + 1] ?? to.center
   const snap = (value: number, candidates: number[]) => {
     let best = value, bestDistance = SNAP_TOLERANCE + 1
     for (const raw of candidates) {
@@ -81,7 +110,8 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
 
 /**
  * Inserts a corner at the clicked point: projected onto the nearest drawn segment for ortho routing,
- * or the rounded point for splines.
+ * or the rounded point for splines. Under ortho routing the line keeps its route: where the new corner
+ * would move it, the bend drawn there becomes a corner too.
  */
 export function insertCorner({ point, controlPoints, routing, ...edge }: CornerEditing & {
   point: XYPosition
@@ -89,7 +119,7 @@ export function insertCorner({ point, controlPoints, routing, ...edge }: CornerE
   const [from, to] = inDrawingOrder(edge)
   const result = [...controlPoints]
   if (routing === 'ortho') {
-    const { points, insertAt } = orthoPolyline(controlPoints, from, to)
+    const { points, insertAt } = editedOrthoPolyline(controlPoints, from, to)
     let best = { index: 0, point, distance: Infinity }
     for (let i = 1; i < points.length; i++) {
       const candidate = projectOnSegment(point, points[i - 1]!, points[i]!)
@@ -98,9 +128,27 @@ export function insertCorner({ point, controlPoints, routing, ...edge }: CornerE
       }
     }
     result.splice(best.index, 0, { x: Math.round(best.point.x), y: Math.round(best.point.y) })
+    if (!isEqualRects(from.node, to.node)) {
+      const after = editedOrthoPolyline(result, from, to).points
+      const startBend = points[1], endBend = points.at(-2)
+      // The bend next to an end is drawn, not saved. Where the new corner moves that end, keep the bend as a corner.
+      if (startBend && !samePoint(after[0], points[0])) {
+        result.unshift(startBend)
+      }
+      if (endBend && !samePoint(after.at(-1), points.at(-1))) {
+        result.push(endBend)
+      }
+      // A corner before a first corner that faces the element can change the turn after it. Keep the bend drawn there.
+      // Equal insert indices mean points[2] is a bend after the first corner, not a saved corner.
+      const bend = insertAt[2] === insertAt[3] ? points[2] : undefined
+      // Relies on the start rule above not having fired, which holds for every click outside the elements.
+      if (bend && best.index === 0 && !after.some(p => samePoint(p, bend))) {
+        result.splice(2, 0, bend)
+      }
+    }
     return result
   }
-  const anchors = [from, ...controlPoints, to]
+  const anchors = [from.center, ...controlPoints, to.center]
   const newPoint = { x: Math.round(point.x), y: Math.round(point.y) }
   let insertionIndex = 0
   let minDistance = Infinity

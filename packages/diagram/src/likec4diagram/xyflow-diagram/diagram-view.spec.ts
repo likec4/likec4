@@ -6,7 +6,7 @@ import { type DiagramEdge, type DiagramNode, type DiagramView, GroupElementKind,
 import { describe, expect, it } from 'vitest'
 import { diagramToXY } from './diagram-view'
 
-type TestView = Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type' | 'autoLayout'>
+type TestView = Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type' | 'autoLayout' | 'routing' | 'edgeEnds'>
 
 function testNode(id: string, overrides: Partial<DiagramNode> = {}): DiagramNode {
   const nodeId = scalar.NodeId(id)
@@ -197,5 +197,42 @@ describe('diagramToXY accessibility', () => {
     expect(xynodes.find(n => n.id === 'group')?.ariaLabel).toBe(
       'Checkout. Group. Contains 1 node. Notes: Important boundary.',
     )
+  })
+})
+
+describe('diagramToXY with corners saved before the ends followed them', () => {
+  // 320 x 180 around (560,390); the corner is beside its left side, 40 below the middle
+  const element = testNode('element', { x: 400, y: 300, width: 320, height: 180 })
+  const far = testNode('far', { x: -400, y: -400, width: 100, height: 100 })
+  const edge = testEdge('element-far', element, far, { controlPoints: [{ x: 200, y: 430 }] })
+  const controlPointsOf = (view: TestView) =>
+    diagramToXY({ view, currentViewId: undefined, where: null }).xyedges[0]?.data.controlPoints
+
+  it('converts the corners of a view with orthogonal routing and no record', () => {
+    expect(controlPointsOf({ ...testView([element, far], [edge]), routing: 'ortho' })).toEqual([
+      { x: 200, y: 390 },
+      { x: 200, y: 430 },
+    ])
+  })
+
+  it('keeps the corners of a view that records that ends follow the corners', () => {
+    expect(controlPointsOf({ ...testView([element, far], [edge]), routing: 'ortho', edgeEnds: 'corner' })).toEqual([
+      { x: 200, y: 430 },
+    ])
+  })
+
+  it('keeps the corners of a view with spline routing', () => {
+    expect(controlPointsOf({ ...testView([element, far], [edge]), routing: 'spline' })).toEqual([{ x: 200, y: 430 }])
+  })
+
+  it('keeps the corners of a self-loop', () => {
+    // both corners face the left side, so converting them would add the bend at (300,390)
+    const loop = testEdge('element-element', element, element, {
+      controlPoints: [{ x: 300, y: 350 }, { x: 300, y: 430 }],
+    })
+    expect(controlPointsOf({ ...testView([element], [loop]), routing: 'ortho' })).toEqual([
+      { x: 300, y: 350 },
+      { x: 300, y: 430 },
+    ])
   })
 })

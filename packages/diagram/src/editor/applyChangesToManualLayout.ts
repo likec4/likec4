@@ -17,7 +17,9 @@ export function applyChangesToManualLayout(
   // Disable auto-freeze during this operation
   try {
     setAutoFreeze(false)
-    return _applyChangesToManualLayout(manualView, latestView)
+    const updated = _applyChangesToManualLayout(manualView, latestView)
+    // the corners of a recorded layout already place the ends, loading must not convert them again
+    return manualView.edgeEnds ? { ...updated, edgeEnds: manualView.edgeEnds } : updated
   } finally {
     setAutoFreeze(true)
   }

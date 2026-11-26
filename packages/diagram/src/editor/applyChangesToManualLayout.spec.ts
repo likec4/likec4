@@ -134,6 +134,13 @@ describe('applyChangesToManualLayout', () => {
     expect(result._type).toBe(manual._type)
   })
 
+  it('should keep the record that edge ends follow the corners from manual layout', ({ expect }) => {
+    const { snapshot, layouted } = prepareFixtures({})
+    const result = applyChangesToManualLayout({ ...snapshot, edgeEnds: 'corner' }, layouted)
+
+    expect(result.edgeEnds).toBe('corner')
+  })
+
   it('should recalculate bounds based on root nodes', ({ expect }) => {
     const { result } = testData({})
 
