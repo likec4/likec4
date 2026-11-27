@@ -697,3 +697,33 @@ describe('ModelEdits', () => {
     expect(result.error).toMatch(/^The edit was not applied: Disk full\. Restore failed, check \S+$/)
   })
 })
+
+describe('Diff has no changes', () => {
+  const noChanges = async (...sources: string[]) => {
+    const { warnings } = await setup(model, ...sources)
+    return warnings.filter(w => w.includes('Diff has no changes'))
+  }
+
+  it('warns for a diff without changes', async ({ expect }) => {
+    expect(await noChanges(`diff rfcA 'RFC A' { description 'Nothing yet' }`)).toHaveLength(1)
+  })
+
+  it('does not warn for a part of a merged diff when another part has changes', async ({ expect }) => {
+    expect(
+      await noChanges(
+        `diff rfcA 'RFC A' { description 'Adds a cache' }`,
+        `diff rfcA { add { extend cloud { cache = component 'Cache' } } }`,
+      ),
+    ).toEqual([])
+  })
+
+  it('still warns when no part of the merged diff has changes', async ({ expect }) => {
+    expect(
+      await noChanges(
+        `diff rfcA 'RFC A' { description 'Adds a cache' }`,
+        `diff rfcA { }`,
+        `diff rfcB { add { extend cloud { cache = component 'Cache' } } }`,
+      ),
+    ).toHaveLength(2)
+  })
+})
