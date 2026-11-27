@@ -84,6 +84,7 @@
     "remeda": "catalog:utils",
     "rolldown": "catalog:tsdown",
     "tsdown": "catalog:tsdown",
+    "tsrs": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

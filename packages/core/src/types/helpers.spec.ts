@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import { exact } from './_common'
+import { exact } from './helpers'
 
 describe('exact', () => {
   it('extract types', ({ expect }) => {
@@ -12,6 +12,9 @@ describe('exact', () => {
       str: '1',
       num: 1,
     }
+
+    // Should retain same reference when no changes needed
+    expect(exact(a) satisfies A).toBe(a)
 
     expect(
       exact({
@@ -39,5 +42,12 @@ describe('exact', () => {
       str: '1',
       num: null,
     })
+
+    // Type validation
+    exact({
+      ...a,
+      // @ts-expect-error should fail for extra properties
+      arc: 'any' as any,
+    }) satisfies A
   })
 })

@@ -18,4 +18,7 @@ export default defineConfig({
       })
     },
   },
+  dts: {
+    generator: 'tsrs',
+  },
 })

@@ -17,8 +17,7 @@
         "__app__/**",
         "config/schema.json",
         "vite-plugin-modules.d.ts"
-      ],
-      "outputLogs": "new-only"
+      ]
     }
   }
 }

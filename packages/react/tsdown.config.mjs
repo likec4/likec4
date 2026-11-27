@@ -53,13 +53,21 @@ export default defineConfig({
       ],
     },
   },
+  fixedExtension: true,
   outputOptions: {
-    exports: 'named',
-    keepNames: true,
-    entryFileNames: '[name].mjs',
+    minify: {
+      mangle: {
+        keepNames: true,
+      },
+    },
+    comments: {
+      jsdoc: false,
+      legal: false,
+      annotation: true,
+    },
   },
   dts: {
-    build: true,
+    generator: 'tsrs',
   },
   deps: {
     onlyBundle: false,

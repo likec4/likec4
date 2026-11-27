@@ -12,6 +12,14 @@ export default defineConfig({
     'src/index.ts',
   ],
   unbundle: true,
-  platform: 'neutral',
   minify: false,
+  deps: {
+    neverBundle: [
+      '@logtape/logtape',
+      /^node:/,
+    ],
+  },
+  dts: {
+    generator: 'tsrs',
+  },
 })

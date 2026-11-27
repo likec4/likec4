@@ -8,7 +8,16 @@ export default defineConfig({
     'src/webapp-export-formats.ts',
   ],
   unbundle: true,
-  platform: 'node',
+  minify: false,
+  deps: {
+    neverBundle: [
+      '@logtape/logtape',
+      /^node:/,
+    ],
+  },
+  dts: {
+    generator: 'tsrs',
+  },
   hooks: {
     'build:done': async () => {
       await spawn('pnpm', ['run', 'generate'], {

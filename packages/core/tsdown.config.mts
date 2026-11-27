@@ -13,7 +13,9 @@ export default defineConfig({
     'src/utils/index.ts',
     'src/index.ts',
   ],
-  target: false,
+  dts: {
+    generator: 'tsrs',
+  },
   platform: 'neutral',
   nodeProtocol: 'strip',
   outputOptions: outputOptions({

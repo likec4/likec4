@@ -48,6 +48,10 @@ export type ProcessedDynamicView<A extends Any = Any> =
   | ComputedDynamicView<A>
   | LayoutedDynamicView<A>
 
+export type ProcessedDeploymentView<A extends Any = Any> =
+  | ComputedDeploymentView<A>
+  | LayoutedDeploymentView<A>
+
 /**
  * @alias DiagramView
  */

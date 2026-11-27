@@ -2,21 +2,18 @@ import { defu } from 'defu'
 import { type UserConfig, defineConfig as tsdownDefineConfig, Rolldown } from 'tsdown'
 
 export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | UserConfig[] {
-  const base: UserConfig = {
+  const base = {
     entry: [
       'src/**/*.{ts,tsx}',
       '!**/*.d.ts',
       '!**/*.spec.{ts,tsx}',
     ],
-    dts: true,
+    fixedExtension: true,
+    cjsDefault: false,
     outputOptions: outputOptions(),
-    platform: 'neutral',
     minify: {
-      compress: {
-        keepNames: {
-          class: true,
-          function: true,
-        },
+      mangle: {
+        keepNames: true,
       },
     },
     define: {
@@ -41,15 +38,29 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
     deps: {
       onlyBundle: false,
     },
-    checks: {
-      bundlerTimings: false,
+  } satisfies UserConfig
+
+  const withBase = (cfg: UserConfig): UserConfig => ({
+    ...base,
+    ...cfg,
+    ...(!cfg.platform && {
+      platform: 'neutral',
+      target: false,
+    }),
+    inputOptions: {
+      ...base.inputOptions,
+      ...cfg.inputOptions,
     },
-  }
+    plugins: [
+      stubBrotli(),
+      cfg.plugins,
+    ],
+  })
 
   if (Array.isArray(config)) {
-    return tsdownDefineConfig(config.map(c => ({ ...base, ...c, plugins: [stubBrotli(), c.plugins] })))
+    return tsdownDefineConfig(config.map(withBase))
   }
-  return tsdownDefineConfig({ ...base, ...config, plugins: [stubBrotli(), config.plugins] })
+  return tsdownDefineConfig(withBase(config))
 }
 
 const stubBrotliId = '\0likec4:stub-brotli'
@@ -131,7 +142,11 @@ export function outputOptions(outputOptions?: Rolldown.OutputOptions): Rolldown.
   return defu(
     outputOptions,
     {
-      keepNames: true,
+      comments: {
+        jsdoc: false,
+        legal: false,
+        annotation: true,
+      },
       entryFileNames: '[name].mjs',
       chunkFileNames: 'chunks/[name].mjs',
       codeSplitting: {

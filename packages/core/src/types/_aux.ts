@@ -1,4 +1,4 @@
-import type { IfNever, IsLiteral, IsNever } from 'type-fest'
+import type { IfNever, IsAny, IsLiteral, IsNever } from 'type-fest'
 import type { Coalesce, Link, OrString } from './_common'
 import type { ModelStage } from './const'
 import type * as scalar from './scalar'
@@ -25,7 +25,15 @@ export type SpecAux<
   MetadataKey: MetadataKey
 }
 export type AnySpec = SpecAux<any, any, any, any, any>
+export type UnknownSpec = SpecAux<string, string, string, string, string>
 
+export type specOf<A> =
+  // dprint-ignore
+  IsNever<A> extends true
+    ? SpecAux<never, never, never, never, never>
+    : A extends AnySpec
+      ? SpecAux<Coalesce<A['ElementKind']>, Coalesce<A['DeploymentKind']>, Coalesce<A['RelationKind']>, Coalesce<A['Tag']>, Coalesce<A['MetadataKey']>>
+      : UnknownSpec
 /**
  * Auxilary interface to keep inferred types
  *
@@ -93,8 +101,8 @@ export type AnyParsed = AnyOnStage<'parsed'>
 export type AnyComputed = AnyOnStage<'computed'>
 export type AnyLayouted = AnyOnStage<'layouted'>
 
-export type Any = Aux<any, any, any, any, any, AnySpec>
-export type { Any as AnyAux }
+export type AnyAux = Aux<any, any, any, any, any, AnySpec>
+export type Any = AnyAux
 
 export type Never = Aux<never, never, never, never, never, SpecAux<never, never, never, never, never>>
 
@@ -110,7 +118,7 @@ export type UnknownParsed = Aux<
   string,
   string,
   string,
-  SpecAux<string, string, string, string, string>
+  UnknownSpec
 >
 
 export type UnknownComputed = AuxComputed<
@@ -118,7 +126,7 @@ export type UnknownComputed = AuxComputed<
   string,
   string,
   string,
-  SpecAux<string, string, string, string, string>
+  UnknownSpec
 >
 
 export type UnknownLayouted = AuxLayouted<
@@ -126,7 +134,7 @@ export type UnknownLayouted = AuxLayouted<
   string,
   string,
   string,
-  SpecAux<string, string, string, string, string>
+  UnknownSpec
 >
 
 /**
@@ -149,20 +157,20 @@ export type PickByStage<A extends Any, OnParsed, OnComputed, OnLayouted = OnComp
 
 export type setStage<A, S extends ModelStage> =
   // dprint-ignore
-  A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-      ? Aux<S, E, D, V, P, Spec>
+  A extends Aux<any, infer E, infer D, infer V, infer P, any>
+      ? Aux<S, E, D, V, P, specOf<A>>
       : never
 
-export type toParsed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-  ? Aux<'parsed', E, D, V, P, Spec>
+export type toParsed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, any>
+  ? Aux<'parsed', E, D, V, P, specOf<A>>
   : never
 
-export type toComputed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-  ? Aux<'computed', E, D, V, P, Spec>
+export type toComputed<A> = A extends Aux<any, infer E, infer D, infer V, infer P, any>
+  ? Aux<'computed', E, D, V, P, specOf<A>>
   : never
 
-export type toLayouted<A> = A extends Aux<any, infer E, infer D, infer V, infer P, infer Spec>
-  ? Aux<'layouted', E, D, V, P, Spec>
+export type toLayouted<A> = A extends Aux<any, infer E, infer D, infer V, infer P, any>
+  ? Aux<'layouted', E, D, V, P, specOf<A>>
   : never
 
 /**
@@ -172,8 +180,8 @@ export type ProjectId<A> = A extends { ProjectId: infer P extends string } ? Coa
 
 export type setProject<A, P extends string> =
   // dprint-ignore
-  A extends Aux<infer S, infer E, infer D, infer V, any, infer Spec>
-      ? Aux<S, E, D, V, P, Spec>
+  A extends Any
+      ? Aux<A['Stage'], A['ElementId'], A['DeploymentId'], A['ViewId'], P, specOf<A>>
       : never
 
 /**
@@ -258,8 +266,7 @@ export type AllKinds<A> = ElementKind<A> | DeploymentKind<A> | RelationKind<A>
 /**
  * Specification from Aux
  */
-export type Spec<A> = A extends Aux<any, any, any, any, any, infer S extends AnySpec> ? S
-  : never
+export type Spec<A> = specOf<A>
 
 export type StrictProjectId<A> = A extends Pick<Any, 'ProjectId'> ? scalar.ProjectId<Coalesce<A['ProjectId']>>
   : never
@@ -291,22 +298,6 @@ export type WithDescriptionAndTech = {
   // long description (displayed in the details panel, or in the diagram if summary is not set)
   readonly description?: scalar.MarkdownOrString | null
   readonly technology?: string | null
-}
-
-/**
- * Returns summary if it is not null, otherwise returns description
- */
-/* @__NO_SIDE_EFFECTS__ */
-export function preferSummary(a: WithDescriptionAndTech): scalar.MarkdownOrString | null | undefined {
-  return a.summary ?? a.description
-}
-
-/**
- * Returns description if it is not null, otherwise returns summary
- */
-/* @__NO_SIDE_EFFECTS__ */
-export function preferDescription(a: WithDescriptionAndTech): scalar.MarkdownOrString | null | undefined {
-  return a.description ?? a.summary
 }
 
 export type WithTags<A extends Any> = {

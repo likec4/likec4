@@ -111,9 +111,9 @@
     "postcss": "catalog:css",
     "postcss-import": "catalog:css",
     "tsdown": "catalog:tsdown",
+    "tsrs": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "vite-plugin-dts": "5.1.2",
     "vitest": "catalog:vitest",
     "zx": "catalog:"
   },

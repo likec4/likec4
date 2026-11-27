@@ -1,7 +1,8 @@
 import type { IsAny, IsUnknown, Or, SetNonNullable, SetRequired } from 'type-fest'
-import type { NonEmptyArray } from '../types'
+import type { NonEmptyArray } from './_common'
 import { isArray } from 'remeda'
 import { invariant } from '../utils/invariant'
+import { type ExtractOnStage, type ModelStage, _stage } from './const'
 
 export function isString(value: unknown): value is string {
   return value != null && typeof value === 'string'
@@ -89,3 +90,22 @@ export function isAnyOf<const Predicates extends NonEmptyArray<Guard<any>>>(
 export function hasChildren<C, A extends { children?: C[] }>(value: A): value is A & { children: NonEmptyArray<C> } {
   return isArray(value.children) && value.children.length > 0
 }
+
+export function isOnStage<S extends ModelStage>(
+  stage: S,
+): <T extends { [_stage]: ModelStage }>(value: T) => value is ExtractOnStage<T, S>
+export function isOnStage<T extends { [_stage]: ModelStage }, S extends ModelStage>(
+  value: T,
+  stage: S,
+): value is ExtractOnStage<T, S>
+export function isOnStage(...args: any[]): any {
+  if (args.length === 1) {
+    const stage = args[0]
+    return (value: { [_stage]: ModelStage }) => value[_stage] === stage
+  }
+  const [value, stage] = args
+  return value[_stage] === stage
+}
+
+export const isLayoutedStage: <T extends { [_stage]: ModelStage }>(value: T) => value is ExtractOnStage<T, 'layouted'> =
+  isOnStage('layouted')

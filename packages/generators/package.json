@@ -71,6 +71,7 @@
     "@types/node": "catalog:",
     "@types/pako": "catalog:",
     "tsdown": "catalog:tsdown",
+    "tsrs": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },

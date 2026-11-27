@@ -82,6 +82,7 @@
     "jiti": "catalog:externals",
     "nano-spawn": "catalog:externals",
     "tsdown": "catalog:tsdown",
+    "tsrs": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
