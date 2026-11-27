@@ -1,5 +1,6 @@
+import type { AnyView, LayoutedView, LikeC4View } from './view'
 import { expectTypeOf, test } from 'vitest'
-import { type GuardedBy, hasProp, isAnyOf, isString } from './guards'
+import { type GuardedBy, hasProp, isAnyOf, isLayoutedStage, isOnStage, isString } from './guards'
 
 test('hasProp', () => {
   const obj = { a: 'a' } as {
@@ -104,4 +105,33 @@ test('isAnyOf', () => {
   const notAGuard = (value: unknown): boolean => value !== null
   // @ts-expect-error
   const invalid = isAnyOf(notAGuard)
+})
+
+test('isOnStage', () => {
+  const anyStage = {} as AnyView
+  const layouted = {} as LayoutedView
+
+  if (isOnStage(anyStage, 'layouted')) {
+    expectTypeOf(anyStage).toEqualTypeOf<LayoutedView>()
+  }
+
+  if (isOnStage(layouted, 'layouted')) {
+    expectTypeOf(layouted).toEqualTypeOf<LayoutedView>()
+  }
+  if (!isOnStage(layouted, 'layouted')) {
+    expectTypeOf(layouted).toBeNever()
+  }
+  if (isOnStage(layouted, 'computed')) {
+    expectTypeOf(layouted).toBeNever()
+  }
+
+  expectTypeOf(anyStage._stage).toEqualTypeOf<'layouted' | 'parsed' | 'computed'>()
+  if (isLayoutedStage(anyStage)) {
+    expectTypeOf(anyStage._stage).toEqualTypeOf<'layouted'>()
+    expectTypeOf(anyStage).toEqualTypeOf<LayoutedView>()
+  }
+
+  if (!isLayoutedStage(layouted)) {
+    expectTypeOf(layouted).toBeNever()
+  }
 })

@@ -15,10 +15,12 @@ import type {
 } from '../../types'
 import type * as aux from '../../types/_aux'
 import type { AnyComputed, AnyLayouted } from '../../types/_aux'
+import type { ProcessedDeploymentView, ProcessedDynamicView } from '../../types/view'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import type {
   $View,
+  $ViewWithType,
   EdgeOrId,
   NodeOrId,
   WithTags,
@@ -26,7 +28,7 @@ import type {
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { isTruthy } from 'remeda'
 import { applyManualLayout, calcDriftsFromSnapshot } from '../../manual-layout'
-import { type RichTextOrEmpty, _stage, _type } from '../../types'
+import { type RichTextOrEmpty, _stage, _type, isLayoutedStage } from '../../types'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
 import { memoizeDescription } from '../utils/richtext'
@@ -166,7 +168,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
    * Returns title if defined, otherwise returns `Untitled`.
    */
   get titleOrUntitled(): string {
-    return this.title ?? 'Untitled'
+    return this.title ?? this.viewOf?.title ?? 'Untitled'
   }
 
   /**
@@ -235,16 +237,17 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
    * @see {@link $layouted} should be used for rendering in the UI
    */
   get $view(): V {
-    if (!this.isLayouted() || 'drifts' in this.#view) {
-      return this.#view
+    const latest = this.#view
+    if (!isLayoutedStage(latest) || 'drifts' in latest) {
+      return latest
     }
     const snapshot = this.#manualLayoutSnapshot
     if (snapshot) {
       return memoizeProp(this, 'withDriftReasons', () => {
-        return calcDriftsFromSnapshot(this.#view, snapshot)
+        return calcDriftsFromSnapshot(latest, snapshot)
       })
     }
-    return this.#view
+    return latest
   }
 
   /**
@@ -255,7 +258,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     if (!this.isLayouted()) {
       throw new Error('View is not layouted')
     }
-    return this.$manual ?? this.#view
+    return (this.$manual ?? this.#view) as any
   }
 
   get hasManualLayout(): boolean {
@@ -274,7 +277,8 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
    * If view has manual layout, returns it with manual layout applied
    */
   get $manual(): V | null {
-    if (!this.isLayouted()) {
+    const latest = this.#view
+    if (!isLayoutedStage(latest)) {
       return null
     }
     const snapshot = this.#manualLayoutSnapshot
@@ -282,11 +286,11 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
       // Defensive guard (#2882): model data is expected to keep auto-layouted views
       // and manual layouts separately (see `LikeC4LanguageServices.layoutedModel`).
       // If the view already has manual layout applied, return it as-is instead of failing.
-      if (this.#view._layout === 'manual') {
-        return this.#view
+      if (latest._layout === 'manual') {
+        return latest
       }
       return memoizeProp(this, 'snapshotWithManualLayout', () => {
-        return applyManualLayout(this.#view, snapshot)
+        return applyManualLayout(latest, snapshot)
       })
     }
     return null
@@ -436,7 +440,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     return this.#view[_stage] === 'layouted'
   }
 
-  public isElementView(): this is LikeC4ViewModel.ElementView<A, V> {
+  public isElementView(): this is LikeC4ViewModel.ElementView<A> {
     return this.#view[_type] === 'element'
   }
 
@@ -444,11 +448,11 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     return this.#view[_type] === 'element' && isTruthy(this.#view.viewOf)
   }
 
-  public isDeploymentView(): this is LikeC4ViewModel.DeploymentView<A, V> {
+  public isDeploymentView(): this is LikeC4ViewModel.DeploymentView<A> {
     return this.#view[_type] === 'deployment'
   }
 
-  public isDynamicView(): this is LikeC4ViewModel.DynamicView<A, V> {
+  public isDynamicView(): this is LikeC4ViewModel.DynamicView<A> {
     return this.#view[_type] === 'dynamic'
   }
 }
@@ -462,26 +466,30 @@ export namespace LikeC4ViewModel {
     extends LikeC4ViewModel<A, ViewWithType<V, 'element'>>
   {
     readonly mode: never
+    readonly _type: 'element'
   }
 
   export interface ScopedElementView<A extends Any>
     extends LikeC4ViewModel<A, ViewWithType<$View<A>, 'element'> & { viewOf: aux.StrictFqn<A> }>
   {
     readonly mode: never
+    readonly _type: 'element'
     readonly viewOf: ElementModel<A>
   }
 
-  export interface DeploymentView<A extends Any, V extends ProcessedView<A> = $View<A>>
-    extends LikeC4ViewModel<A, ViewWithType<V, 'deployment'>>
+  export interface DeploymentView<A extends Any, V extends ProcessedDeploymentView<A> = $ViewWithType<A, 'deployment'>>
+    extends LikeC4ViewModel<A, V>
   {
     readonly mode: never
+    readonly _type: 'deployment'
     readonly viewOf: never
   }
 
-  export interface DynamicView<A extends Any, V extends ProcessedView<A> = $View<A>>
-    extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
+  export interface DynamicView<A extends Any, V extends ProcessedDynamicView<A> = $ViewWithType<A, 'dynamic'>>
+    extends LikeC4ViewModel<A, V>
   {
     readonly mode: DynamicViewDisplayVariant
+    readonly _type: 'dynamic'
     readonly viewOf: never
   }
 }
