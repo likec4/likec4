@@ -1,11 +1,11 @@
 import type { RemovalImpactReport } from '@likec4/language-server'
 import type * as yargs from 'yargs'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { entries } from 'remeda'
 import k from 'tinyrainbow'
 import { createLikeC4Logger } from '../../logger'
 import { displayLocation, findProject, projectsToSearch, reportEditResult } from '../model-edits'
 import { path, project } from '../options'
+import { initLikeC4 } from '../utils'
 
 const resolutionTitles = {
   removed: 'Removed together with the element',
@@ -60,13 +60,14 @@ const safeDeleteCmd = (yargs: yargs.Argv) => {
         }),
     handler: async args => {
       const logger = createLikeC4Logger('c4:safe-delete')
-      await using likec4 = await fromWorkspace(args.path, {
-        watch: false,
+      await using likec4 = await initLikeC4({
+        path: args.path,
+        project: args.project,
         // Logs go to stderr, so stdout has only the JSON
         ...(args.json && { printErrors: false, configureLogger: 'stderr' as const }),
       })
       const found = await findProject(
-        projectsToSearch(likec4, args.project),
+        projectsToSearch(likec4),
         `Element ${args.element}`,
         async projectId => !!(await likec4.parsedModel(projectId)).findElement(args.element),
       )

@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { LikeC4LanguageServices } from '@likec4/language-services'
+import type { LikeC4, LikeC4LanguageServices } from '@likec4/language-services'
 import type { AnyTextAdapter } from '@tanstack/ai'
 import type { LikeC4AppConfig, LikeC4AppOptions, ResolvedLikeC4AppOptions } from './app-options'
 
@@ -42,9 +42,14 @@ export type LikeC4WorkspaceOptions = {
    * Initialize LikeC4 from the specified workspace path.
    * If not provided, vite project root will be used.
    *
-   * As alternative you can provide {@link LikeC4LanguageServices} instance via `languageServices` option.
+   * As alternative you can provide {@link LikeC4} instance via `likec4` option.
    */
   workspace?: string
+  /**
+   * Limits the plugin to these projects (by id).
+   * If not provided, all projects of the workspace are available.
+   */
+  includeProjects?: string | ReadonlyArray<string> | undefined
   /**
    * Cache directory. If not provided, vite cache directory will be used.
    * Disable caching by setting this option to null.
@@ -82,16 +87,37 @@ export type LikeC4WorkspaceOptions = {
   logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
 
   /**
-   * Either provide path to {@link LikeC4WorkspaceOptions.workspace} or {@link LikeC4LanguageServices} instance.
+   * Either provide path to {@link LikeC4WorkspaceOptions.workspace} or {@link LikeC4} instance.
+   */
+  likec4?: never
+  /**
+   * @deprecated Use `likec4` option
    */
   languageServices?: never
 } | {
   /**
-   * If you have instance of {@link LikeC4LanguageServices}, pass it directly.
+   * If you have instance of {@link LikeC4}, pass it directly.
+   * The plugin works with the projects of this instance (see `includeProjects` of `fromWorkspace`).
    * None of the options below are applied when this option is used.
    */
-  languageServices: LikeC4LanguageServices
+  likec4: LikeC4
+  languageServices?: never
   workspace?: never
+  includeProjects?: never
+  cacheDir?: never
+  printErrors?: never
+  throwIfInvalid?: never
+  graphviz?: never
+  watch?: never
+  logLevel?: never
+} | {
+  /**
+   * @deprecated Use `likec4` option, it respects included projects
+   */
+  languageServices: LikeC4LanguageServices
+  likec4?: never
+  workspace?: never
+  includeProjects?: never
   cacheDir?: never
   printErrors?: never
   throwIfInvalid?: never

@@ -20,6 +20,13 @@ const main = defineCommand({
       description: 'likec4 source directory',
       required: false,
     },
+    project: {
+      alias: 'p',
+      type: 'string',
+      valueHint: 'id',
+      description: 'limit to these projects (comma-separated ids)',
+      required: false,
+    },
     customization: {
       type: 'string',
       valueHint: 'file',
@@ -35,6 +42,10 @@ const main = defineCommand({
   },
   async run(context) {
     const workspace = resolve(context.args.workspace || '../../examples/')
+    const includeProjects = context.args.project
+      ?.split(',')
+      .map(id => id.trim())
+      .filter(Boolean)
 
     const server = await createServer({
       configFile: false,
@@ -74,6 +85,7 @@ const main = defineCommand({
       plugins: [
         LikeC4VitePlugin({
           workspace,
+          ...(includeProjects && includeProjects.length > 0 && { includeProjects }),
           customization: context.args.customization ? resolve(context.args.customization) : undefined,
           ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',

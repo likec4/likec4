@@ -43,6 +43,11 @@ export type CreateLanguageServiceOptions = {
    * If not provided, cache will be stored in memory.
    */
   cacheDir?: string | undefined
+
+  /**
+   * Projects (by id) the consumer works with, see {@link WorkspaceSettings.includeProjects}
+   */
+  includeProjects?: ReadonlyArray<string> | undefined
 }
 
 export function createLanguageServices(
@@ -74,6 +79,9 @@ export function createLanguageServices(
       }),
       ...(isTruthy(options.cacheDir) && WithUnstorageCache(options.cacheDir)),
       ...WithGraphviz(useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
+      workspaceSettings: {
+        includeProjects: options.includeProjects,
+      },
     },
   )
   return langium

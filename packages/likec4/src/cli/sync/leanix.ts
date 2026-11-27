@@ -6,7 +6,6 @@
 import type { LeanixApiClient } from '@likec4/leanix-bridge'
 import { writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
@@ -21,7 +20,7 @@ import {
   ERR_LEANIX_TOKEN_REQUIRED,
   writeBridgeArtifacts,
 } from '../bridge/shared'
-import { ensureProject } from '../utils'
+import { ensureProject, initLikeC4 } from '../utils'
 
 const SYNC_PLAN_FILENAME = 'sync-plan.json'
 
@@ -89,11 +88,8 @@ export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
     if (dryRun && apply) {
       throw new Error('Choose either dryRun or apply, not both')
     }
-    await using likec4 = await fromWorkspace(workspacePath, {
-      graphviz: useDotBin ? 'binary' : 'wasm',
-      watch: false,
-    })
-    const { projectId } = ensureProject(likec4, project)
+    await using likec4 = await initLikeC4({ path: workspacePath, project: project, useDotBin: useDotBin })
+    const { projectId } = ensureProject(likec4)
     if (project) {
       logger.info(`${k.dim('project')} ${k.green(projectId)}`)
     }

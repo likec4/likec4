@@ -5,13 +5,12 @@ import type { LikeC4Model } from '../../model'
 import { realpathSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import ky, { HTTPError } from 'ky'
 import { env } from 'std-env'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
-import { ensureProject, workspaceProjects } from '../utils'
+import { ensureProject, initLikeC4, workspaceProjects } from '../utils'
 import { collectAssets } from './assets'
 import { createGitRunner, readGitProvenance } from './git'
 import { buildPublishPayload } from './payload'
@@ -252,17 +251,18 @@ export async function publishHandler(params: PublishHandlerParams): Promise<void
     )
   }
 
-  await using likec4 = await fromWorkspace(workspacePath, {
+  await using likec4 = await initLikeC4({
+    path: workspacePath,
+    project: params.project,
+    useDotBin: params.useDotBin,
     // Decision #8: validation errors block the publish unless --force
     throwIfInvalid: !params.force,
     printErrors: true,
-    graphviz: params.useDotBin ? 'binary' : 'wasm',
-    watch: false,
   })
 
   let selected: Array<{ id: ProjectId; folder: string }>
   if (params.project) {
-    const { projectId, projectFolder } = ensureProject(likec4, params.project)
+    const { projectId, projectFolder } = ensureProject(likec4)
     selected = [{ id: projectId, folder: projectFolder }]
     logger.info(`${k.dim('project:')} ${k.green(projectId)}`)
   } else {

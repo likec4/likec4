@@ -59,12 +59,20 @@ export class LikeC4 {
 
   protected readonly logger: Logger
 
+  /**
+   * Projects this instance is limited to, `undefined` if all projects are available.
+   * See {@link FromWorkspaceOptions.includeProjects}
+   */
+  protected readonly includedProjects: ReadonlyArray<ProjectId> | undefined
+
   constructor(
     langium: LikeC4Langium,
     logger: Logger = rootLogger,
+    includedProjects?: ReadonlyArray<ProjectId>,
   ) {
     this.langium = langium
     this.logger = logger
+    this.includedProjects = includedProjects
   }
 
   /**
@@ -130,6 +138,13 @@ export class LikeC4 {
   }
 
   ensureSingleProject(): void {
+    if (this.includedProjects) {
+      if (this.includedProjects.length > 1) {
+        this.logger.error(`Multiple projects included: [${this.includedProjects.join(', ')}]`)
+        throw new Error(`Multiple projects found`)
+      }
+      return
+    }
     const projects = this.languageServices.projects()
     if (projects.length > 1) {
       this.logger.error(`Multiple projects found:
@@ -138,6 +153,33 @@ ${projects.map(p => `  - ${p.folder.fsPath}`).join('\n')}
 Please specify a project folder`)
       throw new Error(`Multiple projects found`)
     }
+  }
+
+  /**
+   * Resolves the project to work with.
+   *
+   * - If `project` is given, checks that it is registered (and included, see {@link FromWorkspaceOptions.includeProjects})
+   * - If not, returns the only available project, or throws if there are several
+   *
+   * @throws if the project cannot be resolved
+   */
+  ensureProjectId(project?: string | undefined): ProjectId {
+    const included = this.includedProjects
+    if (!included) {
+      return this.projectsManager.ensureProjectId(project as ProjectId | undefined)
+    }
+    if (!project) {
+      const [first, ...rest] = included
+      if (first && rest.length === 0) {
+        return first
+      }
+      throw new Error(`Specify exact project, included: [${included.join(', ')}]`)
+    }
+    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    if (!included.includes(projectId)) {
+      throw new Error(`Project "${project}" is not included, included: [${included.join(', ')}]`)
+    }
+    return projectId
   }
 
   /**
@@ -153,7 +195,7 @@ Please specify a project folder`)
    * ```
    */
   async diagrams(project?: string | undefined): Promise<LayoutedView[]> {
-    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    const projectId = this.ensureProjectId(project)
     return await this.viewsService.diagrams(projectId as ProjectId)
   }
 
@@ -166,7 +208,7 @@ Please specify a project folder`)
    * Use {@link computedModel} for a version that includes manual layouts
    */
   syncComputedModel(project?: string | undefined): LikeC4Model.Computed {
-    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    const projectId = this.ensureProjectId(project)
     return this.modelBuilder.unsafeSyncComputeModel(projectId)
   }
 
@@ -176,7 +218,7 @@ Please specify a project folder`)
    * Not ready for rendering, but enough to traverse
    */
   async computedModel(project?: string | undefined): Promise<LikeC4Model.Computed> {
-    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    const projectId = this.ensureProjectId(project)
     return await this.modelBuilder.computeModel(projectId)
   }
 
@@ -188,7 +230,7 @@ Please specify a project folder`)
    * {@link toBuilder} for programmatic enrichment.
    */
   async parsedModel(project?: string | undefined): Promise<LikeC4Model.Parsed> {
-    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    const projectId = this.ensureProjectId(project)
     const parsed = await this.modelBuilder.parseModel(projectId)
     if (!parsed) {
       throw new Error(`Failed to parse model for project "${projectId}"`)
@@ -302,7 +344,19 @@ Please specify a project folder`)
     return generateLikeC4Source(parsed.$data)
   }
 
+  /**
+   * Returns ids of the available projects.
+   * If the instance is limited with {@link FromWorkspaceOptions.includeProjects}, returns only those (still registered).
+   */
   projects(): NonEmptyArray<ProjectId> {
+    if (this.includedProjects) {
+      const registered = new Set<ProjectId>(this.projectsManager.all)
+      const projects = this.includedProjects.filter(id => registered.has(id))
+      if (!hasAtLeast(projects, 1)) {
+        throw new Error(`None of the included projects are registered: [${this.includedProjects.join(', ')}]`)
+      }
+      return projects
+    }
     return map(this.languageServices.projects(), prop('id'))
   }
 
@@ -332,7 +386,7 @@ Please specify a project folder`)
    * ```
    */
   async layoutedModel(project?: string | undefined): Promise<LikeC4Model.Layouted> {
-    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    const projectId = this.ensureProjectId(project)
     return await this.languageServices.layoutedModel(projectId)
   }
 
@@ -446,7 +500,7 @@ Please specify a project folder`)
     const formatOptions: FormatOptions = {
       ...rest,
       ...(projects && {
-        projectIds: projects.map(p => this.projectsManager.ensureProjectId(p as ProjectId)),
+        projectIds: projects.map(p => this.ensureProjectId(p)),
       }),
     }
     return await this.languageServices.format(formatOptions)

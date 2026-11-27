@@ -72,7 +72,7 @@ export function viteWebcomponentConfig({
     plugins: [
       LikeC4VitePlugin({
         ai: 'disabled',
-        languageServices: languageServices.languageServices,
+        likec4: languageServices,
         webcomponentPrefix,
         customization,
       }),

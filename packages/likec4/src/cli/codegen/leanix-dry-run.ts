@@ -4,7 +4,6 @@
  * Writes manifest.json, leanix-dry-run.json, report.json to out/bridge (or -o/--outdir).
  */
 
-import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { LikeC4Model } from '../../model'
@@ -14,7 +13,7 @@ import {
   ERR_EMPTY_MODEL,
   writeBridgeArtifacts,
 } from '../bridge/shared'
-import { ensureProject } from '../utils'
+import { ensureProject, initLikeC4 } from '../utils'
 
 export type LeanixDryRunHandlerParams = {
   path: string
@@ -36,11 +35,8 @@ export async function leanixDryRunHandler(params: LeanixDryRunHandlerParams): Pr
   const { path: workspacePath, outdir, project, useDotBin } = params
 
   try {
-    await using likec4 = await fromWorkspace(workspacePath, {
-      graphviz: useDotBin ? 'binary' : 'wasm',
-      watch: false,
-    })
-    const { projectId } = ensureProject(likec4, project)
+    await using likec4 = await initLikeC4({ path: workspacePath, project: project, useDotBin: useDotBin })
+    const { projectId } = ensureProject(likec4)
     if (project) {
       logger.info(`${k.dim('project')} ${k.green(projectId)}`)
     }

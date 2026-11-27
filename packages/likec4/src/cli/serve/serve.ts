@@ -1,12 +1,12 @@
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { normalizePath } from 'vite'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { relativeToCwd } from '../../vite/utils'
 import { viteDev } from '../../vite/vite-dev'
+import { initLikeC4 } from '../utils'
 
 type HandlerParams = {
   /**
@@ -111,10 +111,7 @@ export async function handler({
   if (enableHMR) {
     process.env['NODE_ENV'] = 'development'
   }
-  const languageServices = await fromWorkspace(path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: enableHMR,
-  })
+  const languageServices = await initLikeC4({ path, useDotBin, watch: enableHMR })
   const likec4AssetsDir = await mkdtemp(join(tmpdir(), '.likec4-assets-'))
   // const likec4AssetsDir = join(languageServices.workspace, '.likec4-assets')
   // await mkdir(likec4AssetsDir, { recursive: true })

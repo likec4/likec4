@@ -1,5 +1,5 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { aux, ProjectId } from '@likec4/core/types'
+import type { aux } from '@likec4/core/types'
 import type { GenerateDrawioOptions } from '@likec4/generators'
 import type { Argv } from 'yargs'
 import { mkdir, readdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
@@ -10,12 +10,12 @@ import {
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import k from 'tinyrainbow'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
+import { initLikeC4 } from '../../utils'
 
 /** File extension for DrawIO files (single source of truth in CLI). */
 const DRAWIO_FILE_EXT = '.drawio'
@@ -274,19 +274,11 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
   const timer = startTimer(logger)
 
   // 1) Init workspace (same fromWorkspace as build for consistent CI)
-  await using likec4 = await fromWorkspace(args.path, {
-    graphviz: args.useDot ? 'binary' : 'wasm',
-    watch: false,
-  })
-  if (!args.project) {
-    likec4.ensureSingleProject()
-  }
+  await using likec4 = await initLikeC4({ path: args.path, project: args.project, useDotBin: args.useDot })
+  likec4.ensureSingleProject()
 
   // 2) Load layouted model and validate non-empty
-  const projectId: ProjectId | undefined = args.project != null
-    ? likec4.languageServices.projectsManager.ensureProjectId(args.project as ProjectId)
-    : undefined
-  const model = await likec4.layoutedModel(projectId)
+  const model = await likec4.layoutedModel(likec4.ensureProjectId())
   if (model === LikeC4Model.EMPTY) {
     logger.error(ERR_EMPTY_MODEL)
     throw new Error(ERR_EMPTY_MODEL)

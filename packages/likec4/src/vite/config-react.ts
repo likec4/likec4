@@ -65,7 +65,7 @@ export async function viteReactConfig({
     plugins: [
       LikeC4VitePlugin({
         ai: 'disabled',
-        languageServices: languageServices.languageServices,
+        likec4: languageServices,
         customization,
       }),
     ],
