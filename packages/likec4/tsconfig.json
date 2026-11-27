@@ -52,6 +52,9 @@
     },
     {
       "path": "../mcp/"
+    },
+    {
+      "path": "../likec4-spa/tsconfig.vite.json"
     }
   ]
 }

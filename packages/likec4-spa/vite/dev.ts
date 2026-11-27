@@ -1,18 +1,14 @@
-import type { SetOptional } from 'type-fest'
 import type { ViteDevServer } from 'vite'
-import type { LikeC4ViteConfig } from './config-app'
-import { mkdtemp } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import type { AppViteOptions } from './config-app'
 import { loggable } from '@likec4/log'
 import getPort, { portNumbers } from 'get-port'
 import isInsideContainer from 'is-inside-container'
-import { env } from 'std-env'
+import { env, isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
-import { build, createServer } from 'vite'
-import { viteConfig } from './config-app'
-import { viteWebcomponentConfig } from './config-webcomponent'
+import { createServer } from 'vite'
+import { appViteConfig } from './config-app'
 import { copyUserPublicDir, mkTempPublicDir } from './utils'
+import { buildWebcomponent as buildWebcomponentBundle } from './webcomponent'
 
 /**
  * Validates that a port is a valid integer between 1 and 65535.
@@ -54,7 +50,7 @@ export async function resolveHmrPort(
   return undefined
 }
 
-type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
+export type StartDevOptions = Omit<AppViteOptions, 'outputDir' | 'outputSingleFile'> & {
   buildWebcomponent?: boolean
   openBrowser?: boolean
   hmr?: boolean
@@ -68,13 +64,13 @@ type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
   allowedHosts?: string[] | undefined
 }
 
-export async function viteDev({
+/**
+ * Starts the dev server of the LikeC4 app (`likec4 start`).
+ * Also used to capture images (`likec4 export png`), with HMR disabled.
+ */
+export async function startDev({
   buildWebcomponent = false,
   hmr = true,
-  webcomponentPrefix = 'likec4',
-  title,
-  languageServices,
-  likec4AssetsDir,
   openBrowser,
   listen,
   port,
@@ -82,17 +78,8 @@ export async function viteDev({
   userPublicDir,
   allowedHosts,
   ...cfg
-}: Config): Promise<ViteDevServer> {
-  likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
-
-  const { isDev, ...config } = await viteConfig({
-    ...cfg,
-    languageServices,
-    likec4AssetsDir,
-    webcomponentPrefix,
-    title,
-  })
-  const logger = config.customLogger
+}: StartDevOptions): Promise<ViteDevServer> {
+  const { config, customLogger: logger, base, webcomponentPrefix } = appViteConfig(cfg)
 
   // if port not given as argument, try to get from env
   port ??= env['PORT'] ? parseInt(env['PORT'], 10) : undefined
@@ -129,21 +116,12 @@ export async function viteDev({
   }
 
   const server = await createServer({
-    base: config.base,
-    resolve: config.resolve,
-    root: config.root,
-    customLogger: config.customLogger,
-    configFile: false,
-    build: config.build,
-    plugins: config.plugins,
-    clearScreen: config.clearScreen,
-    define: hmr
-      ? {
-        ...config.define,
-        'process.env.NODE_ENV': '"development"',
-      }
-      : config.define,
-    mode: hmr ? 'development' : config.mode,
+    ...config,
+    define: {
+      ...config.define,
+      ...(hmr && { 'process.env.NODE_ENV': '"development"' }),
+    },
+    mode: hmr ? 'development' : 'production',
     publicDir,
     server: {
       host,
@@ -160,23 +138,21 @@ export async function viteDev({
       },
       // Disable file watching when HMR is disabled to improve performance
       ...(!hmr ? { watch: null } : {}),
-      open: openBrowser ?? (!isDev && !isInsideContainer()),
+      open: openBrowser ?? (!isDevelopment && !isInsideContainer()),
     },
   })
 
   await server.listen()
 
   if (buildWebcomponent) {
-    const webcomponentConfig = viteWebcomponentConfig({
-      webcomponentPrefix,
-      languageServices: languageServices,
-      outDir: publicDir,
-      base: config.base,
-      customization: cfg.customization,
-    })
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
-    await build({
-      ...webcomponentConfig,
+    await buildWebcomponentBundle({
+      app: cfg.app,
+      likec4: cfg.likec4,
+      webcomponentPrefix,
+      outDir: publicDir,
+      base,
+      customization: cfg.customization,
       logLevel: 'warn',
     }).catch(err => {
       logger.warn(loggable(err))

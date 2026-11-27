@@ -33,13 +33,11 @@ const router = createTanstackRouter<RouteTree, 'always', true>({
     projectId: firstProjectId,
     projects: _projects,
   },
-  InnerWrap: LikeC4ProjectsContext,
   basepath,
   scrollRestoration: true,
   trailingSlash: 'always',
   defaultViewTransition: false,
   history: useHashHistory ? createHashHistory() : createBrowserHistory(),
-  defaultStaleTime: isDevelopment ? 100 : Infinity,
   defaultNotFoundComponent: () => {
     return <NotFound />
   },

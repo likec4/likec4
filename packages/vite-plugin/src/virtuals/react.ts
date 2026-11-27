@@ -8,10 +8,10 @@ import { logGenerating } from '../logger'
 const defineLikeC4ModelProvider = (customized: boolean) =>
   customized
     ? `
-import { CustomizationContext } from 'likec4:customization'
+import { CustomizationProvider } from 'likec4:customization'
 
 export function LikeC4ModelProvider({ children }) {
-  return (jsx(CustomizationContext, { children: jsx(ModelProvider, { children }) }));
+  return (jsx(CustomizationProvider, { children: jsx(ModelProvider, { children }) }));
 }`
     : `
 export const LikeC4ModelProvider = ModelProvider

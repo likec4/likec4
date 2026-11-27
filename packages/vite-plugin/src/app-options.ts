@@ -27,20 +27,23 @@ export const LikeC4AppOptionsSchema = z.object({
   webcomponentPrefix: z.string().nonempty().default('likec4'),
   /**
    * Path to the file that customizes LikeC4 UI.
-   * The file must default-export the result of `defineCustomComponents` from `likec4/react`.
+   * The file must default-export the result of `createCustomization` from `likec4/react`.
    *
    * The overrides are applied to the LikeC4 application and to the components from `likec4:react`.
    *
    * @example
    * ```tsx
    * // likec4.customization.tsx
-   * import { defineCustomComponents } from 'likec4/react'
+   * import { createCustomization, customizeComponents } from 'likec4/react'
    *
-   * export default defineCustomComponents(({ wrap }) => ({
-   *   LikeC4Diagram: wrap(({ Original, ...props }) => (
-   *     <Original {...props} pannable={false} />
-   *   )),
-   * }))
+   * export default createCustomization({
+   *   components: customizeComponents(({ wrap }) => ({
+   *     Logo: () => <span>Brand</span>,
+   *     LikeC4Diagram: wrap(({ Original, ...props }) => (
+   *       <Original {...props} pannable={false} />
+   *     )),
+   *   })),
+   * })
    * ```
    */
   customization: z.string().nonempty().optional(),

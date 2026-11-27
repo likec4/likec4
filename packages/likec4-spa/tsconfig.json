@@ -1,57 +1,11 @@
 {
-  "extends": "@likec4/tsconfig/react-lib.json",
-  "compilerOptions": {
-    "incremental": true,
-    "customConditions": [
-      "sources"
-    ],
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
-    "noPropertyAccessFromIndexSignature": false,
-    "module": "preserve",
-    "types": [
-      "vite/client",
-      "@likec4/vite-plugin/modules"
-    ],
-    "paths": {
-      "likec4/vite-plugin/internal": [
-        "./shims/vite-plugin.ts"
-      ],
-      "likec4/model": [
-        "./shims/model.ts"
-      ],
-      "likec4/react": [
-        "./shims/react.ts"
-      ]
-    }
-  },
-  "include": [
-    "src/",
-    "codegen/",
-    "styled-system/",
-    "shims/",
-    "start-dev.ts",
-    "vite.config.ts",
-    "package.json"
-  ],
+  "files": [],
   "references": [
     {
-      "path": "../core/"
+      "path": "./tsconfig.app.json"
     },
     {
-      "path": "../config/"
-    },
-    {
-      "path": "../vite-plugin/"
-    },
-    {
-      "path": "../diagram/"
-    },
-    {
-      "path": "../../devops/"
+      "path": "./tsconfig.vite.json"
     }
   ]
 }

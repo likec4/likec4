@@ -15,4 +15,10 @@ export {
   ElementTags,
   type ElementTagsProps,
   Markdown,
+  EdgeActionButton,
+  EdgeContainer,
+  EdgeLabel,
+  EdgeLabelContainer,
+  EdgeMarkers,
+  EdgePath,
 } from '../base-primitives'

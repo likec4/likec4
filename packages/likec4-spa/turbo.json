@@ -8,7 +8,8 @@
       "inputs": [
         "$TURBO_EXTENDS$",
         "shims/**",
-        "codegen/**"
+        "codegen/**",
+        "vite/**"
       ]
     }
   }

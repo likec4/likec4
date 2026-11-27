@@ -15,7 +15,11 @@ const fromWorkspace = vi.hoisted(() => vi.fn<(path: string, options: Record<stri
 const viteDev = vi.hoisted(() => vi.fn<(config: Record<string, unknown>) => Promise<{ close: () => Promise<void> }>>())
 
 vi.mock('@likec4/language-services/node', () => ({ fromWorkspace }))
-vi.mock('../../../vite/vite-dev', () => ({ viteDev }))
+vi.mock('@likec4/spa/vite', async importOriginal => ({
+  ...(await importOriginal<typeof import('@likec4/spa/vite')>()),
+  startDev: viteDev,
+}))
+vi.mock('../../../vite/app-from-package', () => ({ appFromPackage: () => ({}) }))
 vi.mock('../../../vite/printServerUrls', () => ({ resolveServerUrl: () => 'http://localhost:5173/' }))
 vi.mock('../../ensure-libs', () => ({
   ensureReact: vi.fn<() => Promise<void>>(),

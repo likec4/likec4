@@ -1,6 +1,6 @@
 import type * as yargs from 'yargs'
+import { resolveAppConfig } from '@likec4/spa/vite'
 import k from 'tinyrainbow'
-import { resolveAppConfig } from '../../app-config'
 import { createLikeC4Logger } from '../../logger'
 import { relativeToCwd } from '../../vite/utils'
 import { notifyAvailableUpdate } from '../check-update/utils'

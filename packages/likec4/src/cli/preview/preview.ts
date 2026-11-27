@@ -1,10 +1,10 @@
+import { resolveAppConfig, startPreview } from '@likec4/spa/vite'
 import isInsideContainer from 'is-inside-container'
 import k from 'tinyrainbow'
-import { resolveAppConfig } from '../../app-config'
 import { createLikeC4Logger } from '../../logger'
+import { appFromPackage } from '../../vite/app-from-package'
 import { printServerUrls } from '../../vite/printServerUrls'
 import { relativeToCwd } from '../../vite/utils'
-import { vitePreview } from '../../vite/vite-preview'
 import { initLikeC4 } from '../utils'
 
 type HandlerParams = {
@@ -53,9 +53,10 @@ export async function handler({
 
   const languageServices = await initLikeC4({ path: config.workspace })
 
-  const server = await vitePreview({
+  const server = await startPreview({
+    app: appFromPackage(),
     base: config.base,
-    languageServices,
+    likec4: languageServices,
     outputDir: config.build.outDir,
     open: !isInsideContainer(),
     listen,

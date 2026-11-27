@@ -19,5 +19,5 @@ export {
 
 export type * from '@likec4/config'
 
-export { defineAppConfig } from '../app-config/define'
-export type { LikeC4AppConfigInput } from '../app-config/define'
+export { defineAppConfig } from '@likec4/spa/vite/define'
+export type { LikeC4AppConfigInput } from '@likec4/spa/vite/define'

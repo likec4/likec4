@@ -11,7 +11,6 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import { ModelDiffsContext } from '../../context/ModelDiffsContext'
 
 export const Route = createFileRoute('/project/$projectId')({
-  staleTime: Infinity,
   params: z.object({
     projectId: z.string().transform((v) => v as ProjectId),
   }),
