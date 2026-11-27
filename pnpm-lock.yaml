@@ -2394,6 +2394,12 @@ importers:
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
+      '@likec4/language-services':
+        specifier: workspace:*
+        version: link:../language-services
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/styles':
         specifier: workspace:*
         version: link:../../styled-system/styles
@@ -2487,9 +2493,18 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 6.4.1
+      get-port:
+        specifier: ^7.2.0
+        version: 7.2.0
       html-to-image:
         specifier: 1.11.11
         version: 1.11.11
+      is-inside-container:
+        specifier: ^1.0.0
+        version: 1.0.0
+      jiti:
+        specifier: catalog:externals
+        version: 2.7.0
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -2559,6 +2574,9 @@ importers:
       vite-plugin-dts:
         specifier: catalog:vite
         version: 5.1.2(@microsoft/api-extractor@7.59.4(@types/node@22.20.5))(esbuild@0.28.2)(rolldown@1.3.4)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.4.0(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      vite-plugin-singlefile:
+        specifier: ^2.3.3
+        version: 2.3.3(rollup@4.60.1)(vite@8.4.0(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       vitest:
         specifier: catalog:vitest
         version: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.4.0(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))

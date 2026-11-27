@@ -29,7 +29,6 @@ export const Route = createFileRoute('/single-index')({
       }),
     ],
   },
-  staleTime: Infinity,
   loader: async ({ context }) => {
     const projectId = context.projectId
     const [data, { $diffs }] = await Promise.all([loadModel(projectId), loadDiffs(projectId)])

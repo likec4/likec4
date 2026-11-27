@@ -68,10 +68,10 @@ export { LikeC4Styles } from '../LikeC4Styles'
 
 export { TagStylesProvider } from '../context/TagStylesContext'
 
-export { CustomizationProvider } from '../customization/CustomizationContext'
+export { createCustomization, customizeComponents } from '../customization/createCustomization'
 
-export { defineCustomComponents } from '../customization/customizable'
 export type {
-  CustomComponents,
-  Customizables,
+  CustomComponent,
+  CustomComponents,  
+  Customizables
 } from '../customization/customization-types'

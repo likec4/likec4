@@ -10,15 +10,15 @@ import type { Page } from 'playwright'
 import type { ViteDevServer } from 'vite'
 import { relative } from 'node:path'
 import { hrtime } from 'node:process'
+import { resolveAppConfig, startDev } from '@likec4/spa/vite'
 import picomatch from 'picomatch'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
-import { resolveAppConfig } from '../../../app-config'
 import { type ViteLogger, inMillis } from '../../../logger'
+import { appFromPackage } from '../../../vite/app-from-package'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { relativeToCwd } from '../../../vite/utils'
-import { viteDev } from '../../../vite/vite-dev'
 import { initLikeC4 } from '../../utils'
 import { ScreenshotBrowser } from './ScreenshotBrowser'
 import { ScreenshotQueue } from './ScreenshotQueue'
@@ -299,8 +299,9 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
       logger.info(k.cyan(`start preview server`))
       // force production mode
       process.env['NODE_ENV'] = 'production'
-      server = await viteDev({
-        languageServices: likec4,
+      server = await startDev({
+        app: appFromPackage(),
+        likec4,
         buildWebcomponent: false,
         openBrowser: false,
         hmr: false,

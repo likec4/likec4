@@ -1,16 +1,13 @@
-import type { SetOptional } from 'type-fest'
-import type { LikeC4ViteConfig } from './config-app'
+import type { AppViteOptions } from './config-app'
 import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { mkdtemp } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { extname, join, resolve } from 'node:path'
+import { extname, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { build } from 'vite'
-import { viteConfig } from './config-app'
-import { viteWebcomponentConfig } from './config-webcomponent'
+import { appViteConfig } from './config-app'
 import { copyUserPublicDir, mkTempPublicDir } from './utils'
+import { buildWebcomponent as buildWebcomponentBundle } from './webcomponent'
 
-type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
+export type BuildAppOptions = AppViteOptions & {
   buildWebcomponent?: boolean
 }
 
@@ -87,28 +84,19 @@ export function inlineSingleFileFavicon(outDir: string): void {
  * `--output-single-file` it inlines the favicon and strips the temporary Vite
  * assets, leaving a self-contained `index.html` (also copied to `404.html`).
  */
-export async function viteBuild({
+export async function buildApp({
   buildWebcomponent = true,
-  webcomponentPrefix = 'likec4',
-  title,
-  languageServices,
-  likec4AssetsDir,
   outputSingleFile,
   userPublicDir,
   ...cfg
-}: Config) {
-  likec4AssetsDir ??= await mkdtemp(join(tmpdir(), '.likec4-assets-'))
-
-  const config = await viteConfig({
+}: BuildAppOptions) {
+  const languageServices = cfg.likec4
+  const { config, customLogger, outDir, base, webcomponentPrefix } = appViteConfig({
     ...cfg,
-    languageServices,
-    likec4AssetsDir,
-    webcomponentPrefix,
-    title,
     outputSingleFile,
   })
 
-  const outDirWasEmpty = !existsSync(config.build.outDir) || readdirSync(config.build.outDir).length === 0
+  const outDirWasEmpty = !existsSync(outDir) || readdirSync(outDir).length === 0
 
   const publicDir = await mkTempPublicDir()
 
@@ -117,7 +105,7 @@ export async function viteBuild({
     : []
 
   for (const asset of Assets) {
-    const origin = resolve(config.root, asset)
+    const origin = resolve(cfg.app.assetsDir, asset)
     if (existsSync(origin)) {
       copyFileSync(origin, resolve(publicDir, asset))
     }
@@ -134,9 +122,9 @@ export async function viteBuild({
       throw new Error('no views found')
     }
     if (diagrams.length === computed.length) {
-      config.customLogger.info(`${k.dim('workspace:')} ${k.green(`✓ all views layouted`)}`)
+      customLogger.info(`${k.dim('workspace:')} ${k.green(`✓ all views layouted`)}`)
     } else {
-      config.customLogger.warn(
+      customLogger.warn(
         `${k.dim('workspace:')} ${k.yellow(`✗ layouted ${diagrams.length} of ${computed.length} views`)}`,
       )
     }
@@ -144,7 +132,7 @@ export async function viteBuild({
     diagrams.forEach(view => {
       const hasLayoutDrift = view.hasLayoutDrift || (!!view.drifts && view.drifts.length > 0)
       if (hasLayoutDrift) {
-        config.customLogger.warn(
+        customLogger.warn(
           k.dim('view') +
             ' ' +
             k.red(view.id) +
@@ -162,7 +150,7 @@ export async function viteBuild({
         patterns.some(p => p.startsWith('#') ? v.tags?.some(t => t === p.slice(1)) : v.id === p)
       )
       if (!hasMatch) {
-        config.customLogger.warn(
+        customLogger.warn(
           k.dim('landingPage:') + ' ' + k.yellow('no views match the configured filter'),
         )
       }
@@ -171,9 +159,9 @@ export async function viteBuild({
     for (const project of projects) {
       const computed = await languageServices.viewsService.computedViews(project.id)
       if (computed.length === 0) {
-        config.customLogger.warn(`${k.dim('project:')} ${project.id} ${k.yellow(`✗ no views found`)}`)
+        customLogger.warn(`${k.dim('project:')} ${project.id} ${k.yellow(`✗ no views found`)}`)
       } else {
-        config.customLogger.info(`${k.dim('project:')} ${project.id} ${k.green(`${computed.length} views`)}`)
+        customLogger.info(`${k.dim('project:')} ${project.id} ${k.green(`${computed.length} views`)}`)
       }
 
       const model = await languageServices.layoutedModel(project.id)
@@ -185,7 +173,7 @@ export async function viteBuild({
           patterns.some(p => p.startsWith('#') ? v.tags?.some(t => t === p.slice(1)) : v.id === p)
         )
         if (!hasMatch) {
-          config.customLogger.warn(
+          customLogger.warn(
             `${k.dim('project:')} ${project.id} ${k.yellow('landingPage: no views match the configured filter')}`,
           )
         }
@@ -194,14 +182,14 @@ export async function viteBuild({
   }
 
   if (buildWebcomponent && !outputSingleFile) {
-    const webcomponentConfig = viteWebcomponentConfig({
+    await buildWebcomponentBundle({
+      app: cfg.app,
+      likec4: languageServices,
       webcomponentPrefix,
-      languageServices,
       outDir: publicDir,
-      base: config.base,
+      base,
       customization: cfg.customization,
     })
-    await build(webcomponentConfig)
   }
 
   // Static website
@@ -212,21 +200,21 @@ export async function viteBuild({
 
   if (outputSingleFile) {
     if (!outDirWasEmpty) {
-      config.customLogger.warn(k.yellow('outDir was not empty, skipping cleanup'))
+      customLogger.warn(k.yellow('outDir was not empty, skipping cleanup'))
       return
     }
     // Inline the favicon before cleanup removes the asset it references,
     // so the single HTML file stays self-contained (no dangling 404).
-    inlineSingleFileFavicon(config.build.outDir)
-    removeAllButPreserved(config.build.outDir, ['index.html', ...userPublicEntries])
+    inlineSingleFileFavicon(outDir)
+    removeAllButPreserved(outDir, ['index.html', ...userPublicEntries])
   }
 
   // Copy index.html to 404.html
-  const indexHtml = resolve(config.build.outDir, 'index.html')
+  const indexHtml = resolve(outDir, 'index.html')
   if (existsSync(indexHtml)) {
     copyFileSync(
       indexHtml,
-      resolve(config.build.outDir, '404.html'),
+      resolve(outDir, '404.html'),
     )
   }
 }

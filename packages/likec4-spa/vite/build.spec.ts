@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { inlineSingleFileFavicon, removeAllButPreserved } from './vite-build'
+import { inlineSingleFileFavicon, removeAllButPreserved } from './build'
 
 describe('removeAllButPreserved', () => {
   let outDir: string

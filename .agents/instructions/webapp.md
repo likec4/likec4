@@ -28,7 +28,7 @@ The app is not pre-bundled into one artifact. Each layer is built as a library, 
 - `packages/react` (`@likec4/react`, private) bundles `packages/diagram` (the root and `./custom`) with its styles into one module. The packages in its `dependencies` stay external: `react`, `react-dom`, Mantine, `motion` and others. `@likec4/core/*` is rewritten to the external `likec4/core/*` by an alias in `tsdown.config.mjs`; `@likec4/core` is only a devDependency, for types.
 - `packages/likec4-spa` is built by `vite build` in library mode (`vite.config.ts`): unminified ES modules, one entry per route, page, component and context, plus `src/main`, `codegen/react`, `codegen/webcomponent` and the CSS. Its `dependencies`, `likec4/*` and `likec4:*` are external. `@likec4/diagram` and `@likec4/diagram/custom` are aliased to `likec4/react`, `@likec4/core` to `likec4/core`.
 - `packages/likec4` copies both outputs in the `build:done` hook of `tsdown.config.mts`: `packages/react/dist` becomes `packages/likec4/react/` (the `likec4/react` export) and `packages/likec4-spa/dist` becomes `packages/likec4/__app__/`. Both folders are git-ignored build output.
-- At run time `packages/likec4/src/vite/config-*.ts` use `__app__` as the Vite root. `src/vite/aliases.ts` points `likec4/react`, `likec4/model` and `likec4/vite-plugin/internal` to the files of the installed `likec4` package. Third-party packages resolve from the `dependencies` of `likec4`.
+- The app is run by the Node API of `packages/likec4-spa` (`@likec4/spa/vite`, see "packages/likec4-spa"). The CLI passes `appFromPackage()` from `packages/likec4/src/vite/app-from-package.ts`: `__app__` is the Vite root, and the aliases point `likec4/react`, `likec4/model` and `likec4/vite-plugin/internal` to the files of the installed `likec4` package. Third-party packages resolve from the `dependencies` of `likec4`.
 
 ### Bundled core
 
@@ -91,7 +91,8 @@ This package is the webapp host (`@likec4/spa`) and materializes `@likec4/diagra
 - `src/pages/` contains page-level components, one per route. It owns async data wiring. Import from `src/context/` and `likec4:*` virtual modules. Do not import sibling pages.
 - `src/components/` contains reusable UI. Pages may import components, but components must not import pages.
 - `src/context/` contains React providers that bridge `likec4:*` virtual modules into `@likec4/diagram`. `LikeC4ModelContext.tsx` is where the diagram's `LikeC4ModelProvider` contract is fulfilled. `LikeC4CustomizationContext.tsx` feeds the overrides from `likec4:customization` into the diagram's `CustomizationProvider`. New context that adapts virtual-module data goes here.
-- `src/main.tsx` and `src/router.tsx` are entrypoints. `start-dev.ts` is the dev-server bootstrap invoked by `pnpm dev`.
+- `src/main.tsx` and `src/router.tsx` are entrypoints. `start-dev.ts` is the dev-server bootstrap invoked by `pnpm dev`: it reads the app config and calls `startDev` with `appFromSources()`, the same way `likec4 start` does.
+- `vite/` is the Node API of the app, `@likec4/spa/vite`: `startDev`, `startPreview`, `buildApp`, `buildReact`, `buildWebcomponent` and the app config (`likec4.app.config.*`, `resolveAppConfig`). It is not part of the browser build; `likec4` bundles it into its CLI with tsdown. Every function takes an `AppSource`: where the app is (Vite root, entries) and how Vite resolves it. `@likec4/spa/vite/sources` (`appFromSources()`) is for development only, the CLI uses `appFromPackage()`. `@likec4/spa/vite/define` is the type-only part behind `defineAppConfig` of `likec4/config`.
 - `codegen/` contains the entries for `likec4 gen react` and `likec4 gen webcomponent` (`react.tsx`, `webcomponent.tsx`) and the pages to try them in dev.
 - `lib/` and `dist/` are build output; `dist/` is copied to `packages/likec4/__app__/`. Do not edit them by hand.
 
@@ -104,9 +105,10 @@ State management:
 
 Public API and contracts:
 
-- `package.json` is `private: true`; this is an app, not a library, so there are no stable exports.
-- Talk to the Language Server only through `likec4:rpc` from `@likec4/vite-plugin`.
-- Do not import `@likec4/language-server` or `@likec4/vite-plugin` source directly.
+- `package.json` is `private: true`; this is an app, not a library. Its only exports are the Node API `./vite*`, consumed by `likec4` and `start-dev.ts`.
+- The browser app (`src/`, `codegen/`) talks to the Language Server only through `likec4:rpc` from `@likec4/vite-plugin`.
+- The browser app must not import `@likec4/language-server`, `@likec4/language-services` or `@likec4/vite-plugin` source directly. The Node API in `vite/` composes `@likec4/vite-plugin` and takes a `LikeC4` instance from `@likec4/language-services`.
+- `tsconfig.json` references `tsconfig.app.json` (browser: `src/`, `codegen/`, `shims/`) and `tsconfig.vite.json` (Node: `vite/`, `start-dev.ts`, `vite.config.ts`); `packages/likec4` references the latter.
 - Model, project, app-config, icon, RPC, and export-format data should come from `likec4:*` virtual modules. Dev-only integrations such as AI chat or external renderers may use their documented endpoints.
 - Adding new model-backed data means adding a virtual module in `@likec4/vite-plugin`, not fetching language-server data here.
 - New routes require `routeTree.gen.ts` to be regenerated by the TanStack Router Vite plugin.

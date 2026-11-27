@@ -9,9 +9,10 @@ import type { ProjectId } from '@likec4/core/types'
 import { FramerMotionConfig, LikeC4MantineProvider } from '@likec4/diagram'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { defaultTheme } from 'likec4:app-config'
-import { CustomizationContext } from 'likec4:customization'
-import { ErrorBoundary } from '../components/ErrorComponent'
+import { CustomizationProvider } from 'likec4:customization'
+import { ErrorBoundary, ErrorComponent } from '../components/ErrorComponent'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
+import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
 
 export type Context = {
   /**
@@ -39,10 +40,13 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
-  component: RootComponent,
+  // component: RootComponent,
+  errorComponent: ErrorComponent,
+  shellComponent: RootShellComponent
 })
 
-function RootComponent() {
+
+function RootShellComponent({ children }: { children: React.ReactNode }) {
   const theme = Route.useSearch({
     select: (search) => search.theme,
   })
@@ -54,17 +58,48 @@ function RootComponent() {
   // the build default is light or dark.
   const defaultColorScheme = theme === 'auto' ? 'auto' : defaultTheme
   return (
+    
     <LikeC4MantineProvider
       defaultColorScheme={defaultColorScheme}
       {...(forceColorScheme && { forceColorScheme })}
     >
       <FramerMotionConfig>
-        <ErrorBoundary>
-          <CustomizationContext>
-            <Outlet />
-          </CustomizationContext>
-        </ErrorBoundary>
+        <CustomizationProvider>
+          <LikeC4ProjectsContext>
+            {children}
+          </LikeC4ProjectsContext>
+        </CustomizationProvider>
       </FramerMotionConfig>
     </LikeC4MantineProvider>
   )
 }
+
+// function RootComponent() {
+//   // const theme = Route.useSearch({
+//   //   select: (search) => search.theme,
+//   //   structuralSharing: true,    
+//   // })
+//   // // When ?theme= is explicitly set in URL, force that color scheme without
+//   // // writing to localStorage. This preserves the user's manual preference
+//   // // while allowing embeds to override the appearance via URL.
+//   // const forceColorScheme = resolveForceColorScheme(theme)
+//   // // When ?theme=auto is explicitly set, restore system preference even if
+//   // // the build default is light or dark.
+//   // const defaultColorScheme = theme === 'auto' ? 'auto' : defaultTheme
+//   return (
+//     // <LikeC4MantineProvider
+//     //   defaultColorScheme={defaultColorScheme}
+//     //   {...(forceColorScheme && { forceColorScheme })}
+//     // >
+//     //   <FramerMotionConfig>
+//         <ErrorBoundary>
+//           <LikeC4ProjectsContext>
+            
+//               <Outlet />
+//             {/* </CustomizationProvider> */}
+//           </LikeC4ProjectsContext>
+//         </ErrorBoundary>
+//     //   </FramerMotionConfig>
+//     // </LikeC4MantineProvider>
+//   )
+// }

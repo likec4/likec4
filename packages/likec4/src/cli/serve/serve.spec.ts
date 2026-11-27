@@ -29,8 +29,13 @@ const mockViteDevServer = {
   resolvedUrls: { local: ['http://localhost:5173/'] },
 }
 
-vi.mock('../../vite/vite-dev', () => ({
-  viteDev: vi.fn().mockResolvedValue(mockViteDevServer),
+vi.mock('@likec4/spa/vite', async importOriginal => ({
+  ...(await importOriginal<typeof import('@likec4/spa/vite')>()),
+  startDev: vi.fn().mockResolvedValue(mockViteDevServer),
+}))
+
+vi.mock('../../vite/app-from-package', () => ({
+  appFromPackage: () => ({}),
 }))
 
 vi.mock('../../vite/printServerUrls', () => ({
@@ -48,7 +53,7 @@ describe('serve handler', () => {
 
   it('propagates hmrPort to viteDev', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({
@@ -69,7 +74,7 @@ describe('serve handler', () => {
 
   it('propagates undefined hmrPort when not provided (HMR uses the dev server port)', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({
@@ -90,7 +95,7 @@ describe('serve handler', () => {
 
   it('propagates port and hmrPort to viteDev', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({
@@ -113,7 +118,7 @@ describe('serve handler', () => {
 
   it('propagates userPublicDir to viteDev', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({
@@ -134,7 +139,7 @@ describe('serve handler', () => {
 
   it('propagates allowedHosts to viteDev', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({
@@ -155,7 +160,7 @@ describe('serve handler', () => {
 
   it('propagates undefined allowedHosts when not provided (preserves "allow all" default)', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({
@@ -175,7 +180,7 @@ describe('serve handler', () => {
 
   it('propagates theme and customization to viteDev', async () => {
     const { handler } = await import('./serve')
-    const { viteDev } = await import('../../vite/vite-dev')
+    const { startDev: viteDev } = await import('@likec4/spa/vite')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>
 
     await handler({

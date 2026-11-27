@@ -16,14 +16,14 @@ vi.mock('std-env', () => ({
 }))
 
 // Mock the heavy Vite/language-server transitive imports so this test stays unit-level
-vi.mock('./config-app', () => ({ viteConfig: vi.fn() }))
-vi.mock('./config-webcomponent', () => ({ viteWebcomponentConfig: vi.fn() }))
+vi.mock('./config-app', () => ({ appViteConfig: vi.fn() }))
+vi.mock('./webcomponent', () => ({ buildWebcomponent: vi.fn() }))
 vi.mock('./utils', () => ({ mkTempPublicDir: vi.fn().mockResolvedValue('/tmp/pub') }))
-vi.mock('vite', () => ({ createServer: vi.fn(), build: vi.fn() }))
+vi.mock('vite', () => ({ createServer: vi.fn() }))
 vi.mock('is-inside-container', () => ({ default: vi.fn().mockReturnValue(false) }))
 vi.mock('@likec4/log', () => ({ loggable: vi.fn((e: unknown) => e) }))
 
-import { resolveHmrPort } from './vite-dev'
+import { resolveHmrPort } from './dev'
 
 async function getEnvMock() {
   const { env } = await import('std-env')

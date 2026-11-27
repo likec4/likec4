@@ -1,0 +1,42 @@
+{
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "incremental": true,
+    "customConditions": [
+      "sources"
+    ],
+    "noPropertyAccessFromIndexSignature": false,
+    "types": [
+      "node"
+    ],
+    "outDir": "${configDir}/lib/vite",
+    "tsBuildInfoFile": "${configDir}/lib/tsconfig.vite.tsbuildinfo"
+  },
+  "include": [
+    "vite/",
+    "start-dev.ts",
+    "vite.config.ts",
+    "package.json"
+  ],
+  "references": [
+    {
+      "path": "../core/"
+    },
+    {
+      "path": "../config/"
+    },
+    {
+      "path": "../vite-plugin/"
+    },
+    {
+      "path": "../language-services/"
+    },
+    {
+      "path": "../log/"
+    },
+    {
+      "path": "../../devops/"
+    }
+  ]
+}
