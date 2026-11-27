@@ -331,7 +331,7 @@ actions that modify a saved manual layout.
 
 There are two customization layers:
 
-1. **UI slots** — replace or wrap shell components (`LikeC4Diagram`, logos, …) via `CustomizationProvider`
+1. **UI slots** — replace or wrap shell components (`LikeC4Diagram`, logos, …) via `createCustomization`
 2. **Node renderers** — customize how individual diagram nodes are drawn via `renderNodes`
 
 ### UI slots (experimental)
@@ -339,43 +339,42 @@ There are two customization layers:
 > [!WARNING]
 > Experimental API — slot names and helper signatures may change.
 
-Wrap your diagram tree with `CustomizationProvider` and pass overrides from `defineCustomComponents`.
+Wrap your diagram tree with the provider returned by `createCustomization`, and define overrides with `customizeComponents`.
 
 - **replace** — provide a component with the same props as the slot
-- **wrap** — use `wrap` from `defineCustomComponents`; your component receives `{ Original, ...props }`
+- **wrap** — use `wrap` from `customizeComponents`; your component receives `{ Original, ...props }`
 
 ```tsx
 import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram'
-import {
-  CustomizationProvider,
-  defineCustomComponents,
-} from '@likec4/diagram/custom'
+import { createCustomization, customizeComponents } from '@likec4/diagram/custom'
 
-const components = defineCustomComponents(({ wrap }) => ({
-  // Replace the logo SVG entirely
-  LogoSvg: (props) => (
-    <svg {...props}>
-      <text>Brand</text>
-    </svg>
-  ),
-  // Wrap the diagram to inject default props
-  LikeC4View: wrap(({ Original, ...props }) => <Original {...props} pannable={false} />),
-}))
+const Customization = createCustomization({
+  components: customizeComponents(({ wrap }) => ({
+    // Replace the logo SVG entirely
+    Logo: (props) => (
+      <svg {...props}>
+        <text>Brand</text>
+      </svg>
+    ),
+    // Wrap the diagram to inject default props
+    LikeC4View: wrap(({ Original, ...props }) => <Original {...props} pannable={false} />),
+  })),
+})
 
 function App() {
   return (
-    <CustomizationProvider components={components}>
+    <Customization>
       <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4View viewId="index" />
       </LikeC4ModelProvider>
-    </CustomizationProvider>
+    </Customization>
   )
 }
 ```
 
-Registered slots today: `LikeC4Diagram`, `LikeC4View`, `ReactLikeC4`, `LogoSvg`, `LogoIconSvg`, `NavigationPanelLogo`.
+Registered slots today: `LikeC4Diagram`, `LikeC4View`, `ReactLikeC4`, `Logo`, `LogoIcon`, `ElementShape`.
 
-Keep the `components` object referentially stable (module scope) so HMR keeps override identities stable.
+Call `createCustomization` at module scope, not during render.
 
 When using the bundled React package, import the same helpers from `likec4/react`.
 

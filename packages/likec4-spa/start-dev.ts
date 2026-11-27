@@ -28,7 +28,7 @@ const main = defineCommand({
     customization: {
       type: 'string',
       valueHint: 'file',
-      description: 'file with UI customizations (default export of defineCustomComponents)',
+      description: 'file with UI customizations (default export of createCustomization)',
       required: false,
     },
     appConfig: {

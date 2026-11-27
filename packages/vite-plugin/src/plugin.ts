@@ -282,7 +282,7 @@ export function LikeC4VitePlugin({
         if (!parsed) {
           return
         }
-        const { name, projectId } = parsed        
+        const { name, projectId } = parsed
         const registry = projectId ? projectVirtuals : virtuals
         if (!registry.has(name)) {
           return

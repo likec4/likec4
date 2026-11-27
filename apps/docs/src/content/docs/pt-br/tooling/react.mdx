@@ -612,7 +612,7 @@ esses atalhos controlam o zoom do diagrama, e não o zoom da página do navegado
 ### Slots de UI (experimental)
 
 :::caution[Experimental]
-Substitua ou envolva partes da UI (`LikeC4Diagram`, logos, …) com `CustomizationProvider`.
+Substitua ou envolva partes da UI (`LikeC4Diagram`, logos, …) com o provider de `createCustomization`.
 Esta API pode mudar; os nomes dos slots podem crescer, mas trate os helpers como experimentais por enquanto.
 :::
 
@@ -623,26 +623,28 @@ Há duas camadas de personalização:
 
 ```tsx
 import {
-  CustomizationProvider,
-  defineCustomComponents,
+  createCustomization,
+  customizeComponents,
   LikeC4ModelProvider,
   LikeC4View,
 } from 'likec4/react'
 
-const components = defineCustomComponents(({ wrap }) => ({
-  LogoSvg: (props) => <svg {...props}><text>Brand</text></svg>,
-  LikeC4View: wrap(({ Original, ...props }) => (
-    <Original {...props} pannable={false} />
-  )),
-}))
+const Customization = createCustomization({
+  components: customizeComponents(({ wrap }) => ({
+    Logo: (props) => <svg {...props}><text>Brand</text></svg>,
+    LikeC4View: wrap(({ Original, ...props }) => (
+      <Original {...props} pannable={false} />
+    )),
+  })),
+})
 
 function App() {
   return (
-    <CustomizationProvider components={components}>
+    <Customization>
       <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4View viewId="index" />
       </LikeC4ModelProvider>
-    </CustomizationProvider>
+    </Customization>
   )
 }
 ```
@@ -650,7 +652,7 @@ function App() {
 - **replace** — passe um componente com as mesmas props do slot
 - **wrap** — use `wrap`; o componente recebe `{ Original, ...props }`
 
-Coloque `CustomizationProvider` acima da árvore do diagrama. A ordem em relação a `LikeC4ModelProvider` não importa. Prefira uma constante `components` no escopo do módulo para manter os overrides amigáveis ao HMR.
+Coloque o provider acima da árvore do diagrama. A ordem em relação a `LikeC4ModelProvider` não importa. Chame `createCustomization` no escopo do módulo, não durante a renderização.
 
 Com `@likec4/diagram`, importe os mesmos helpers de `@likec4/diagram/custom`.
 

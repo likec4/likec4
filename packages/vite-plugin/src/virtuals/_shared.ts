@@ -117,7 +117,7 @@ export interface VirtualModule {
    * Reload the module when projects change
    */
   hmr?: boolean
-  
+
   /**
    * Load the module content
    */

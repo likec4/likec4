@@ -1,24 +1,32 @@
+// SPDX-License-Identifier: MIT
+//
 // Copyright (c) 2023-2026 Denis Davydkov
-import { type ComponentProps, createContext, type FC, use } from 'react'
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import { type ComponentProps, type FC, createContext, use } from 'react'
 import {
   type CustomComponent,
   type CustomComponents,
   type Customizable,
   type CustomizableName,
-  WrappedMarker
+  WrappedMarker,
 } from './customization-types'
 
-export const CustomizationContext = createContext<CustomizationProps | null>(null);
+export const CustomizationContext = createContext<CustomizationProps | null>(null)
 CustomizationContext.displayName = 'CustomizationContext'
 
+/**
+ * Value of {@link CustomizationContext}
+ */
 export interface CustomizationProps {
   /**
-   * Slot overrides from {@link customizeComponents}.
+   * Slot overrides from `customizeComponents`.
    * Prefer a module-scoped constant so the map identity stays stable across HMR.
    */
   components?: CustomComponents | undefined
 }
-
 
 function useCustomization(name: CustomizableName): CustomComponent<FC<any>> | undefined {
   return use(CustomizationContext)?.components?.[name]
@@ -67,7 +75,7 @@ function register<
 }
 
 /**
- * Registers a LikeC4 UI slot that consumers can override via {@link CustomizationContext}.
+ * Registers a LikeC4 UI slot that consumers can override via `createCustomization`.
  *
  * @internal Prefer not to call from user code — slot names are owned by LikeC4.
  */

@@ -37,7 +37,7 @@ export const appConfig = {
 
 export const customization = {
   string: true,
-  desc: 'file with UI customizations, default-exports `defineCustomComponents` from likec4/react',
+  desc: 'file with UI customizations, default-exports `createCustomization` from likec4/react',
   normalize: true,
   nargs: 1,
   coerce: resolve,

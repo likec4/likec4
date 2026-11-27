@@ -1,19 +1,19 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type JSX, type PropsWithChildren } from 'react'
-import { CustomizationContext } from './customizable'
-import { WrappedMarker, type CustomComponents, type Customizables, type Wrapper } from './customization-types'
+import type { JSX, PropsWithChildren } from 'react'
+import type { CustomComponents, Customizables, Wrapper } from './customization-types'
+import { type CustomizationProps, CustomizationContext } from './customizable'
+import { WrappedMarker } from './customization-types'
 
-// export const CustomizationContext = createContext<CustomizationProps | null>(null);
-// CustomizationContext.displayName = 'CustomizationContext'
-
-export interface CustomizationProps {
-  /**
-   * Slot overrides from {@link customizeComponents}.
-   * Prefer a module-scoped constant so the map identity stays stable across HMR.
-   */
-  components?: CustomComponents | undefined
-}
-
+/**
+ * Provider returned by {@link createCustomization}
+ */
+export type CustomizationProvider = (props: PropsWithChildren) => JSX.Element
 
 /**
  * Marks a component as a wrap override. The registered shell injects `Original`
@@ -30,19 +30,19 @@ function wrapOriginal<P>(
 /**
  * Defines overrides for registered customizable slots.
  * To be used with {@link createCustomization}.
- * 
+ *
  * Overrides support two modes:
  * - **replace** — pass a component that receives the original props
  * - **wrap** — use `wrap` function; receives `{ Original, ...props }`
- 
+ *
  * @example
  * ```tsx
  * import { customizeComponents } from 'likec4/react'
- * 
+ *
  * const components = customizeComponents(({ wrap }) => ({
  *   Logo: () => <span>My logo</span>, // replace
  *   LikeC4Diagram: wrap(({ Original, ...props }) => (
- *     <Original {...props} onClick={() => console.log('logo')} />
+ *     <Original {...props} pannable={false} />
  *   )),
  * }))
  * ```
@@ -54,7 +54,6 @@ export function customizeComponents(
 ): CustomComponents {
   return typeof value === 'function' ? value({ wrap: wrapOriginal }) : value
 }
-
 
 /**
  * Creates a customization context provider that can be used to override or
@@ -88,19 +87,16 @@ export function customizeComponents(
  * ```
  * @experimental
  */
-export function createCustomization(value: CustomizationProps): CustomizationProvider {  
-  // Named function is required for HMR
-  let customizationValue = {
-    components: value.components
+export function createCustomization(value: CustomizationProps): CustomizationProvider {
+  const customizationValue: CustomizationProps = {
+    components: value.components,
   }
-  // const Cmp = function CustomizationProvider1({children}: PropsWithChildren) {
-  //   return <CustomizationContext.Provider value={customizationValue}>
-  //     {children}
-  //   </CustomizationContext.Provider>
-  // }
-  // Cmp.displayName = 'CustomizationProvider1'
-  return ({children}) => <CustomizationContext.Provider value={customizationValue}>
-    {children}
-  </CustomizationContext.Provider>
+  // Keep the provider anonymous (no name, no displayName): React Refresh would treat
+  // a named default export of the customization file as a component and make the file
+  // an HMR boundary, so `likec4:customization` would not pick up the new overrides.
+  return ({ children }) => (
+    <CustomizationContext.Provider value={customizationValue}>
+      {children}
+    </CustomizationContext.Provider>
+  )
 }
-export type CustomizationProvider = (props: PropsWithChildren) => JSX.Element
