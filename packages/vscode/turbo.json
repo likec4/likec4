@@ -25,9 +25,7 @@
         "$TURBO_EXTENDS$",
         "data/skills/**",
         "data/config.schema.json",
-        "dist/**"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
   }
 }

@@ -35,7 +35,6 @@ function readName(key: string): string | undefined {
   }
   let name = prop(
     vars,
-    // @ts-expect-error
     ...path,
   )
   return isString(name) ? name : undefined

@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs'
-import { generateFonts } from './generate-fonts'
+import { generateFonts } from './generate-fonts.ts'
 
 const systemPrompt = readFileSync('src/graphviz/ai/prompt-system.md', 'utf-8')
 

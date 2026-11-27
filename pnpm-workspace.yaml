@@ -63,6 +63,7 @@ catalog:
   playwright: 1.65.1
   rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
+  tsrs: 7.1.0-beta.tsrs5
   tsx: 4.23.15
   turbo: 2.11.13
   typescript: 6.0.3

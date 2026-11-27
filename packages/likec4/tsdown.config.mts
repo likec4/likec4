@@ -25,10 +25,8 @@ export default defineConfig([
       'index': './src/vite-plugin/internal.ts',
     },
     outDir: './dist/vite-plugin/internal',
-    platform: 'neutral',
-    target: false,
-    outputOptions: {
-      entryFileNames: '[name].mjs',
+    dts: {
+      generator: 'tsrs',
     },
     // Share a single copy of core with the main build
     deps: {
@@ -57,7 +55,7 @@ export default defineConfig([
     target: false,
     nodeProtocol: 'strip',
     dts: {
-      build: true,
+      generator: 'tsrs',
     },
     outputOptions: outputOptions({
       codeSplitting: {
@@ -83,11 +81,14 @@ export default defineConfig([
     // graphology needs `events`
     nodeProtocol: 'strip',
     dts: {
-      build: true,
+      generator: 'tsrs',
     },
     deps: {
       onlyBundle: false,
-      neverBundle: [/^likec4\/core/],
+      neverBundle: [
+        '@likec4/log',
+        /^likec4\/core/,
+      ],
     },
     plugins: [aliasCore(), nodePolyfills()],
   },
@@ -104,7 +105,7 @@ export default defineConfig([
     platform: 'node',
     nodeProtocol: true,
     dts: {
-      build: true,
+      generator: 'tsrs',
     },
     // @likec4/core is built separately (see below), share a single copy of it
     deps: {
@@ -170,6 +171,7 @@ function aliasCore(): Rolldown.Plugin {
 
 /**
  * Rewrites `@likec4/layouts/*` to the external `likec4/layouts`, the entry of the layouts build.
+ * (except @likec4/layouts/graphviz/binary)
  */
 function aliasLayouts(): Rolldown.Plugin {
   return {

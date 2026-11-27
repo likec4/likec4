@@ -64,9 +64,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     try {
       const unflatten = await spawn(this.unflattenpath, ['-l', '1', '-c', '3'], {
         timeout: 10_000,
-        stdin: {
-          string: dot,
-        },
+        input: dot,
       })
       result = unflatten.stdout
       if (!isEmpty(unflatten.stderr)) {
@@ -103,9 +101,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     try {
       const dotcmd = await spawn(this.dotpath, ['-Tjson', '-y'], {
         timeout: 10_000,
-        stdin: {
-          string: dot,
-        },
+        input: dot,
       })
       result = dotcmd.stdout
       if (!isEmpty(dotcmd.stderr)) {
@@ -145,9 +141,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     try {
       const cmd = await spawn(this.dotpath, ['-Tsvg', '-y'], {
         timeout: 10_000,
-        stdin: {
-          string: dot,
-        },
+        input: dot,
       })
       result = cmd.stdout
       if (!isEmpty(cmd.stderr)) {

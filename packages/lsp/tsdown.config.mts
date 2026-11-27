@@ -11,9 +11,6 @@ export default defineConfig({
   deps: {
     onlyBundle: false,
   },
-  outputOptions: {
-    keepNames: true,
-  },
   inputOptions: {
     resolve: {
       conditionNames: ['production', 'sources', 'node', 'import', 'default'],

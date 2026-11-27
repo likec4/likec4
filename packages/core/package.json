@@ -154,6 +154,7 @@
     "remark-rehype": "11.1.2",
     "remeda": "catalog:utils",
     "tsdown": "catalog:tsdown",
+    "tsrs": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "unified": "11.0.5",

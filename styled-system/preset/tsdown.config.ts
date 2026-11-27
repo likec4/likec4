@@ -1,20 +1,20 @@
-import { outputOptions } from '@likec4/devops/tsdown'
 import spawn from 'nano-spawn'
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: [
-    'src/defaults/*.ts',
-    'src/**/index.ts',
+    'src/defaults/index.ts',
+    'src/index.ts',
   ],
-  // unbundle: true,
-  dts: true,
-  platform: 'neutral',
+  dts: {
+    generator: 'tsrs',
+  },
+  cjsDefault: false,
   minify: false,
-  format: ['esm'],
-  outputOptions: outputOptions(),
   deps: {
-    onlyBundle: false,
+    onlyBundle: [
+      '@radix-ui/colors',
+    ],
   },
   hooks: {
     'build:prepare': async () => {
