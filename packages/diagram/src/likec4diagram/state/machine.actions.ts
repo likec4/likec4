@@ -227,7 +227,6 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       })
     } else {
       assertEvent(event, 'update.view')
-      // xyedges in the event come from editor history, with corners already converted by diagramToXY
       xydata = 'xynodes' in event ? event : convertToXYFlow({
         currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,

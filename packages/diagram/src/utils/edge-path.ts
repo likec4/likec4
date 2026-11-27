@@ -249,7 +249,6 @@ export function editedOrthoPolyline(
   return { points, insertAt }
 }
 
-/** Clips both ends of the polyline at the node borders. */
 function clipEnds(points: XYPosition[], from: EdgeEnd, to: EdgeEnd): XYPosition[] {
   clipStart(points, from.node, ORTHO_NODE_MARGIN)
   points.reverse()
