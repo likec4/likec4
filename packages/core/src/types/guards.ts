@@ -98,10 +98,6 @@ export function isOnStage<T extends { [_stage]: ModelStage }, S extends ModelSta
   value: T,
   stage: S,
 ): value is ExtractOnStage<T, S>
-// export function isOnStage<T, S extends ModelStage>(
-//   value: T & {[_stage]: ModelStage},
-//   stage: S
-// ): value is T & {[_stage]: S};
 export function isOnStage(...args: any[]): any {
   if (args.length === 1) {
     const stage = args[0]
