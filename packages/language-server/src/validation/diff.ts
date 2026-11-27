@@ -7,19 +7,35 @@ import { relationFingerprint } from '../model/relationFingerprint'
 import { projectIdFrom, safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 
+function hasChanges(diff: ast.ModelDiff): boolean {
+  return diff.removes.length > 0 || diff.adds.length > 0 || diff.viewBlocks.length > 0
+}
+
 export const modelDiffChecks = (services: LikeC4Services): ValidationCheck<ast.ModelDiff> => {
   const cache = new WorkspaceCache<ProjectId, DiffOverlap[]>(services.shared, DocumentState.Linked)
   const overlapsIn = (projectId: ProjectId) =>
     cache.get(projectId, () => findDiffOverlaps(services.likec4.ModelParser.documents(projectId).toArray()))
 
+  // Diffs with the same name are merged, so a part with only a title or description is fine
+  // as long as another part of the same diff has changes
+  const changedCache = new WorkspaceCache<ProjectId, Set<string>>(services.shared, DocumentState.Linked)
+  const changedDiffsIn = (projectId: ProjectId) =>
+    changedCache.get(projectId, () =>
+      new Set(
+        services.shared.workspace.LangiumDocuments.projectDocuments(projectId)
+          .flatMap(doc => (doc.parseResult.value as ast.LikeC4Grammar).diffs ?? [])
+          .filter(hasChanges)
+          .map(diff => diff.name),
+      ))
+
   return tryOrLog((diff, accept) => {
-    if (diff.removes.length === 0 && diff.adds.length === 0 && diff.viewBlocks.length === 0) {
+    const projectId = projectIdFrom(AstUtils.getDocument(diff))
+    if (!hasChanges(diff) && !changedDiffsIn(projectId).has(diff.name)) {
       accept('warning', 'Diff has no changes', {
         node: diff,
         property: 'name',
       })
     }
-    const projectId = projectIdFrom(AstUtils.getDocument(diff))
     const index = services.shared.workspace.IndexManager
     for (const view of diff.viewBlocks.flatMap(block => block.views)) {
       if (!view.name) {
