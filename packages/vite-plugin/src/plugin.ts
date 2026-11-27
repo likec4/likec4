@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core/types'
-import type { LikeC4LanguageServices } from '@likec4/language-services'
+import type { LikeC4, LikeC4LanguageServices } from '@likec4/language-services'
 import type {
   Plugin,
   PluginOption,
@@ -17,7 +17,7 @@ import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { limitFunction } from 'p-limit'
 import { resolve } from 'pathe'
-import { funnel, isBoolean } from 'remeda'
+import { funnel, isBoolean, map } from 'remeda'
 import { detectAI } from './ai/detect-ai'
 import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
@@ -106,6 +106,11 @@ export function LikeC4VitePlugin({
   const appOptions = resolveAppOptions({ title, theme, useHashHistory, webcomponentPrefix, customization }, appConfig)
 
   let likec4: LikeC4LanguageServices
+  /**
+   * LikeC4 instance, if available (not provided with deprecated `languageServices` option).
+   * Defines the projects the plugin works with.
+   */
+  let instance: LikeC4 | undefined
   let assetsDir: string
   let customizationFile: string | undefined
   let rpcEnabled = false
@@ -179,7 +184,9 @@ export function LikeC4VitePlugin({
       if (!module) {
         return null
       }
-      return await module.load(moduleopts({ project: likec4.project(projectId) }))
+      return await module.load(
+        moduleopts({ project: likec4.project(instance?.ensureProjectId(projectId) ?? projectId) }),
+      )
     }
 
     // Global virtual modules
@@ -189,7 +196,9 @@ export function LikeC4VitePlugin({
     }
     // Only projects with documents, or the fallback default project if the workspace is empty
     // (modules like `likec4:app-config` must still load)
-    const projects = likec4.projects()
+    const projects = instance
+      ? map(instance.projects(), id => likec4.project(id))
+      : likec4.projects()
     return await module.load(moduleopts({ projects }))
   }
 
@@ -223,7 +232,10 @@ export function LikeC4VitePlugin({
         }
       }
 
-      if (pluginOpts.languageServices) {
+      if (pluginOpts.likec4) {
+        instance = pluginOpts.likec4
+        likec4 = instance.languageServices
+      } else if (pluginOpts.languageServices) {
         likec4 = pluginOpts.languageServices
       } else {
         let cacheDir = pluginOpts.cacheDir
@@ -232,7 +244,8 @@ export function LikeC4VitePlugin({
         }
         const watch = isDev && (pluginOpts.watch ?? true)
 
-        const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
+        instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
+          includeProjects: pluginOpts.includeProjects,
           manualLayouts: true,
           graphviz: pluginOpts.graphviz ?? 'wasm',
           configureLogger: 'console',
@@ -448,7 +461,7 @@ export function LikeC4VitePlugin({
   return [
     iconBundlePlugin({
       environments: environments ? [environments].flat() : undefined,
-      workspace: pluginOpts.workspace ?? pluginOpts.languageServices?.workspacePath,
+      workspace: pluginOpts.workspace ?? pluginOpts.likec4?.workspace ?? pluginOpts.languageServices?.workspacePath,
     }),
     mainPlugin,
   ]

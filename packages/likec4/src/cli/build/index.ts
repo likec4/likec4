@@ -7,7 +7,6 @@
 
 import type * as yargs from 'yargs'
 import { resolve } from 'node:path'
-import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { resolveAppConfig } from '../../app-config'
 import { createLikeC4Logger } from '../../logger'
@@ -30,6 +29,7 @@ import {
   withoutDefault,
 } from '../options'
 import { showSupportUsMessage } from '../support-message'
+import { initLikeC4 } from '../utils'
 
 const buildCmd = (yargs: yargs.Argv) => {
   return yargs
@@ -99,9 +99,9 @@ const buildCmd = (yargs: yargs.Argv) => {
           logger.info(`${k.cyan('app config')} ${k.dim(relativeToCwd(config.configFile))}`)
         }
 
-        await using languageServices = await fromWorkspace(config.workspace, {
-          graphviz: config.graphviz,
-          watch: false,
+        await using languageServices = await initLikeC4({
+          path: config.workspace,
+          useDotBin: config.graphviz === 'binary',
         })
 
         const outputDir = config.build.outDir ?? resolve(languageServices.workspace, 'dist')

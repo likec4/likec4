@@ -3,15 +3,13 @@ import type { ProjectId } from '@likec4/core/types'
 import type { Argv } from 'yargs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
-import { workspaceProjects } from '../../utils'
+import { initLikeC4, workspaceProjects } from '../../utils'
 
-const ERR_PROJECT_NOT_FOUND = 'project not found'
 const ERR_NO_PROJECTS = 'No projects found'
 
 type JsonExportArgs = {
@@ -26,18 +24,11 @@ type JsonExportArgs = {
 /** Run the JSON export workflow: init workspace, load model(s), write to outfile. */
 export async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
-  await using languageServices = await fromWorkspace(args.path, {
-    graphviz: args.useDot ? 'binary' : 'wasm',
-    watch: false,
-  })
+  await using languageServices = await initLikeC4({ path: args.path, project: args.project, useDotBin: args.useDot })
 
   let projects: ProjectId[]
   if (args.project) {
-    projects = languageServices.projectsManager.all.filter(p => p === args.project)
-    if (!hasAtLeast(projects, 1)) {
-      logger.error(`${ERR_PROJECT_NOT_FOUND}: ${args.project}`)
-      throw new Error(`${ERR_PROJECT_NOT_FOUND}: ${args.project}`)
-    }
+    projects = languageServices.projects()
   } else {
     projects = workspaceProjects(languageServices)
     if (!hasAtLeast(projects, 1)) {

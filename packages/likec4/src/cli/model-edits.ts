@@ -7,13 +7,13 @@ import { relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { collapseUnchanged, diffLines } from '@likec4/core/utils'
 import k from 'tinyrainbow'
-import { ensureProject } from './utils'
 
 /**
- * The project selected with `--project`, or every project of the workspace.
+ * Projects of the instance: the one selected with `--project` (see `resolveProjectArg`),
+ * or every project of the workspace.
  */
-export function projectsToSearch(likec4: LikeC4, project: string | undefined): ProjectId[] {
-  return project ? [ensureProject(likec4, project).projectId] : [...likec4.projects()]
+export function projectsToSearch(likec4: LikeC4): ProjectId[] {
+  return [...likec4.projects()]
 }
 
 /**

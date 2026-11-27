@@ -6,6 +6,7 @@ import yargs from 'yargs'
 
 type MockLikeC4 = {
   workspace: string
+  projects: () => never[]
   languageServices: { projects: () => never[] }
   [Symbol.asyncDispose]: () => Promise<void>
 }
@@ -32,6 +33,7 @@ describe('export png and jpg commands', () => {
     // No projects: the export starts the server and has nothing to capture
     fromWorkspace.mockImplementation(async workspace => ({
       workspace,
+      projects: () => [],
       languageServices: { projects: () => [] },
       [Symbol.asyncDispose]: async () => {},
     }))

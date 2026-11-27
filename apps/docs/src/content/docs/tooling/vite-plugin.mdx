@@ -212,12 +212,14 @@ Options that load the LikeC4 model:
 | Option         | Description                                                                                         |
 | -----------------| --------------------------------------------------------------------------------------------------- |
 | `workspace`      | directory with source files (defaults to vite root) |
+| <span style="text-wrap:nowrap">`includeProjects`</span> | project id, or list of ids, to limit the plugin to (default: all projects) |
 | `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | fails with rejected promise if model is invalid  (default `false`) |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
 | `watch`          | watch the source files for changes in the dev server (default `true`; a build never watches) |
 | `logLevel`       | `'trace'`, `'debug'`, `'info'`, `'warning'` (default) or `'error'` |
-| <span style="text-wrap:nowrap">`languageServices`</span> | an already initialized model, see [Usage with API](#usage-with-api); can't be combined with the options above |
+| `likec4`         | an already initialized LikeC4 instance, see [Usage with API](#usage-with-api); can't be combined with the options above |
+| <span style="text-wrap:nowrap">`languageServices`</span> | deprecated, use `likec4` |
 
 Application options, at the top level of the plugin options.
 Check the "Read by" column: only `customization` changes the components you embed.
@@ -307,7 +309,7 @@ import react from '@vitejs/plugin-react'
 import { LikeC4 } from 'likec4'
 import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 
-const { languageServices } = await LikeC4.fromSource(`
+const likec4 = await LikeC4.fromSource(`
   specification {
     element system
     element user
@@ -327,7 +329,7 @@ export default defineConfig({
   plugins: [
     react(),
     LikeC4VitePlugin({
-      languageServices,
+      likec4,
     }),
   ],
 })

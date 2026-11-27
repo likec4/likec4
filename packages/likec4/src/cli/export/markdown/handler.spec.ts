@@ -28,15 +28,25 @@ const logger = {
 type ProjectSpec = { id: string; folder: string; hasViews?: boolean; description?: string }
 
 function mockWorkspace(projects: ProjectSpec[]) {
-  fromWorkspace.mockResolvedValue({
-    languageServices: {
-      projects: () =>
-        projects.map(p => ({
-          id: p.id,
-          folder: { fsPath: p.folder },
-          config: { metadata: p.description ? { description: p.description } : {} },
-        })),
-    },
+  const project = (id: string) => {
+    const p = projects.find(p => p.id === id)!
+    return {
+      id: p.id,
+      folder: { fsPath: p.folder },
+      config: { metadata: p.description ? { description: p.description } : {} },
+    }
+  }
+  // Emulates `includeProjects` of the real `fromWorkspace`
+  fromWorkspace.mockImplementation(async (_path, opts) => {
+    const include = (opts as { includeProjects?: string } | undefined)?.includeProjects
+    if (include && !projects.some(p => p.id === include)) {
+      throw new Error(`Unknown projects in includeProjects: [${include}]`)
+    }
+    return makeWorkspace(include ? [include] : projects.map(p => p.id))
+  })
+  const makeWorkspace = (ids: string[]) => ({
+    projects: () => ids,
+    languageServices: { project },
     layoutedModel: vi.fn<(id: string) => Promise<{ projectId: string; views: () => Array<unknown> }>>(async id => ({
       projectId: id,
       views: () => (projects.find(p => p.id === id)?.hasViews ?? true) ? [{ $view: { sourcePath: 'views.c4' } }] : [],
@@ -97,7 +107,7 @@ describe('export markdown handler', () => {
     mockWorkspace([{ id: 'project-a', folder: join(tmp, 'project-a') }])
     await expect(
       runExportMarkdown({ path: tmp, project: 'nope', useDot: false }, logger),
-    ).rejects.toThrow(/project not found: nope/)
+    ).rejects.toThrow(/Unknown projects in includeProjects: \[nope\]/)
   })
 
   it('writes the rendered Markdown of each project', async () => {

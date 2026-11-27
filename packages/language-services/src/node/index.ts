@@ -7,6 +7,7 @@ import k from 'tinyrainbow'
 import { withTrailingSlash } from 'ufo'
 import { createFromSources } from '../common/createFromSources'
 import { handleInitOptions } from '../common/handleInitOptions'
+import { normalizeIncludeProjects, validateIncludeProjects } from '../common/includeProjects'
 import { type LikeC4Diagnostic, type LikeC4Langium, type LikeC4LanguageServices, LikeC4 } from '../common/LikeC4'
 import { type FromWorkspaceOptions, type InitOptions, DefaultInitOptions } from '../common/options'
 import { configureLogger } from './configureLogger'
@@ -37,8 +38,10 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
 
   const logger = rootLogger.getChild('lang')
 
+  const includedProjects = normalizeIncludeProjects(options?.includeProjects)
+
   const opts = defu(
-    options,
+    { ...options, includeProjects: includedProjects },
     {
       ...DefaultInitOptions,
       useFileSystem: true,
@@ -77,7 +80,16 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
 
   logger.info(`${k.dim('workspace:')} found ${userDocuments.length} source files`)
 
-  return handleInitOptions(langium, rootLogger, options)
+  if (includedProjects) {
+    try {
+      validateIncludeProjects(langium.shared.workspace.ProjectsManager, includedProjects)
+    } catch (error) {
+      await langium.likec4.likec4.LanguageServices.dispose()
+      throw error
+    }
+  }
+
+  return handleInitOptions(langium, rootLogger, options, includedProjects)
 }
 
 /**

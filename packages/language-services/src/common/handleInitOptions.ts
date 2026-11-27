@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core/types'
 import { type Logger, rootLogger } from '@likec4/log'
 import { type LikeC4Langium, LikeC4 } from './LikeC4'
 import { type InitOptions, DefaultInitOptions } from './options'
@@ -13,8 +14,9 @@ export async function handleInitOptions(
   langium: LikeC4Langium,
   logger: Logger = rootLogger,
   options: InitOptions | undefined,
+  includedProjects?: ReadonlyArray<ProjectId>,
 ): Promise<LikeC4> {
-  const likec4 = new LikeC4(langium, logger)
+  const likec4 = new LikeC4(langium, logger, includedProjects)
 
   const throwIfInvalid = options?.throwIfInvalid ?? DefaultInitOptions.throwIfInvalid
   const printErrors = options?.printErrors ?? DefaultInitOptions.printErrors

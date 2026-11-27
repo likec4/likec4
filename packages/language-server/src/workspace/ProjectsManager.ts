@@ -6,9 +6,8 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
-import type { ProjectId } from '@likec4/core/types'
 import type { SetOptional, Tagged } from 'type-fest'
-import type { LikeC4SharedServices } from '../module'
+import type { LikeC4SharedServices, WorkspaceSettings } from '../module'
 import {
   type IncludeConfig,
   type LikeC4ProjectConfig,
@@ -16,6 +15,7 @@ import {
   isLikeC4Config,
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
+import { ProjectId } from '@likec4/core/types'
 import {
   compareNaturalHierarchically,
   DefaultMap,
@@ -314,10 +314,18 @@ export class ProjectsManager extends ADisposable {
   #updateListeners = [] as Array<() => void>
 
   /**
-   * Configured default project ID.
-   * (it is used in CLI and Vite plugin)
+   * Configured default project ID - the single project from {@link WorkspaceSettings.includeProjects},
+   * if it is registered
    */
-  #defaultProjectId = undefined as ProjectId | undefined
+  get #configuredDefault(): ProjectId | undefined {
+    const id = this.#defaultFromSettings
+    return id && this.#projects.some(p => p.id === id) ? id : undefined
+  }
+
+  /**
+   * The single project from {@link WorkspaceSettings.includeProjects}
+   */
+  readonly #defaultFromSettings: ProjectId | undefined
 
   /**
    * Workspace-level exclude matcher from VS Code settings (likec4.exclude).
@@ -378,8 +386,10 @@ export class ProjectsManager extends ADisposable {
    */
   #ownerOf = new DefaultMap((docuri: NormalizedUri) => this.findOwnerProject(docuri) ?? null)
 
-  constructor(protected services: LikeC4SharedServices) {
+  constructor(protected services: LikeC4SharedServices, settings?: WorkspaceSettings) {
     super()
+    const [single, ...rest] = settings?.includeProjects ?? []
+    this.#defaultFromSettings = single && rest.length === 0 ? ProjectId(single) : undefined
     this.onDispose(
       Disposable.create(async () => {
         this.cancelScheduledReloads()
@@ -470,8 +480,9 @@ export class ProjectsManager extends ADisposable {
    *  - undefined if there are multiple projects.
    */
   get defaultProjectId(): ProjectId | undefined {
-    if (this.#defaultProjectId) {
-      return this.#defaultProjectId
+    const configured = this.#configuredDefault
+    if (configured) {
+      return configured
     }
     if (this.#projects.length > 1) {
       return undefined
@@ -480,20 +491,6 @@ export class ProjectsManager extends ADisposable {
       return this.#projects[0].id
     }
     return ProjectsManager.DefaultProjectId
-  }
-
-  set defaultProjectId(id: string | ProjectId | undefined) {
-    if (id === this.#defaultProjectId) {
-      return
-    }
-    this.#defaultProjectId = undefined
-    if (!id || id === ProjectsManager.DefaultProjectId) {
-      logger.debug`reset default project ID`
-      return
-    }
-    invariant(this.#projects.find(p => p.id === id), `Project "${id}" not found`)
-    logger.debug`set default project ID to ${id}`
-    this.#defaultProjectId = id as ProjectId
   }
 
   get default(): ProjectData {
@@ -507,11 +504,12 @@ export class ProjectsManager extends ADisposable {
         DefaultProject.id,
       ]
       // if default project is set, ensure it is first
-      if (this.#defaultProjectId) {
-        const idx = ids.findIndex(p => p === this.#defaultProjectId)
+      const configured = this.#configuredDefault
+      if (configured) {
+        const idx = ids.findIndex(p => p === configured)
         if (idx > 0) {
           ids.splice(idx, 1)
-          ids.unshift(this.#defaultProjectId)
+          ids.unshift(configured)
         }
       }
       return ids
@@ -614,9 +612,16 @@ export class ProjectsManager extends ADisposable {
     // If context is default project
     // - document does not belong to any project
     // - document is not excluded
-    if (projectId === ProjectsManager.DefaultProjectId) {
-      const owner = this.#ownerOf.get(uri)
-      return !owner && !this.#excludedDocuments.get(uri)
+    const configuredDefault = this.#configuredDefault
+    if (projectId === ProjectsManager.DefaultProjectId || projectId === configuredDefault) {
+      // Documents outside of every project belong to the configured default project (if any)
+      const isOrphan = !this.#ownerOf.get(uri) && !this.#excludedDocuments.get(uri)
+      if (projectId === ProjectsManager.DefaultProjectId) {
+        return isOrphan && !configuredDefault
+      }
+      if (isOrphan) {
+        return true
+      }
     }
     const project = this.#projectById.get(projectId)
     return includes(project, uri)
@@ -749,7 +754,7 @@ export class ProjectsManager extends ADisposable {
   ownerProjectId(document: LangiumDocument | URI | string): ProjectId {
     return this.#ownerOf.get(normalizeUri(document))?.id
       // if no owner, return default project
-      ?? this.#defaultProjectId
+      ?? this.#configuredDefault
       ?? ProjectsManager.DefaultProjectId
   }
 
@@ -889,9 +894,6 @@ export class ProjectsManager extends ADisposable {
 
   clearCaches(): void {
     logger.trace('clearCaches')
-    if (this.#defaultProjectId && !this.#projects.some(p => p.id === this.#defaultProjectId)) {
-      this.#defaultProjectId = undefined
-    }
     this.#projectById.clear()
     this.#ownerOf.clear()
     this.#excludedDocuments.clear()

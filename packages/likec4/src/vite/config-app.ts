@@ -113,7 +113,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     customLogger: customLogger as Logger,
     plugins: [
       LikeC4VitePlugin({
-        languageServices: languageServices.languageServices,
+        likec4: languageServices,
         webcomponentPrefix,
         title,
         useHashHistory: cfg.useHashHistory,

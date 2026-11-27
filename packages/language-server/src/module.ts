@@ -105,11 +105,29 @@ interface LikeC4AddedSharedServices {
 }
 
 export type LikeC4SharedServices = LangiumSharedServices & LikeC4AddedSharedServices
+/**
+ * Workspace settings, known before the workspace is initialized
+ */
+export interface WorkspaceSettings {
+  /**
+   * Projects (by id) the consumer works with.
+   * The whole workspace is still parsed, for now the filter only picks the default project:
+   * if there is a single project, it owns documents outside of every project,
+   * and is used when no project is specified.
+   */
+  includeProjects?: ReadonlyArray<string> | undefined
+}
+
+export type WorkspaceSettingsModuleContext = {
+  workspaceSettings?: WorkspaceSettings | undefined
+}
+
 export type LikeC4SharedModuleContext =
   & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
   & FileSystemModuleContext
   & LikeC4ManualLayoutsModuleContext
   & UnstorageModuleContext
+  & WorkspaceSettingsModuleContext
 
 function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
   LikeC4SharedServices,
@@ -126,7 +144,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       Cache: services => new WorkspaceCache(services, DocumentState.Validated),
       IndexManager: services => new IndexManager(services),
       LangiumDocuments: services => new LangiumDocuments(services),
-      ProjectsManager: services => new ProjectsManager(services),
+      ProjectsManager: services => new ProjectsManager(services, context.workspaceSettings),
       WorkspaceManager: services => new LikeC4WorkspaceManager(services),
       DocumentBuilder: services => new LikeC4DocumentBuilder(services),
       FileSystemProvider: services => context.fileSystemProvider(services),

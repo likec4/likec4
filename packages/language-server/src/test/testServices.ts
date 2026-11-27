@@ -252,6 +252,7 @@ export function createTestServices(options?: {
  */
 export async function createMultiProjectTestServices<const Projects extends Record<string, Record<string, string>>>(
   data: Projects,
+  context?: Partial<LanguageServicesContext>,
 ) {
   const workspace = 'file:///test/workspace'
   const {
@@ -260,7 +261,7 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     addDocument,
     validateAll,
     resetState,
-  } = createTestServices({ workspace })
+  } = createTestServices({ workspace, ...(context && { context }) })
 
   await initialize()
 
