@@ -11,7 +11,6 @@ import { platform } from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { gunzipSync } from 'node:zlib'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { clearLogs, createGitRunner, fromWorkspace, logs, useRealWorkspace } from './__doubles__'
 import { publishHandler } from './handler'
 
 type MockModelData = {
@@ -48,27 +47,52 @@ function modelWithNodes(id: string, nodeCount: number): MockModelData {
   }
 }
 
-// The doubles live in `./__doubles__` because this suite runs with `--no-isolate` and shares
-// its module registry with `handler.integration.spec.ts` - see that module's header.
-vi.mock('@likec4/language-services/node', async importOriginal => {
-  const actual = await importOriginal<typeof import('@likec4/language-services/node')>()
-  const doubles = await import('./__doubles__')
-  doubles.rememberRealWorkspace(actual.fromWorkspace)
-  return { ...actual, fromWorkspace: doubles.fromWorkspace }
+const { logs, fakeLogger, createGitRunner, fromWorkspace } = vi.hoisted(() => {
+  /** Lines captured from the faked `createLikeC4Logger` */
+  const logs = {
+    info: [] as string[],
+    warn: [] as string[],
+    error: [] as string[],
+  }
+  const fakeLogger = () => ({
+    info: (msg: string) => void logs.info.push(msg),
+    debug: () => {},
+    warn: (msg: unknown) => void logs.warn.push(String(msg)),
+    warnOnce: (msg: string) => void logs.warn.push(msg),
+    error: (msg: unknown) => void logs.error.push(String(msg)),
+    clearScreen: () => {},
+    hasErrorLogged: () => false,
+    hasWarned: false,
+  })
+  return {
+    logs,
+    fromWorkspace: vi.fn<(...args: unknown[]) => Promise<unknown>>(),
+    fakeLogger,
+    createGitRunner: vi.fn<() => (args: readonly string[]) => Promise<string>>(),
+  }
 })
+
+function clearLogs(): void {
+  logs.info.length = 0
+  logs.warn.length = 0
+  logs.error.length = 0
+}
+
+vi.mock('@likec4/language-services/node', async importOriginal => ({
+  ...(await importOriginal<typeof import('@likec4/language-services/node')>()),
+  fromWorkspace,
+}))
 
 // `readGitProvenance`, `parseGitOrigin` etc. stay real - only spawning `git` is faked
-vi.mock('./git', async importOriginal => {
-  const actual = await importOriginal<typeof import('./git')>()
-  const doubles = await import('./__doubles__')
-  return { ...actual, createGitRunner: doubles.createGitRunner }
-})
+vi.mock('./git', async importOriginal => ({
+  ...(await importOriginal<typeof import('./git')>()),
+  createGitRunner,
+}))
 
-vi.mock('../../logger', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../logger')>()
-  const doubles = await import('./__doubles__')
-  return { ...actual, createLikeC4Logger: doubles.fakeLogger }
-})
+vi.mock('../../logger', async importOriginal => ({
+  ...(await importOriginal<typeof import('../../logger')>()),
+  createLikeC4Logger: fakeLogger,
+}))
 
 /** A runner that behaves as if `git` is not installed, or this is not a repository. */
 function noGitRunner() {
@@ -114,8 +138,6 @@ describe('publish handler', () => {
     process.exitCode = previousExitCode
     await rm(tmp, { recursive: true, force: true })
     vi.clearAllMocks()
-    // the double is shared with `handler.integration.spec.ts`, which needs the real thing
-    useRealWorkspace()
   })
 
   /**
