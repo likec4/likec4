@@ -83,9 +83,10 @@ export default defineConfig([
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
     format: 'cjs',
-    platform: 'browser',
     target: false,
     inputOptions: {
+      // The `cjs` format always targets Node.js, so `platform: 'browser'` must be set here
+      platform: 'browser',
       resolve: {
         conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],
       },
