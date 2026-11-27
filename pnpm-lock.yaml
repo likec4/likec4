@@ -2909,8 +2909,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
       d3-zoom:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.1
+        version: 3.0.1
       defu:
         specifier: catalog:utils
         version: 6.1.7
@@ -7601,8 +7601,8 @@ packages:
     peerDependencies:
       d3-selection: 2 - 3
 
-  d3-zoom@3.0.0:
-    resolution: {integrity: sha512-b8AmV3kfQaqWAuacbPuNbL6vahnOJflOhexLzMMNLga62+/nh0JzvJ0aO/5a5MVgUFGS7Hu1P9P03o3fJkDCyw==}
+  d3-zoom@3.0.1:
+    resolution: {integrity: sha512-kfjD3BDQu/FOatpZ6JdMSyIoDwTxIpI29ySTI2J5ZlDaH1WbuJGQJ2Q9oJkWTEZEW98j6idezoomSD3Cn2zwiw==}
     engines: {node: '>=12'}
 
   data-uri-to-buffer@4.0.1:
@@ -8158,10 +8158,6 @@ packages:
 
   has-tostringtag@1.0.2:
     resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
-    engines: {node: '>= 0.4'}
-
-  hasown@2.0.3:
-    resolution: {integrity: sha512-ej4AhfhfL2Q2zpMmLo7U1Uv9+PyhIZpgQLGT1F9miIGmiCJIoCgSmczFdrc97mWT4kVY72KA+WnnhJ5pghSvSg==}
     engines: {node: '>= 0.4'}
 
   hasown@2.0.4:
@@ -14211,7 +14207,7 @@ snapshots:
 
   '@types/node-fetch@2.6.13':
     dependencies:
-      '@types/node': 18.19.130
+      '@types/node': 22.20.5
       form-data: 4.0.6
 
   '@types/node@17.0.45': {}
@@ -14537,7 +14533,7 @@ snapshots:
       d3-drag: 3.0.0
       d3-interpolate: 3.0.1
       d3-selection: 3.0.0
-      d3-zoom: 3.0.0
+      d3-zoom: 3.0.1
 
   '@yuku-toolchain/darwin-arm64@0.28.1':
     optional: true
@@ -15133,7 +15129,7 @@ snapshots:
       d3-selection: 3.0.0
       d3-timer: 3.0.1
 
-  d3-zoom@3.0.0:
+  d3-zoom@3.0.1:
     dependencies:
       d3-dispatch: 3.0.1
       d3-drag: 3.0.0
@@ -15738,10 +15734,6 @@ snapshots:
     dependencies:
       has-symbols: 1.1.0
 
-  hasown@2.0.3:
-    dependencies:
-      function-bind: 1.1.2
-
   hasown@2.0.4:
     dependencies:
       function-bind: 1.1.2
@@ -15992,7 +15984,7 @@ snapshots:
 
   is-core-module@2.16.2:
     dependencies:
-      hasown: 2.0.3
+      hasown: 2.0.4
 
   is-decimal@2.0.1: {}
 
