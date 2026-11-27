@@ -260,6 +260,43 @@ describe('computeCompareView', () => {
     expect(filterCompareView(view, 'changes')).toBe(view)
   })
 
+  it('matches dynamic view steps by source path, not by position', () => {
+    const base = modelData()
+    const step = (source: string, target: string, title: string, astPath: string) => ({
+      source,
+      target,
+      title,
+      astPath,
+    })
+    const flow = {
+      [_type]: 'dynamic',
+      [_stage]: 'parsed',
+      id: ViewId('flow'),
+      title: null,
+      description: null,
+      tags: null,
+      links: null,
+      rules: [],
+      variant: 'sequence',
+      steps: [
+        step('cloud.api', 'customer', 'calls', '/steps@0'),
+        // only exists after the diff, so the steps below it are numbered one higher
+        step('customer', 'cloud.payments', 'pays', '/steps@1'),
+        step('cloud.api', 'cloud.audit', 'logs', '/steps@2'),
+        step('customer', 'cloud.audit', 'audits', '/steps@3'),
+      ],
+    } as unknown as ParsedView
+    const data = { ...base, views: { ...base.views, [flow.id]: flow } }
+    const { view } = computeCompareView(flow, createCompareModels(data, DiffId('rfc1'))!)!
+    const steps = view.edges.map(e => `${e.label}:${e.diffStatus ?? 'unchanged'}`)
+    expect(steps).toEqual([
+      'calls:unchanged',
+      'pays:added',
+      'logs:unchanged',
+      'audits:unchanged',
+    ])
+  })
+
   it('drops sequence steps hidden by the mode', () => {
     const node = (id: string, diffStatus?: 'added') => ({
       id,

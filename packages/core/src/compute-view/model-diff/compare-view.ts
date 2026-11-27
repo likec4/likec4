@@ -200,7 +200,7 @@ function countStatuses(items: ReadonlyArray<ComputedNode | ComputedEdge>): DiffS
  * Nodes and edges are marked with their diff status.
  *
  * - Nodes are matched by id.
- * - Edges are matched by id, then by source path (dynamic views), then by source and target.
+ * - Edges are matched by source path (dynamic view steps), then by id (other edges), then by source and target.
  * - An edge is `modified` if its relationships changed.
  * - A node is `modified` if its label or tags changed, or if it is listed in `modified`.
  *
@@ -243,9 +243,19 @@ function mergeComputedViews<A extends AnyAux>(
   }
 
   const unmatched = new Map((before?.edges ?? []).map(edge => [edge.id, edge]))
+  // Steps of a dynamic view are numbered by position, so a step the diff inserts shifts the ids of
+  // the steps after it. Match steps by their source path first, before any edge is matched by id.
+  const bySourcePath = new Map<string, ComputedEdge<A>>()
+  for (const edge of after?.edges ?? []) {
+    const previous = edge.astPath ? ifind(unmatched.values(), c => c.astPath === edge.astPath) : undefined
+    if (previous) {
+      bySourcePath.set(edge.id, previous)
+      unmatched.delete(previous.id)
+    }
+  }
   const findMatch = (edge: ComputedEdge<A>): ComputedEdge<A> | undefined =>
-    unmatched.get(edge.id)
-      ?? (edge.astPath ? ifind(unmatched.values(), c => c.astPath === edge.astPath) : undefined)
+    bySourcePath.get(edge.id)
+      ?? (edge.astPath ? undefined : unmatched.get(edge.id))
       ?? ifind(unmatched.values(), c => c.source === edge.source && c.target === edge.target)
 
   const edges: ComputedEdge<A>[] = []
