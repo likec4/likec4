@@ -10,14 +10,7 @@ import type { IsAnyOrNever } from './_common'
  */
 export type ModelStage = 'parsed' | 'computed' | 'layouted'
 
-export type ExtractOnStage<T, S extends ModelStage> = Extract<T, { [_stage]: S }>
-
-export function isOnStage<T extends { [_stage]: ModelStage }, S extends ModelStage>(
-  value: T,
-  stage: S,
-): value is ExtractOnStage<T, S> {
-  return value[_stage] === stage
-}
+export type ExtractOnStage<T, S extends ModelStage> = Extract<T, { readonly [_stage]: S }>
 
 /**
  * Property name to store the stage of the model
@@ -29,7 +22,7 @@ export type _stage = typeof _stage
 
 export type inferStage<A> =
   // dprint-ignore
-  A extends { ['_stage']: infer S extends ModelStage }
+  A extends { [_stage]: infer S extends ModelStage }
    ? IsAnyOrNever<S> extends true
      ? never
      : S
@@ -46,7 +39,7 @@ export type _type = typeof _type
 
 export type inferType<A> =
   // dprint-ignore
-  A extends { ['_type']: infer T }
+  A extends { [_type]: infer T }
     ? IsAnyOrNever<T> extends true
       ? never
       : T

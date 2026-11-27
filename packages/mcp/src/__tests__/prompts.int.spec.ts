@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair } from './test-utils'
+import { describe } from 'vitest'
+import { createMCPTest } from './test-utils'
 
 const DSL = `
   specification {
@@ -15,9 +15,10 @@ const DSL = `
   }
 `
 
+const it = createMCPTest(DSL)
+
 describe('MCP prompts protocol round-trip', () => {
-  it('getPrompt returns a user message with apply-semantic-layout instructions', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('getPrompt returns a user message with apply-semantic-layout instructions', async ({ pair, expect }) => {
     const result = await pair.client.getPrompt({
       name: 'apply_semantic_layout',
       arguments: { projectId: 'default', viewId: 'index' },
@@ -34,8 +35,7 @@ describe('MCP prompts protocol round-trip', () => {
     expect(text).toContain('viewId: `index`')
   })
 
-  it('exposes prompt argument descriptions in listPrompts', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('exposes prompt argument descriptions in listPrompts', async ({ pair, expect }) => {
     const { prompts } = await pair.client.listPrompts()
     const prompt = prompts.find(p => p.name === 'apply_semantic_layout')
     expect(prompt).toBeDefined()

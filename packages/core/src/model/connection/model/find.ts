@@ -52,14 +52,8 @@ export function findConnection<A extends AnyAux>(
   if (directed && reverse) {
     return [directed, reverse]
   }
-  if (directed) {
-    return [directed]
-  }
-  if (reverse) {
-    return [reverse]
-  }
-
-  return []
+  const connection = directed ?? reverse
+  return connection ? [connection] : []
 }
 
 /**

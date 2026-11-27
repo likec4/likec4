@@ -1,4 +1,4 @@
-import z from 'zod/v4'
+import z from 'zod'
 import { RELATIVE_PATH_REGEX } from './schema.include'
 
 /**

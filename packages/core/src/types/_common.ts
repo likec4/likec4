@@ -92,29 +92,4 @@ export type OrString = string & Record<never, never>
  */
 export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V
 
-type ExactObject<T, InputType = unknown> =
-  & {
-    [KeyType in keyof T]:
-      // dprint-ignore
-      undefined extends T[KeyType]
-        ? T[KeyType] | undefined
-        : T[KeyType]
-    // dprint-ignore
-    // IsNever<T[KeyType]> extends true
-    //   ? never
-    //   : undefined extends T[KeyType]
-    //     ? T[KeyType] | undefined
-    //     : T[KeyType]
-  }
-  & Record<Exclude<keyof InputType, KeysOfUnion<T>>, never>
-
-/**
- * Allows only exact properties of `U` to be present in `T` and omits undefined values
- *
- * See {@link Exact} for more details (this version is non-deep)
- */
-export function exact<Expected, T extends ExactObject<Expected, T>>(a: T): Expected {
-  return omitBy(a, v => v === undefined) as Expected
-}
-
 export type IsAnyOrNever<T> = Or<IsAny<T>, IsNever<T>>

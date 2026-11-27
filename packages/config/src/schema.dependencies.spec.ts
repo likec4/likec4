@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, it } from 'vitest'
-import z from 'zod/v4'
+import z from 'zod'
 import { LikeC4ProjectConfigOps, LikeC4ProjectJsonConfigSchema, validateProjectConfig } from './schema'
 
 const validate = (dependencies: unknown) => validateProjectConfig({ name: 'consumer', dependencies })

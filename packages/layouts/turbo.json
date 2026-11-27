@@ -6,7 +6,7 @@
   "tasks": {
     "generate": {
       "inputs": [
-        "scripts/*.ts",
+        "scripts/*",
         "src/**/*.md"
       ],
       "outputs": [

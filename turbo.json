@@ -20,10 +20,12 @@
   "tasks": {
     // This is transit node - https://turborepo.dev/docs/core-concepts/package-and-task-graph#transit-nodes
     "sources": {
-      "dependsOn": ["^sources"]
+      "dependsOn": ["^sources"],
+      "outputLogs": "new-only"
     },
     "generate": {
-      "dependsOn": ["^generate"]
+      "dependsOn": ["^generate"],
+      "outputLogs": "new-only"
     },
     "typecheck": {
       "dependsOn": [
@@ -82,6 +84,7 @@
       "outputs": [
         "*.tgz"
       ],
+      "cache": false,
       "outputLogs": "new-only"
     },
     "lint:package": {

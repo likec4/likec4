@@ -12,23 +12,13 @@
       "inputs": [
         "src/*.ts",
         "tsconfig.json",
-      ],
-      "outputs": [
-        "lib/**",
-        "*.tsbuildinfo"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
     "build": {
       "dependsOn": [
         "sources",
         "@likec4/diagram#build"
-      ],
-      "outputs": [
-        "dist/**",
-        "styled-system/**"
-      ],
-      "outputLogs": "new-only"
+      ]
     }
   }
 }

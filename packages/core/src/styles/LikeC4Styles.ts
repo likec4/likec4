@@ -338,11 +338,11 @@ export class LikeC4Styles {
   tagColor(
     tag: typeof DefaultTagColors[number] | ThemeColor | CustomColor | ColorLiteral,
   ): ThemeColorValues['elements'] {
-    if (this.isThemeColor(tag)) {
-      return this.theme.colors[tag].elements
-    }
     if (isDefaultTagColor(tag)) {
       return this.computeFrom(DefaultTagColorValues[tag]).elements
+    }
+    if (this.isThemeColor(tag)) {
+      return this.theme.colors[tag].elements
     }
     return this.computeFrom(tag).elements
   }

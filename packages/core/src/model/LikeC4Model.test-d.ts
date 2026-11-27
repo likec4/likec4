@@ -11,6 +11,7 @@ import {
   type aux,
   type AuxFromLikeC4ModelData,
   type ComputedDeploymentView,
+  type ComputedDynamicView,
   type ComputedElementView,
   type ComputedLikeC4ModelData,
   type ComputedView,
@@ -328,6 +329,22 @@ test('LikeC4Model type guards', () => {
       expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel<A, ComputedView<A>>>()
     }
 
+    expectTypeOf(v.stage).toEqualTypeOf<'computed'>()
+    expectTypeOf(v._type).toEqualTypeOf<'element' | 'deployment' | 'dynamic'>()
+    expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<A> | null>()
+    if (v.isScopedElementView()) {
+      expectTypeOf(v._type).toEqualTypeOf<'element'>()
+      expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<A>>()
+    }
+    if (v.isDynamicView()) {
+      expectTypeOf(v._type).toEqualTypeOf<'dynamic'>()
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DynamicView<A, ComputedDynamicView<A>>>()
+    }
+    if (v.isDeploymentView()) {
+      expectTypeOf(v._type).toEqualTypeOf<'deployment'>()
+      expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DeploymentView<A, ComputedDeploymentView<A>>>()
+    }
+
     expectTypeOf(unknownModel.element('cloud').defaultView).toExtend<
       | null
       | LikeC4ViewModel<A, ComputedElementView<A>>
@@ -376,14 +393,19 @@ test('LikeC4Model type guards', () => {
       expectTypeOf(node.height).toEqualTypeOf<number>()
     }
 
+    expectTypeOf(v._type).toEqualTypeOf<'element' | 'deployment' | 'dynamic'>()
     expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<A> | null>()
     if (v.isScopedElementView()) {
+      expectTypeOf(v._type).toEqualTypeOf<'element'>()
       expectTypeOf(v.viewOf).toEqualTypeOf<ElementModel<A>>()
     }
     if (v.isDynamicView()) {
+      expectTypeOf(v._type).toEqualTypeOf<'dynamic'>()
       expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DynamicView<A, LayoutedDynamicView<A>>>()
+      expectTypeOf(v.$layouted).toEqualTypeOf<LayoutedDynamicView<A>>()
     }
     if (v.isDeploymentView()) {
+      expectTypeOf(v._type).toEqualTypeOf<'deployment'>()
       expectTypeOf(v).toEqualTypeOf<LikeC4ViewModel.DeploymentView<A, LayoutedDeploymentView<A>>>()
     }
 

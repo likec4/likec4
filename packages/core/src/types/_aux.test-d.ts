@@ -185,6 +185,8 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'computed' | 'layouted'>>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | string[]>>()
+
+    expectTypeOf<aux.Spec<A>>().toEqualTypeOf<aux.SpecAux<string, string, string, string, string>>()
   })
 
   it('should work with UnknownComputed', () => {
@@ -214,6 +216,10 @@ describe('Aux', () => {
     expectAuxTypes<never>().toEqualTypeOf<AllResolvedAsNever>()
     expectTypeOf<aux.Tags<never>>().toEqualTypeOf<readonly never[]>()
     expectTypeOf<aux.Metadata<never>>().toBeNever()
+
+    expectTypeOf<aux.Spec<A>>().toEqualTypeOf<SpecAux<never, never, never, never, never>>()
+
+    expectTypeOf<aux.Spec<never>>().toEqualTypeOf<SpecAux<never, never, never, never, never>>()
   })
 
   it('should work with AnyParsed (fallback to UnknownParsed)', () => {
@@ -236,12 +242,15 @@ describe('Aux', () => {
     expectAuxTypes<A>().toEqualTypeOf<AllResolvedAsStringWithStage<'parsed' | 'computed' | 'layouted'>>()
     expectTypeOf<aux.Tags<A>>().toEqualTypeOf<readonly string[]>()
     expectTypeOf<aux.Metadata<A>>().toEqualTypeOf<Record<string, string | string[]>>()
+    expectTypeOf<aux.Spec<A>>().toEqualTypeOf<aux.SpecAux<string, string, string, string, string>>()
   })
 
   it('should work with any', () => {
     expectAuxTypes<any>().toEqualTypeOf<AllResolvedAsStringWithStage<'parsed' | 'computed' | 'layouted'>>()
     expectTypeOf<aux.Tags<any>>().toEqualTypeOf<readonly string[]>()
     expectTypeOf<aux.Metadata<any>>().toEqualTypeOf<Record<string, string | string[]>>()
+
+    expectTypeOf<aux.Spec<any>>().toEqualTypeOf<aux.SpecAux<string, string, string, string, string>>()
 
     // Check StrictTypes from aux.*
     expectTypeOf<aux.StrictFqn<any>>().toEqualTypeOf<scalar.Fqn<string>>()

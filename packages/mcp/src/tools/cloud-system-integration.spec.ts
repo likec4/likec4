@@ -2,8 +2,8 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair, structured } from '../__tests__/test-utils'
+import { describe } from 'vitest'
+import { createMCPTest, structured } from '../__tests__/test-utils'
 
 /**
  * Integration tests using the official cloud-system example model.
@@ -332,25 +332,25 @@ model {
 }
 `
 
-const createCloudSystemPair = () =>
-  createMCPTestPair({
-    docs: {
-      '_spec.c4': SPEC,
-      'model.c4': MODEL,
-      'externals.c4': EXTERNALS,
-      'cloud/next.c4': CLOUD_NEXT,
-      'cloud/ui.c4': CLOUD_UI,
-      'cloud/legacy.c4': CLOUD_LEGACY,
-    },
-  })
+const it = createMCPTest({
+  docs: {
+    '_spec.c4': SPEC,
+    'model.c4': MODEL,
+    'externals.c4': EXTERNALS,
+    'cloud/next.c4': CLOUD_NEXT,
+    'cloud/ui.c4': CLOUD_UI,
+    'cloud/legacy.c4': CLOUD_LEGACY,
+  },
+})
 
 describe('cloud-system integration tests', () => {
   describe('subgraph-summary', () => {
-    it('should summarize cloud system descendants', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'subgraph-summary',
-        arguments: { elementId: 'cloud', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    it('should summarize cloud system descendants', async ({ callTool, expect }) => {
+      const result = await callTool('subgraph-summary', {
+        elementId: 'cloud',
+        maxDepth: 10,
+        metadataKeys: undefined,
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -390,11 +390,12 @@ describe('cloud-system integration tests', () => {
       expect(data['totalDescendants']).toBe(14)
     })
 
-    it('should filter metadata keys for cloud.ui descendants', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'subgraph-summary',
-        arguments: { elementId: 'cloud.ui', maxDepth: 5, metadataKeys: ['version'], project: 'default' },
+    it('should filter metadata keys for cloud.ui descendants', async ({ callTool, expect }) => {
+      const result = await callTool('subgraph-summary', {
+        elementId: 'cloud.ui',
+        maxDepth: 5,
+        metadataKeys: ['version'],
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -411,11 +412,12 @@ describe('cloud-system integration tests', () => {
       }
     })
 
-    it('should respect maxDepth on amazon subtree', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'subgraph-summary',
-        arguments: { elementId: 'amazon', maxDepth: 1, metadataKeys: undefined, project: 'default' },
+    it('should respect maxDepth on amazon subtree', async ({ callTool, expect }) => {
+      const result = await callTool('subgraph-summary', {
+        elementId: 'amazon',
+        maxDepth: 1,
+        metadataKeys: undefined,
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -430,11 +432,12 @@ describe('cloud-system integration tests', () => {
       expect(data['truncatedByDepth']).toBe(true)
     })
 
-    it('should include tags in amazon descendants', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'subgraph-summary',
-        arguments: { elementId: 'amazon', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    it('should include tags in amazon descendants', async ({ callTool, expect }) => {
+      const result = await callTool('subgraph-summary', {
+        elementId: 'amazon',
+        maxDepth: 10,
+        metadataKeys: undefined,
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -451,11 +454,12 @@ describe('cloud-system integration tests', () => {
       expect(pgTblUsers.tags).toContain('deprecated')
     })
 
-    it('should include relationship counts for cloud.next children', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'subgraph-summary',
-        arguments: { elementId: 'cloud.next', maxDepth: 10, metadataKeys: undefined, project: 'default' },
+    it('should include relationship counts for cloud.next children', async ({ callTool, expect }) => {
+      const result = await callTool('subgraph-summary', {
+        elementId: 'cloud.next',
+        maxDepth: 10,
+        metadataKeys: undefined,
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -471,11 +475,11 @@ describe('cloud-system integration tests', () => {
   })
 
   describe('query-by-tag-pattern', () => {
-    it('should find deprecated elements with prefix match', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'query-by-tag-pattern',
-        arguments: { pattern: 'deprec', matchMode: 'prefix', project: 'default' },
+    it('should find deprecated elements with prefix match', async ({ callTool, expect }) => {
+      const result = await callTool('query-by-tag-pattern', {
+        pattern: 'deprec',
+        matchMode: 'prefix',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -493,11 +497,11 @@ describe('cloud-system integration tests', () => {
       expect(matchedTags).toContain('deprecated')
     })
 
-    it('should find api-tagged elements with contains match', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'query-by-tag-pattern',
-        arguments: { pattern: 'api', matchMode: 'contains', project: 'default' },
+    it('should find api-tagged elements with contains match', async ({ callTool, expect }) => {
+      const result = await callTool('query-by-tag-pattern', {
+        pattern: 'api',
+        matchMode: 'contains',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -509,11 +513,11 @@ describe('cloud-system integration tests', () => {
       expect(ids).toContain('cloud.next.graphql')
     })
 
-    it('should find db-tagged elements with suffix match', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'query-by-tag-pattern',
-        arguments: { pattern: 'db', matchMode: 'suffix', project: 'default' },
+    it('should find db-tagged elements with suffix match', async ({ callTool, expect }) => {
+      const result = await callTool('query-by-tag-pattern', {
+        pattern: 'db',
+        matchMode: 'suffix',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -525,11 +529,11 @@ describe('cloud-system integration tests', () => {
       expect(ids).toContain('amazon.lambdas')
     })
 
-    it('should find next-tagged elements', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'query-by-tag-pattern',
-        arguments: { pattern: 'next', matchMode: 'prefix', project: 'default' },
+    it('should find next-tagged elements', async ({ callTool, expect }) => {
+      const result = await callTool('query-by-tag-pattern', {
+        pattern: 'next',
+        matchMode: 'prefix',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -541,11 +545,11 @@ describe('cloud-system integration tests', () => {
       expect(results.length).toBe(2)
     })
 
-    it('should return empty for non-matching pattern', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'query-by-tag-pattern',
-        arguments: { pattern: 'nonexistenttag', matchMode: 'prefix', project: 'default' },
+    it('should return empty for non-matching pattern', async ({ callTool, expect }) => {
+      const result = await callTool('query-by-tag-pattern', {
+        pattern: 'nonexistenttag',
+        matchMode: 'prefix',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -556,19 +560,15 @@ describe('cloud-system integration tests', () => {
   })
 
   describe('batch-read-elements', () => {
-    it('should read multiple cloud system elements with correct details', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'batch-read-elements',
-        arguments: {
-          ids: [
-            'cloud.ui.dashboard',
-            'cloud.next.backend',
-            'amazon.lambdas',
-            'nonexistent.element',
-          ],
-          project: 'default',
-        },
+    it('should read multiple cloud system elements with correct details', async ({ callTool, expect }) => {
+      const result = await callTool('batch-read-elements', {
+        ids: [
+          'cloud.ui.dashboard',
+          'cloud.next.backend',
+          'amazon.lambdas',
+          'nonexistent.element',
+        ],
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -607,14 +607,10 @@ describe('cloud-system integration tests', () => {
       expect(lambdas.children).toContain('amazon.lambdas.fn_enrich')
     })
 
-    it('should read elements with metadata', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'batch-read-elements',
-        arguments: {
-          ids: ['cloud.ui'],
-          project: 'default',
-        },
+    it('should read elements with metadata', async ({ callTool, expect }) => {
+      const result = await callTool('batch-read-elements', {
+        ids: ['cloud.ui'],
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -631,15 +627,11 @@ describe('cloud-system integration tests', () => {
   })
 
   describe('element-diff', () => {
-    it('should diff dashboard vs mobile (different kinds, same parent)', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'element-diff',
-        arguments: {
-          element1Id: 'cloud.ui.dashboard',
-          element2Id: 'cloud.ui.mobile',
-          project: 'default',
-        },
+    it('should diff dashboard vs mobile (different kinds, same parent)', async ({ callTool, expect }) => {
+      const result = await callTool('element-diff', {
+        element1Id: 'cloud.ui.dashboard',
+        element2Id: 'cloud.ui.mobile',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -677,15 +669,11 @@ describe('cloud-system integration tests', () => {
       expect(relationships.outgoingShared).toBeGreaterThanOrEqual(3)
     })
 
-    it('should diff elements with different tags (lambdas vs legacy services)', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'element-diff',
-        arguments: {
-          element1Id: 'amazon.lambdas',
-          element2Id: 'cloud.legacy.backend.services',
-          project: 'default',
-        },
+    it('should diff elements with different tags (lambdas vs legacy services)', async ({ callTool, expect }) => {
+      const result = await callTool('element-diff', {
+        element1Id: 'amazon.lambdas',
+        element2Id: 'cloud.legacy.backend.services',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()
@@ -706,15 +694,11 @@ describe('cloud-system integration tests', () => {
       expect(kindDiff.element2Value).toBe('component')
     })
 
-    it('should diff db-tagged elements (pg vs aurora)', async () => {
-      await using pair = await createCloudSystemPair()
-      const result = await pair.client.callTool({
-        name: 'element-diff',
-        arguments: {
-          element1Id: 'amazon.rds.pg',
-          element2Id: 'amazon.rds.aurora',
-          project: 'default',
-        },
+    it('should diff db-tagged elements (pg vs aurora)', async ({ callTool, expect }) => {
+      const result = await callTool('element-diff', {
+        element1Id: 'amazon.rds.pg',
+        element2Id: 'amazon.rds.aurora',
+        project: 'default',
       })
 
       expect(result.structuredContent).toBeDefined()

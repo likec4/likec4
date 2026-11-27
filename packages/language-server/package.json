@@ -178,6 +178,7 @@
     "memfs": "catalog:",
     "oxlint": "catalog:",
     "tsdown": "catalog:tsdown",
+    "tsrs": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
@@ -190,9 +191,6 @@
     "jiti": {
       "optional": true
     }
-  },
-  "engines": {
-    "node": ">=22.23.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

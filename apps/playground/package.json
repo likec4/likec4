@@ -122,7 +122,6 @@
     "typescript": "catalog:",
     "ufo": "catalog:utils",
     "vite": "catalog:vite",
-    "vite-plugin-node-polyfills": "catalog:vite",
     "vscode": "npm:@codingame/monaco-vscode-extension-api@37.3.11",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageclient": "catalog:vscode",

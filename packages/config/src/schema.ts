@@ -18,7 +18,7 @@ import type {
   ProjectId,
 } from '@likec4/core/types'
 import JSON5 from 'json5'
-import z from 'zod/v4'
+import z from 'zod'
 import { DependenciesSchema, normalizeDependencies, projectNameSchema } from './schema.dependencies'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'

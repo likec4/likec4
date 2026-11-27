@@ -24,7 +24,7 @@ import {
 } from '@likec4/core/styles'
 import { exact } from '@likec4/core/types'
 import { isPlainObject } from 'remeda'
-import z from 'zod/v4'
+import z from 'zod'
 
 const opacity = z
   .int()

@@ -1,6 +1,7 @@
 {
   "js/ts.tsdk.path": "./node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  // "js/ts.experimental.useTsgo": true,
   "eslint.enable": false,
   "oxc.enable.oxlint": true,
   "oxc.enable.oxfmt": false,

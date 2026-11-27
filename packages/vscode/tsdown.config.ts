@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { stubBrotli } from '@likec4/devops/tsdown'
 import nodeModulesPolyfillPlugin from '@rolldown/plugin-node-polyfills'
 import { isProduction } from 'std-env'
-import { defineConfig } from 'tsdown'
+import { type UserConfig, defineConfig } from 'tsdown'
 import { fs } from 'zx'
 
 const isDev = !isProduction
@@ -15,10 +15,14 @@ const shared = {
   env: {
     NODE_ENV: isProduction ? 'production' : 'development',
   },
-  minify: isProduction,
-  outputOptions: {
-    keepNames: true,
-  },
+  minify: isProduction ?
+    {
+      compress: true,
+      mangle: {
+        keepNames: true,
+      },
+    } :
+    false,
   dts: false,
   deps: {
     neverBundle: ['vscode'],
@@ -26,7 +30,7 @@ const shared = {
   plugins: [
     stubBrotli(),
   ],
-}
+} satisfies UserConfig
 
 export default defineConfig([
   {
@@ -81,6 +85,7 @@ export default defineConfig([
     format: 'cjs',
     target: false,
     inputOptions: {
+      // The `cjs` format always targets Node.js, so `platform: 'browser'` must be set here
       platform: 'browser',
       resolve: {
         conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],

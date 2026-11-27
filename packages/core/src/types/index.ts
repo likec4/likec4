@@ -1,7 +1,5 @@
 export type * from './_common'
 
-export { exact } from './_common'
-
 export type * as aux from './_aux'
 
 export type {
@@ -10,6 +8,7 @@ export type {
   AnyComputed,
   AnyLayouted,
   AnyParsed,
+  AnySpec,
   Aux,
   AuxComputed,
   AuxLayouted,
@@ -19,9 +18,8 @@ export type {
   UnknownComputed,
   UnknownLayouted,
   UnknownParsed,
+  UnknownSpec,
 } from './_aux'
-
-export { preferDescription, preferSummary } from './_aux'
 
 export type * from '../geometry'
 export { BBox, RectBox } from '../geometry'
@@ -70,6 +68,14 @@ export {
   hasChildren,
   hasProp,
   isAnyOf,
+  isLayoutedStage,
   isNonEmptyArray,
+  isOnStage,
   isString,
 } from './guards'
+
+export {
+  exact,
+  preferDescription,
+  preferSummary,
+} from './helpers'
