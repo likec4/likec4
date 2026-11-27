@@ -278,6 +278,5 @@ declare module 'likec4:customization' {
 
   export type { CustomComponents, Customizables }
 
-
   export function CustomizationProvider(props: PropsWithChildren): JSX.Element
 }

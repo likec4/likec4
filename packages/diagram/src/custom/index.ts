@@ -72,6 +72,6 @@ export { createCustomization, customizeComponents } from '../customization/creat
 
 export type {
   CustomComponent,
-  CustomComponents,  
-  Customizables
+  CustomComponents,
+  Customizables,
 } from '../customization/customization-types'

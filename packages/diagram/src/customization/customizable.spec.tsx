@@ -6,11 +6,11 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { FC, ReactNode } from 'react'
+import type { Wrapper } from './customization-types'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { createCustomization, customizeComponents, type CustomizationProvider } from './createCustomization'
+import { type CustomizationProvider, createCustomization, customizeComponents } from './createCustomization'
 import { customizable } from './customizable'
-import type { Wrapper } from './customization-types'
 
 const SpecSlot = customizable('SpecSlot')(
   ({ label }: { label: string }) => <span data-testid="original">{label}</span>,
@@ -33,7 +33,7 @@ type SpecWrap = (wrapper: Wrapper<SpecSlotProps>) => FC<SpecSlotProps>
  */
 function specCustomization(value: SpecSlots | ((ctx: { wrap: SpecWrap }) => SpecSlots)): CustomizationProvider {
   return createCustomization({
-    components: customizeComponents(value as any)
+    components: customizeComponents(value as never),
   })
 }
 
@@ -74,7 +74,7 @@ describe('customizable / CustomizationProvider', () => {
     expect(html).not.toContain('data-testid="original"')
   })
 
-  it('wraps the original via defineCustomComponents({ wrap })', () => {
+  it('wraps the original via customizeComponents({ wrap })', () => {
     const Customization = specCustomization(({ wrap }) => ({
       SpecSlot: wrap(({ Original, label }) => (
         <div data-testid="wrapped">

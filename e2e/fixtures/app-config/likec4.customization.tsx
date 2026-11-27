@@ -1,4 +1,4 @@
-import { type ElementShapeProps, defineCustomComponents } from 'likec4/react'
+import { type ElementShapeProps, createCustomization, customizeComponents } from 'likec4/react'
 
 function CustomShape({ data, width, height }: ElementShapeProps) {
   const w = width ?? data.width
@@ -15,16 +15,18 @@ function CustomShape({ data, width, height }: ElementShapeProps) {
   )
 }
 
-export default defineCustomComponents(({ wrap }) => ({
-  // Replace
-  ElementShape: CustomShape,
-  // Wrap
-  LikeC4Diagram: wrap(({ Original, ...props }) => (
-    <>
-      <Original {...props} />
-      <div data-testid="custom-wrap" style={{ position: 'fixed', top: 8, right: 8, zIndex: 1000 }}>
-        customized
-      </div>
-    </>
-  )),
-}))
+export default createCustomization({
+  components: customizeComponents(({ wrap }) => ({
+    // Replace
+    ElementShape: CustomShape,
+    // Wrap
+    LikeC4Diagram: wrap(({ Original, ...props }) => (
+      <>
+        <Original {...props} />
+        <div data-testid="custom-wrap" style={{ position: 'fixed', top: 8, right: 8, zIndex: 1000 }}>
+          customized
+        </div>
+      </>
+    )),
+  })),
+})

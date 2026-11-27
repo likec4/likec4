@@ -612,7 +612,7 @@ these shortcuts control diagram zoom instead of browser page zoom. Tab out of th
 ### UI slots (experimental)
 
 :::caution[Experimental]
-Override shell UI pieces (`LikeC4Diagram`, logos, …) via `CustomizationProvider`.
+Override shell UI pieces (`LikeC4Diagram`, logos, …) with the provider from `createCustomization`.
 This API may change; slot names can grow, but treat helpers as experimental for now.
 :::
 
@@ -623,26 +623,28 @@ There are two customization layers:
 
 ```tsx
 import {
-  CustomizationProvider,
-  defineCustomComponents,
+  createCustomization,
+  customizeComponents,
   LikeC4ModelProvider,
   LikeC4View,
 } from 'likec4/react'
 
-const components = defineCustomComponents(({ wrap }) => ({
-  LogoSvg: (props) => <svg {...props}><text>Brand</text></svg>,
-  LikeC4View: wrap(({ Original, ...props }) => (
-    <Original {...props} pannable={false} />
-  )),
-}))
+const Customization = createCustomization({
+  components: customizeComponents(({ wrap }) => ({
+    Logo: (props) => <svg {...props}><text>Brand</text></svg>,
+    LikeC4View: wrap(({ Original, ...props }) => (
+      <Original {...props} pannable={false} />
+    )),
+  })),
+})
 
 function App() {
   return (
-    <CustomizationProvider components={components}>
+    <Customization>
       <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4View viewId="index" />
       </LikeC4ModelProvider>
-    </CustomizationProvider>
+    </Customization>
   )
 }
 ```
@@ -650,7 +652,7 @@ function App() {
 - **replace** — pass a component that receives the slot’s original props
 - **wrap** — use `wrap`; your component receives `{ Original, ...props }`
 
-Place `CustomizationProvider` above the diagram tree. Ordering relative to `LikeC4ModelProvider` does not matter. Prefer a module-scoped `components` constant so overrides stay HMR-friendly.
+Place the provider above the diagram tree. Ordering relative to `LikeC4ModelProvider` does not matter. Call `createCustomization` at module scope, not during render.
 
 With `@likec4/diagram`, import the same helpers from `@likec4/diagram/custom`.
 

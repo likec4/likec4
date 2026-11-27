@@ -16,14 +16,19 @@ describe('customizationModule', () => {
     expect(code).not.toContain('import.meta.hot')
   })
 
-  it('imports the customization file and keeps overrides across HMR updates', async () => {
+  it('renders the default export of the customization file in the provider', async () => {
     const customizationFile = '/workspace/likec4.customization.tsx'
     const result = await customizationModule.load.call({} as any, { customizationFile } as any)
     const code = typeof result === 'string' ? result : result.code
 
     expect(code).toContain(
-      `export { default as CustomizationProvider } from ${hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(customizationFile))}`,
+      `import { default as Customization } from ${
+        hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(customizationFile))
+      }`,
     )
+    expect(code).toContain('export function CustomizationProvider(props)')
+    // HMR of the customization file breaks without this import
+    expect(code).toContain(`import { jsx } from 'react/jsx-runtime'`)
     expect(code).not.toContain('import.meta.hot.accept(')
   })
 
