@@ -2,20 +2,9 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { useRealWorkspace } from '../../publish/__doubles__'
 import { runExportJson } from './handler'
 
-// Runs against real language services. The package runs specs with `--no-isolate`,
-// so the mock is shared with the publish specs, see `publish/__doubles__.ts`.
-vi.mock(import('@likec4/language-services/node'), async importOriginal => {
-  const actual = await importOriginal()
-  const doubles = await import('../../publish/__doubles__')
-  doubles.rememberRealWorkspace(actual.fromWorkspace)
-  return {
-    ...actual,
-    fromWorkspace: doubles.fromWorkspace as typeof actual.fromWorkspace,
-  }
-})
+// Runs against real language services
 
 const logger = {
   info: vi.fn<(msg: string) => void>(),
@@ -36,7 +25,6 @@ describe('export json handler', () => {
   let tmp: string
 
   beforeEach(async () => {
-    useRealWorkspace()
     tmp = await mkdtemp(join(tmpdir(), 'likec4-json-'))
   })
 

@@ -12,32 +12,48 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gunzipSync } from 'node:zlib'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { clearLogs, createGitRunner, logs, useRealWorkspace } from './__doubles__'
 import { publishHandler } from './handler'
 
-// The doubles live in `./__doubles__` because this suite runs with `--no-isolate` and shares
-// its module registry with `handler.spec.ts` - see that module's header. `fromWorkspace` is
-// mocked here too, but only so the double defaults to the real implementation no matter which
-// file registers the mock first: this suite always runs against real language services.
-vi.mock('@likec4/language-services/node', async importOriginal => {
-  const actual = await importOriginal<typeof import('@likec4/language-services/node')>()
-  const doubles = await import('./__doubles__')
-  doubles.rememberRealWorkspace(actual.fromWorkspace)
-  return { ...actual, fromWorkspace: doubles.fromWorkspace }
+const { logs, fakeLogger, createGitRunner } = vi.hoisted(() => {
+  /** Lines captured from the faked `createLikeC4Logger` */
+  const logs = {
+    info: [] as string[],
+    warn: [] as string[],
+    error: [] as string[],
+  }
+  const fakeLogger = () => ({
+    info: (msg: string) => void logs.info.push(msg),
+    debug: () => {},
+    warn: (msg: unknown) => void logs.warn.push(String(msg)),
+    warnOnce: (msg: string) => void logs.warn.push(msg),
+    error: (msg: unknown) => void logs.error.push(String(msg)),
+    clearScreen: () => {},
+    hasErrorLogged: () => false,
+    hasWarned: false,
+  })
+  return {
+    logs,
+    fakeLogger,
+    createGitRunner: vi.fn<() => (args: readonly string[]) => Promise<string>>(),
+  }
 })
 
-// only spawning `git` is faked, `readGitProvenance` and friends stay real
-vi.mock('./git', async importOriginal => {
-  const actual = await importOriginal<typeof import('./git')>()
-  const doubles = await import('./__doubles__')
-  return { ...actual, createGitRunner: doubles.createGitRunner }
-})
+function clearLogs(): void {
+  logs.info.length = 0
+  logs.warn.length = 0
+  logs.error.length = 0
+}
 
-vi.mock('../../logger', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../logger')>()
-  const doubles = await import('./__doubles__')
-  return { ...actual, createLikeC4Logger: doubles.fakeLogger }
-})
+// `readGitProvenance`, `parseGitOrigin` etc. stay real - only spawning `git` is faked
+vi.mock('./git', async importOriginal => ({
+  ...(await importOriginal<typeof import('./git')>()),
+  createGitRunner,
+}))
+
+vi.mock('../../logger', async importOriginal => ({
+  ...(await importOriginal<typeof import('../../logger')>()),
+  createLikeC4Logger: fakeLogger,
+}))
 
 const fixtures = join(dirname(fileURLToPath(import.meta.url)), '__fixtures__')
 
@@ -67,8 +83,6 @@ describe('publish handler (real workspace)', () => {
 
   beforeEach(() => {
     clearLogs()
-    // `handler.spec.ts` may have left a fake behind in the shared module registry
-    useRealWorkspace()
     sentBodies = []
     fetchMock.mockImplementation(async request => {
       sentBodies.push(new Uint8Array(await request.clone().arrayBuffer()))
