@@ -26,8 +26,10 @@ export const Route = createFileRoute('/')({
 
     throw redirect({
       to: '/single-index/',
+      search: true,
       mask: {
         to: '/',
+        search: true,
         unmaskOnReload: true,
       },
     })

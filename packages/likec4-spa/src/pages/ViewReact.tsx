@@ -21,8 +21,7 @@ import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useEffect, useRef } from 'react'
 import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'
-import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDiffPanel'
-import { selectDiff, useModelDiffState } from '../components/model-diff/state'
+import { ModelDiffPanel, useCompareView, useSelectOwnerDiff } from '../components/model-diff/ModelDiffPanel'
 import { NotFound } from '../components/NotFound'
 import { headerOps } from '../components/view-page/state'
 import { useCurrentProject, useCurrentView, useCurrentViewId, useModelDiffs, useProjectModel } from '../hooks'
@@ -35,29 +34,13 @@ export function ViewReact() {
   const [view, setLayoutType] = useCurrentView()
   const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
   const model = useProjectModel()
-  const { dynamic, diff: diffParam } = useSearch({
+  const { dynamic } = useSearch({
     from: '__root__',
   })
   const { diffs } = useModelDiffs()
-  const { diffId } = useModelDiffState()
   const compareView = useCompareView(viewId)
 
-  useEffect(() => {
-    if (view || diffParam || diffId) {
-      return
-    }
-    const owners = diffs.filter(diff => diff.views.some(item => item.id === viewId))
-    const owner = owners.length === 1 ? owners[0] : undefined
-    if (!owner) {
-      return
-    }
-    selectDiff(owner.id)
-    void navigate({
-      to: './',
-      replace: true,
-      search: (prev) => ({ ...prev, diff: owner.id }),
-    })
-  }, [view, diffParam, diffId, diffs, viewId, navigate])
+  useSelectOwnerDiff(!!view, viewId)
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
     void navigate({

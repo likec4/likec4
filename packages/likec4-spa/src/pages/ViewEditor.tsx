@@ -13,21 +13,24 @@ import { isDevelopment } from 'likec4:app-config'
 import { isAIAvailable, likec4rpc } from 'likec4:rpc'
 import { LazyAIChat } from '../aichat'
 import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'
-import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDiffPanel'
+import { ModelDiffPanel, useCompareView, useSelectOwnerDiff } from '../components/model-diff/ModelDiffPanel'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ProjectContext } from '../context/safeCtx'
-import { useCurrentProject, useCurrentView } from '../hooks'
+import { useCurrentProject, useCurrentView, useCurrentViewId, useModelDiffs } from '../hooks'
 import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 import { FocusElementFromUrl, ListenForDiagramStateChanges, OpenRelationshipBrowserFromUrl } from './ViewReact'
 
 export function ViewEditor() {
   const navigate = useNavigate()
   const project = useCurrentProject()
+  const viewId = useCurrentViewId()
   const [view, setLayoutType] = useCurrentView()
   const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
   const { $model: $likec4model } = useLikeC4ProjectContext()
   const { dynamic } = useSearch({ strict: false })
-  const compareView = useCompareView(view?.id)
+  const { diffs } = useModelDiffs()
+  const compareView = useCompareView(viewId)
+  useSelectOwnerDiff(!!view, viewId)
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
     void navigate({
@@ -41,18 +44,28 @@ export function ViewEditor() {
     })
   })
 
-  if (!view) {
-    return <NotFound />
+  // A view that only a diff introduces has no saved view, just the compare view
+  const shown = compareView ?? view
+  if (!shown) {
+    const owners = diffs.filter(diff => diff.views.some(item => item.id === viewId))
+    if (owners.length === 0) {
+      return <NotFound />
+    }
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <ModelDiffPanel viewId={viewId} />
+      </div>
+    )
   }
 
-  const notations = view.notation?.nodes ?? []
+  const notations = shown.notation?.nodes ?? []
   const hasNotations = notations.length > 0
   // The compare view is not the saved view: keep the editor off
   const isComparing = compareView !== null
 
   const diagram = (
     <LikeC4Diagram
-      view={compareView ?? view}
+      view={shown}
       zoomable
       pannable
       controls
@@ -93,7 +106,7 @@ export function ViewEditor() {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <CompareModelProvider viewId={view.id}>
+      <CompareModelProvider viewId={shown.id}>
         {isComparing ? diagram : (
           <LikeC4EditorProvider
             editor={{
@@ -122,7 +135,7 @@ export function ViewEditor() {
           </LikeC4EditorProvider>
         )}
       </CompareModelProvider>
-      <ModelDiffPanel viewId={view.id} />
+      <ModelDiffPanel viewId={shown.id} />
     </div>
   )
 }

@@ -2,8 +2,8 @@ import { type CompareViewMode, filterCompareView } from '@likec4/core/compute-vi
 import { type LayoutedView, type ViewId, DiffId } from '@likec4/core/types'
 import { token } from '@likec4/styles/tokens'
 import { Box, Group, Paper, SegmentedControl, Select, Stack, Text } from '@mantine/core'
-import { useNavigate } from '@tanstack/react-router'
-import { useMemo } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useEffect, useMemo } from 'react'
 import { useModelDiffs, useProjectModel } from '../../hooks'
 import { selectCompareMode, selectDiff, useModelDiffState } from './state'
 
@@ -41,6 +41,35 @@ export function useCompareView(viewId: ViewId | undefined): LayoutedView | null 
   const { diffId, mode } = useModelDiffState()
   const view = diffId && viewId ? views[diffId]?.[viewId] : undefined
   return useMemo(() => view ? filterCompareView(view, mode) : null, [view, mode])
+}
+
+/**
+ * A view that only a diff introduces opens with that diff selected,
+ * if exactly one diff introduces it and no diff is selected yet.
+ */
+export function useSelectOwnerDiff(viewExists: boolean, viewId: ViewId) {
+  const navigate = useNavigate()
+  const { diff: diffParam } = useSearch({
+    from: '__root__',
+  })
+  const { diffs } = useModelDiffs()
+  const { diffId } = useModelDiffState()
+  useEffect(() => {
+    if (viewExists || diffParam || diffId) {
+      return
+    }
+    const owners = diffs.filter(diff => diff.views.some(item => item.id === viewId))
+    const owner = owners.length === 1 ? owners[0] : undefined
+    if (!owner) {
+      return
+    }
+    selectDiff(owner.id)
+    void navigate({
+      to: './',
+      replace: true,
+      search: (prev) => ({ ...prev, diff: owner.id }),
+    })
+  }, [viewExists, diffParam, diffId, diffs, viewId, navigate])
 }
 
 /**
