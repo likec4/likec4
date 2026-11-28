@@ -3,7 +3,7 @@ import type { DiffId } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { useSearch } from '@tanstack/react-router'
 import { atom } from 'nanostores'
-import { useModelDiffs } from '../../context/ModelDiffsContext'
+import { useModelDiffs } from '../../hooks'
 
 /**
  * Selected diff (`null` shows the model as is) and compare mode, kept across views

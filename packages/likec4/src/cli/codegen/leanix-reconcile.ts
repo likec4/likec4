@@ -7,13 +7,12 @@
 import type { BridgeManifest, LeanixInventoryDryRun, LeanixInventorySnapshot } from '@likec4/leanix-bridge'
 import { readFile, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { isBridgeManifest, isLeanixInventorySnapshot, reconcileInventoryWithManifest } from '@likec4/leanix-bridge'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { LikeC4Model } from '../../model'
 import { asBridgeModel, buildBridgeArtifacts } from '../bridge/shared'
-import { ensureProject } from '../utils'
+import { ensureProject, initLikeC4 } from '../utils'
 
 const RECONCILE_REPORT_FILENAME = 'reconciliation-report.json'
 const ARTIFACT_MANIFEST = 'manifest.json'
@@ -52,11 +51,8 @@ export async function loadDryRunFromWorkspace(
   project: string | undefined,
   useDotBin: boolean,
 ): Promise<LeanixInventoryDryRun | undefined> {
-  await using likec4 = await fromWorkspace(workspacePath, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-  const { projectId } = ensureProject(likec4, project)
+  await using likec4 = await initLikeC4({ path: workspacePath, project: project, useDotBin: useDotBin })
+  const { projectId } = ensureProject(likec4)
   const model = await likec4.layoutedModel(projectId)
   if (model === LikeC4Model.EMPTY) return undefined
   const artifacts = buildBridgeArtifacts(asBridgeModel(model))

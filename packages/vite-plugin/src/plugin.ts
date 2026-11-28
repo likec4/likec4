@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core/types'
-import type { LikeC4LanguageServices } from '@likec4/language-services'
+import type { LikeC4, LikeC4LanguageServices } from '@likec4/language-services'
 import type {
   Plugin,
   PluginOption,
@@ -17,15 +17,15 @@ import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { limitFunction } from 'p-limit'
 import { resolve } from 'pathe'
-import { funnel, isBoolean } from 'remeda'
+import { funnel, isBoolean, map } from 'remeda'
 import { detectAI } from './ai/detect-ai'
 import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enableOpenProjectInEditor } from './openProjectInEditor'
-import { reloadModuleInEnvironments } from './reloadModule'
+import { codeHash, codeHashMeta, hasOutdatedModule, isModuleImported, reloadModuleInEnvironments } from './reloadModule'
 import { enablePluginRPC } from './rpc'
-import { splitErrorMessage } from './rpc/sendError'
+import { firstValidationError } from './validationError'
 import {
   type ProjectVirtualModule,
   type SharedVirtualModuleOptions,
@@ -106,6 +106,11 @@ export function LikeC4VitePlugin({
   const appOptions = resolveAppOptions({ title, theme, useHashHistory, webcomponentPrefix, customization }, appConfig)
 
   let likec4: LikeC4LanguageServices
+  /**
+   * LikeC4 instance, if available (not provided with deprecated `languageServices` option).
+   * Defines the projects the plugin works with.
+   */
+  let instance: LikeC4 | undefined
   let assetsDir: string
   let customizationFile: string | undefined
   let rpcEnabled = false
@@ -179,7 +184,9 @@ export function LikeC4VitePlugin({
       if (!module) {
         return null
       }
-      return await module.load(moduleopts({ project: likec4.project(projectId) }))
+      return await module.load(
+        moduleopts({ project: likec4.project(instance?.ensureProjectId(projectId) ?? projectId) }),
+      )
     }
 
     // Global virtual modules
@@ -189,15 +196,12 @@ export function LikeC4VitePlugin({
     }
     // Only projects with documents, or the fallback default project if the workspace is empty
     // (modules like `likec4:app-config` must still load)
-    const projects = likec4.projects()
+    const projects = instance
+      ? map(instance.projects(), id => likec4.project(id))
+      : likec4.projects()
     return await module.load(moduleopts({ projects }))
   }
 
-  /**
-   * Dev server only: code served to the client, by resolved id.
-   * Used to skip HMR updates when the generated code did not change.
-   */
-  const servedCode = new Map<string, string>()
   /**
    * Dev server only: results generated while checking for changes,
    * served by the next `load` instead of generating again.
@@ -223,7 +227,10 @@ export function LikeC4VitePlugin({
         }
       }
 
-      if (pluginOpts.languageServices) {
+      if (pluginOpts.likec4) {
+        instance = pluginOpts.likec4
+        likec4 = instance.languageServices
+      } else if (pluginOpts.languageServices) {
         likec4 = pluginOpts.languageServices
       } else {
         let cacheDir = pluginOpts.cacheDir
@@ -232,7 +239,8 @@ export function LikeC4VitePlugin({
         }
         const watch = isDev && (pluginOpts.watch ?? true)
 
-        const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
+        instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
+          includeProjects: pluginOpts.includeProjects,
           manualLayouts: true,
           graphviz: pluginOpts.graphviz ?? 'wasm',
           configureLogger: 'console',
@@ -295,7 +303,13 @@ export function LikeC4VitePlugin({
           return null
         }
         if (rpcEnabled) {
-          servedCode.set(id, codeOf(result))
+          // The hash of the served code is kept in the module graph of the environment,
+          // HMR skips environments that already have the same code
+          const code = codeOf(result)
+          return {
+            ...(typeof result === 'string' ? { code } : result),
+            meta: codeHashMeta(code),
+          }
         }
         return result
       },
@@ -329,14 +343,10 @@ export function LikeC4VitePlugin({
 
           /**
            * Reloads the module in every environment that imports it,
-           * but only if its generated code has changed
+           * but only where the served code differs from the generated one
            */
           const reloadModule = async (id: string): Promise<boolean> => {
-            const isImported = Object.values(server.environments).some(env => {
-              const md = env.moduleGraph.getModuleById(id)
-              return !!md && md.importers.size > 0
-            })
-            if (!isImported) {
+            if (!isModuleImported(server, id)) {
               return false
             }
             try {
@@ -344,14 +354,15 @@ export function LikeC4VitePlugin({
               if (!result) {
                 return false
               }
-              if (servedCode.get(id) === codeOf(result)) {
+              const hash = codeHash(codeOf(result))
+              if (!hasOutdatedModule(server, id, hash)) {
                 // drop the result of a change that was reverted before the module was loaded
                 pendingResults.delete(id)
                 logger.trace(k.dim('unchanged ') + id.slice(1))
                 return false
               }
               pendingResults.set(id, result)
-              return await reloadModuleInEnvironments(server, id)
+              return await reloadModuleInEnvironments(server, id, hash)
             } catch (err) {
               pendingResults.delete(id)
               logger.error(loggable(err))
@@ -360,24 +371,13 @@ export function LikeC4VitePlugin({
           }
 
           const hasErrors = () => {
-            const [error] = likec4.getErrors()
-            if (!error) {
+            // errors of the projects excluded by `includeProjects` do not block hot reload
+            const err = firstValidationError(instance ?? likec4)
+            if (!err) {
               return false
             }
             try {
-              hotChannel.send({
-                type: 'error',
-                err: {
-                  name: 'LikeC4ValidationError',
-                  ...splitErrorMessage(error.message),
-                  plugin: 'vite-plugin-likec4',
-                  loc: {
-                    file: error.sourceFsPath,
-                    line: error.line,
-                    column: error.range.start.character + 1,
-                  },
-                },
-              })
+              hotChannel.send({ type: 'error', err })
               logger.trace(
                 k.dim('sent LikeC4ValidationError'),
               )
@@ -448,7 +448,7 @@ export function LikeC4VitePlugin({
   return [
     iconBundlePlugin({
       environments: environments ? [environments].flat() : undefined,
-      workspace: pluginOpts.workspace ?? pluginOpts.languageServices?.workspacePath,
+      workspace: pluginOpts.workspace ?? pluginOpts.likec4?.workspace ?? pluginOpts.languageServices?.workspacePath,
     }),
     mainPlugin,
   ]

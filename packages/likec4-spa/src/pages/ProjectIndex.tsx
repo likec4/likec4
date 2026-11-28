@@ -1,4 +1,3 @@
-import { useLikeC4Model } from '@likec4/diagram'
 import { Burger } from '@mantine/core'
 import { useDocumentTitle } from '@mantine/hooks'
 import { IconLayoutGrid, IconList } from '@tabler/icons-react'
@@ -33,7 +32,7 @@ import { type SortOption, type ViewModeOption, SortMenu, ViewModeSwitch } from '
 import { WorkspaceSearchTrigger } from '../components/workspace-search/SearchTrigger'
 import { WorkspaceSearchProvider } from '../components/workspace-search/WorkspaceSearchProvider'
 import { filterLandingPageViews } from '../filterLandingPageViews'
-import { useCurrentProject, useLikeC4Views } from '../hooks'
+import { useCurrentProject, useLikeC4Views, useProjectModel } from '../hooks'
 
 export type ProjectIndexMode = 'cards' | 'table'
 
@@ -71,7 +70,7 @@ export function ProjectIndexPage({ section, onSectionChange, mode, onModeChange 
   mode: ProjectIndexMode
   onModeChange: (mode: ProjectIndexMode) => void
 }) {
-  const model = useLikeC4Model()
+  const model = useProjectModel()
   const allViews = useLikeC4Views()
   const { id: projectId, landingPage, title: projectTitle } = useCurrentProject()
   const title = projectTitle ?? pageTitle

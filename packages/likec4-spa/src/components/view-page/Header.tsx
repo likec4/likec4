@@ -5,7 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { useLikeC4Projects } from '@likec4/diagram'
 import {
   Button,
   Divider,
@@ -21,6 +20,7 @@ import { IconChevronDown, IconShare } from '@tabler/icons-react'
 import {
   Link,
   useMatches,
+  useRouteContext,
 } from '@tanstack/react-router'
 import { AnimatePresence } from 'motion/react'
 import { memo, useCallback, useState } from 'react'
@@ -33,7 +33,7 @@ import { ShareModal } from './ShareModal'
 import { useHeaderVisible } from './state'
 
 export const Header = memo(() => {
-  const projects = useLikeC4Projects()
+  const { projects } = useRouteContext({ from: '__root__' })
   const isReactDiagramRoute = useMatches({
     select(matches) {
       return matches.some(({ routeId }) => routeId === '/project/$projectId/view/$viewId/')

@@ -1,10 +1,18 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { defineCustomComponents } from '../../customization/customizable'
-import { CustomizationProvider } from '../../customization/CustomizationContext'
+import { createCustomization, customizeComponents } from '../../customization'
 import { type ElementShapeProps, ElementShape } from './ElementShape'
 
 const data: ElementShapeProps['data'] = { shape: 'cylinder', width: 320, height: 180 }
+
+/**
+ * {@link createCustomization} for spec slots: they are not registered in `Customizables`
+ */
+const specCustomization = (...args: Parameters<typeof customizeComponents>) => {
+  return createCustomization({
+    components: customizeComponents(...args),
+  })
+}
 
 describe('ElementShape slot', () => {
   it('renders the built-in shape without customization', () => {
@@ -15,11 +23,11 @@ describe('ElementShape slot', () => {
   })
 
   it('renders the replacement with the props of the shape', () => {
-    const components = defineCustomComponents({
+    const CustomizationProvider = specCustomization({
       ElementShape: ({ data }) => <i data-custom-shape={`${data.shape}:${data.width}x${data.height}`} />,
     })
     const html = renderToStaticMarkup(
-      <CustomizationProvider components={components}>
+      <CustomizationProvider>
         <ElementShape data={data} />
       </CustomizationProvider>,
     )
@@ -28,7 +36,7 @@ describe('ElementShape slot', () => {
   })
 
   it('gives the built-in shape to the wrapper', () => {
-    const components = defineCustomComponents(({ wrap }) => ({
+    const CustomizationProvider = specCustomization(({ wrap }) => ({
       ElementShape: wrap(({ Original, ...props }) => (
         <g data-wrapped>
           <Original {...props} />
@@ -36,7 +44,7 @@ describe('ElementShape slot', () => {
       )),
     }))
     const html = renderToStaticMarkup(
-      <CustomizationProvider components={components}>
+      <CustomizationProvider>
         <ElementShape data={data} />
       </CustomizationProvider>,
     )

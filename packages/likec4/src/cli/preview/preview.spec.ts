@@ -8,8 +8,13 @@ vi.mock('@likec4/language-services/node', () => ({
   fromWorkspace: vi.fn(async (workspace: string) => ({ workspace })),
 }))
 
-vi.mock('../../vite/vite-preview', () => ({
-  vitePreview: vi.fn().mockResolvedValue({}),
+vi.mock('@likec4/spa/vite', async importOriginal => ({
+  ...(await importOriginal<typeof import('@likec4/spa/vite')>()),
+  startPreview: vi.fn().mockResolvedValue({}),
+}))
+
+vi.mock('../../vite/app-from-package', () => ({
+  appFromPackage: () => ({}),
 }))
 
 vi.mock('../../vite/printServerUrls', () => ({
@@ -21,7 +26,7 @@ describe('preview handler', () => {
 
   async function run(params: Parameters<typeof import('./preview').handler>[0]) {
     const { handler } = await import('./preview')
-    const { vitePreview } = await import('../../vite/vite-preview')
+    const { startPreview: vitePreview } = await import('@likec4/spa/vite')
     const { fromWorkspace } = await import('@likec4/language-services/node')
     await handler(params)
     return {

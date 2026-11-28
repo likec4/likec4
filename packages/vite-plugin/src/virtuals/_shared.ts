@@ -117,6 +117,10 @@ export interface VirtualModule {
    * Reload the module when projects change
    */
   hmr?: boolean
+
+  /**
+   * Load the module content
+   */
   load(
     opts: SharedVirtualModuleOptions & {
       projects: NonEmptyArray<ProjectData>

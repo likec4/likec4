@@ -10,16 +10,16 @@ import type { Page } from 'playwright'
 import type { ViteDevServer } from 'vite'
 import { relative } from 'node:path'
 import { hrtime } from 'node:process'
-import { fromWorkspace } from '@likec4/language-services/node'
+import { resolveAppConfig, startDev } from '@likec4/spa/vite'
 import picomatch from 'picomatch'
 import { hasAtLeast } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
-import { resolveAppConfig } from '../../../app-config'
 import { type ViteLogger, inMillis } from '../../../logger'
+import { appFromPackage } from '../../../vite/app-from-package'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { relativeToCwd } from '../../../vite/utils'
-import { viteDev } from '../../../vite/vite-dev'
+import { initLikeC4 } from '../../utils'
 import { ScreenshotBrowser } from './ScreenshotBrowser'
 import { ScreenshotQueue } from './ScreenshotQueue'
 import {
@@ -265,22 +265,16 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
     customization,
   } = args
 
-  await using likec4 = await fromWorkspace(workspacePath, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
+  await using likec4 = await initLikeC4({ path: workspacePath, project, useDotBin })
 
   const output = outputArg ?? likec4.workspace
   let server: ViteDevServer | undefined
   let resolvedServerUrl = serverUrl
 
-  const projects = [...likec4.languageServices.projects()]
-  if (project) {
-    if (!projects.some(p => p.id === project)) {
-      logger.error(`project not found: ${project}`)
-      throw new Error(`project not found: ${project}`)
-    }
-  }
+  const projects = likec4.projects().map(id => likec4.languageServices.project(id))
+  // Views of each project go to its own subfolder if the workspace has several projects,
+  // even if the export is limited to one of them (with `--project`)
+  const multiProject = likec4.languageServices.projects().length > 1
 
   const pipeline = createScreenshotPipeline({
     logger,
@@ -305,8 +299,9 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
       logger.info(k.cyan(`start preview server`))
       // force production mode
       process.env['NODE_ENV'] = 'production'
-      server = await viteDev({
-        languageServices: likec4,
+      server = await startDev({
+        app: appFromPackage(),
+        likec4,
         buildWebcomponent: false,
         openBrowser: false,
         hmr: false,
@@ -329,10 +324,7 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
     const totals = new Map<string, number>()
 
     for (const prj of projects) {
-      if (project && prj.id !== project) {
-        continue
-      }
-      if (projects.length > 1) {
+      if (multiProject) {
         logger.info(k.dim('---------'))
         logger.info(`${k.dim('project:')} ${k.magenta(prj.id)}`)
         logger.info(`${k.dim('folder:')} ${relativeToCwd(prj.folder.fsPath)}`)
@@ -358,7 +350,7 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
         continue
       }
 
-      const _output = projects.length > 1 ? joinURL(output, prj.id) : output
+      const _output = multiProject ? joinURL(output, prj.id) : output
       logger.info(`${k.dim('output:')} ${relativeToCwd(_output)}`)
       totals.set(prj.id, views.length)
       // Screenshots of this project start while the next project is layouted

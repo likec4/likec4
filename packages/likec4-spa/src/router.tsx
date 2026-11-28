@@ -9,7 +9,6 @@ import { basepath, isDevelopment, useHashHistory } from 'likec4:app-config'
 import { isSingleProject, projects } from 'likec4:projects'
 import { hasAtLeast } from 'remeda'
 import { NotFound } from './components/NotFound'
-import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 import { rewriteSingleProjectInput, rewriteSingleProjectOutput } from './rewrite-single-project'
 import { routeTree } from './routeTree.gen'
 
@@ -33,7 +32,6 @@ const router = createTanstackRouter<RouteTree, 'always', true>({
     projectId: firstProjectId,
     projects: _projects,
   },
-  InnerWrap: LikeC4ProjectsContext,
   basepath,
   scrollRestoration: true,
   trailingSlash: 'always',

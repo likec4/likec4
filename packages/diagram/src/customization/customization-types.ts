@@ -48,7 +48,7 @@ export type CustomComponent<Original extends FC<any>> =
   }
 
 /**
- * Partial map of slot overrides for {@link CustomizationProvider}.
+ * Partial map of slot overrides, see `customizeComponents` and `createCustomization`.
  *
  * @experimental
  */

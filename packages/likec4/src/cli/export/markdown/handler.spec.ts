@@ -28,14 +28,31 @@ const logger = {
 type ProjectSpec = { id: string; folder: string; hasViews?: boolean; description?: string }
 
 function mockWorkspace(projects: ProjectSpec[]) {
-  fromWorkspace.mockResolvedValue({
+  const toProject = (p: ProjectSpec) => ({
+    id: p.id,
+    folder: { fsPath: p.folder },
+    config: { metadata: p.description ? { description: p.description } : {} },
+  })
+  const named = projects.filter(p => p.id !== 'default')
+  // Emulates `languageServices.project()`: `default` stands for the only named project
+  const project = (id: string) => {
+    const resolved = id === 'default' && named.length === 1 ? named[0]! : projects.find(p => p.id === id)!
+    return toProject(resolved)
+  }
+  // Emulates `includeProjects` of the real `fromWorkspace`
+  fromWorkspace.mockImplementation(async (_path, opts) => {
+    const include = (opts as { includeProjects?: string } | undefined)?.includeProjects
+    if (include && !projects.some(p => p.id === include)) {
+      throw new Error(`Unknown projects in includeProjects: [${include}]`)
+    }
+    return makeWorkspace(include ? [include] : projects.map(p => p.id))
+  })
+  const makeWorkspace = (ids: string[]) => ({
+    projects: () => ids,
     languageServices: {
-      projects: () =>
-        projects.map(p => ({
-          id: p.id,
-          folder: { fsPath: p.folder },
-          config: { metadata: p.description ? { description: p.description } : {} },
-        })),
+      project,
+      // Projects that own source documents, each with its own folder
+      projects: () => projects.map(toProject),
     },
     layoutedModel: vi.fn<(id: string) => Promise<{ projectId: string; views: () => Array<unknown> }>>(async id => ({
       projectId: id,
@@ -68,6 +85,15 @@ describe('export markdown handler', () => {
     expect(existsSync(join(b, 'README.md'))).toBe(true)
   })
 
+  it('keeps the folder of the default project next to the only named project', async () => {
+    const a = join(tmp, 'project-a')
+    await mkdir(a, { recursive: true })
+    mockWorkspace([{ id: 'project-a', folder: a }, { id: 'default', folder: tmp }])
+    await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
+    expect(existsSync(join(a, 'README.md'))).toBe(true)
+    expect(existsSync(join(tmp, 'README.md'))).toBe(true)
+  })
+
   it('skips a project that renders to no views', async () => {
     const a = join(tmp, 'project-a')
     const b = join(tmp, 'project-b')
@@ -97,7 +123,7 @@ describe('export markdown handler', () => {
     mockWorkspace([{ id: 'project-a', folder: join(tmp, 'project-a') }])
     await expect(
       runExportMarkdown({ path: tmp, project: 'nope', useDot: false }, logger),
-    ).rejects.toThrow(/project not found: nope/)
+    ).rejects.toThrow(/Unknown projects in includeProjects: \[nope\]/)
   })
 
   it('writes the rendered Markdown of each project', async () => {

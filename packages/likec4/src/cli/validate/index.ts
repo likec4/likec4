@@ -1,8 +1,8 @@
 import type * as yargs from 'yargs'
-import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { path, project } from '../options'
+import { initLikeC4 } from '../utils'
 import { runValidate } from './handler'
 import { parseMaxWarnings } from './result'
 
@@ -71,8 +71,9 @@ const validateCmd = (yargs: yargs.Argv) => {
         const isJson = args.json === true
 
         // Initialize language services
-        await using languageServices = await fromWorkspace(args.path, {
-          watch: false,
+        await using languageServices = await initLikeC4({
+          path: args.path,
+          project: args.project,
           printErrors: !isJson,
           throwIfInvalid: false,
           // In JSON mode, redirect logging to stderr to keep stdout clean for JSON
@@ -82,7 +83,6 @@ const validateCmd = (yargs: yargs.Argv) => {
 
         const result = await runValidate(languageServices, {
           path: args.path,
-          project: args.project,
           file: args.file,
           layout: args.layout === true,
           json: isJson,

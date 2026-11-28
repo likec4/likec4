@@ -1190,8 +1190,11 @@ describe('ProjectsManager', () => {
       expect(projectsManager.all).toEqual(['p1', 'p2', 'default'])
     })
 
-    it('should allow setting explicit default project among multiple and make it first in all()', async ({ expect }) => {
-      const { projectsManager } = await createMultiProjectTestServices({})
+    it('should use the single project from includeProjects as default and make it first in all()', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices(
+        {},
+        { workspaceSettings: { includeProjects: ['p2'] } },
+      )
 
       await projectsManager.registerProject({
         config: { name: 'p1' },
@@ -1201,15 +1204,20 @@ describe('ProjectsManager', () => {
         config: { name: 'p2' },
         folderUri: URI.parse('file:///test/workspace/src/p2'),
       })
-
-      projectsManager.defaultProjectId = 'p2' as ProjectId
 
       expect(projectsManager.defaultProjectId).toBe('p2')
       expect(projectsManager.all).toEqual(['p2', 'p1', 'default'])
+      // documents outside of every project belong to the default project
+      expect(projectsManager.ownerProjectId(URI.parse('file:///test/workspace/orphan.c4'))).toBe('p2')
+      expect(projectsManager.isIncluded('p2' as ProjectId, 'file:///test/workspace/orphan.c4')).toBe(true)
+      expect(projectsManager.isIncluded('default' as ProjectId, 'file:///test/workspace/orphan.c4')).toBe(false)
     })
 
-    it('should reset explicit default when set to undefined or "default"', async ({ expect }) => {
-      const { projectsManager } = await createMultiProjectTestServices({})
+    it('should not pick default project when includeProjects has several projects', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices(
+        {},
+        { workspaceSettings: { includeProjects: ['p1', 'p2'] } },
+      )
 
       await projectsManager.registerProject({
         config: { name: 'p1' },
@@ -1220,47 +1228,24 @@ describe('ProjectsManager', () => {
         folderUri: URI.parse('file:///test/workspace/src/p2'),
       })
 
-      projectsManager.defaultProjectId = 'p1' as ProjectId
-      expect(projectsManager.defaultProjectId).toBe('p1')
-
-      // Reset via undefined
-      projectsManager.defaultProjectId = undefined
       expect(projectsManager.defaultProjectId).toBeUndefined()
-
-      // Set again and reset via "default"
-      projectsManager.defaultProjectId = 'p2' as ProjectId
-      expect(projectsManager.defaultProjectId).toBe('p2')
-      projectsManager.defaultProjectId = 'default' as ProjectId
-      expect(projectsManager.defaultProjectId).toBeUndefined()
+      expect(projectsManager.ownerProjectId(URI.parse('file:///test/workspace/orphan.c4'))).toBe('default')
     })
 
-    it('setting explicit default to non-existing project should throw', async ({ expect }) => {
-      const { projectsManager } = await createMultiProjectTestServices({})
-
-      await projectsManager.registerProject({
-        config: { name: 'p1' },
-        folderUri: URI.parse('file:///test/workspace/src/p1'),
-      })
-
-      expect(() => {
-        projectsManager.defaultProjectId = 'unknown' as ProjectId
-      }).toThrowError(/Project "unknown" not found/)
-    })
-
-    it('resetting explicit default in single-project workspace should fall back to that project', async ({ expect }) => {
-      const { projectsManager } = await createMultiProjectTestServices({})
+    it('should ignore not registered project from includeProjects', async ({ expect }) => {
+      const { projectsManager } = await createMultiProjectTestServices(
+        {},
+        { workspaceSettings: { includeProjects: ['unknown'] } },
+      )
 
       await projectsManager.registerProject({
         config: { name: 'solo' },
         folderUri: URI.parse('file:///test/workspace/src/solo'),
       })
 
-      // Explicitly set and then reset
-      projectsManager.defaultProjectId = 'solo' as ProjectId
-      expect(projectsManager.defaultProjectId).toBe('solo')
-      projectsManager.defaultProjectId = undefined
       // With one project, getter returns that id
       expect(projectsManager.defaultProjectId).toBe('solo')
+      expect(projectsManager.ownerProjectId(URI.parse('file:///test/workspace/orphan.c4'))).toBe('default')
     })
   })
 

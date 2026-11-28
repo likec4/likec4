@@ -5,127 +5,27 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { Simplify } from 'type-fest'
-// import type { Customizable, Customizables, FC, ValidName } from '@likec4/diagram-customization'
-// import type { CustomComponentName } from '@likec4/diagram-customization'
-import { type ComponentProps, type FC, type JSX, type ReactNode, use } from 'react'
+import { type ComponentProps, type FC, createContext, use } from 'react'
 import {
   type CustomComponent,
   type CustomComponents,
   type Customizable,
   type CustomizableName,
-  type Customizables,
-  type Wrapper,
   WrappedMarker,
 } from './customization-types'
-import { CustomizationContext } from './CustomizationContext'
 
-// type FC<P = {}> = {
-//   (props: P): ReactNode
-//   displayName?: string | undefined
-// }
-
-// /**
-//  * Marker copied onto wrap overrides so the registered shell can inject `Original`.
-//  * @internal
-//  */
-// export const WrappedMarker = Symbol.for('likec4.customizable.wrapped')
-
-// export type { Customizable } from '@likec4/diagram-customization'
-// // export type Customizable<
-// //   TComponent extends FC<any>,
-// //   Name extends string,
-// // > = TComponent & {
-// //   readonly displayName: Name
-// // }
-
-// /**
-//  * Augmentation interface for customizable component slots.
-//  *
-//  * Slots are registered by LikeC4 internals via {@link customizable}.
-//  * Consumers override them through {@link defineCustomComponents}.
-//  *
-//  * @experimental
-//  */
-// export interface RegisterCustomizable {
-// }
-
-// export type PropsOf<N> = N extends (props: infer P) => any ? P : never
-
-// /**
-//  * The original implementation of a registered slot, passed to wrap overrides.
-//  *
-//  * @experimental
-//  */
-// export interface Original<N extends keyof RegisterCustomizable> {
-//   (props: PropsOf<N>): ReactNode
-// }
-
-// type Wrapper<P> = (props: P & { Original: FC<P> }) => JSX.Element
-
-// /**
-//  * A replacement or wrap override for a registered slot.
-//  */
-// export type CustomComponent<N extends CustomComponentName> =
-//   | Customizables[N] & {
-//     [WrappedMarker]?: never
-//   }
-//   | Wrapper<PropsOf<Customizables[N]>> & {
-//     [WrappedMarker]: true
-//   }
-
-// /**
-//  * Partial map of slot overrides for {@link CustomizationProvider}.
-//  *
-//  * @experimental
-//  */
-// export type CustomComponents = {
-//   [K in Registered]?: CustomComponent<K>
-// }
-
-// export type CustomizationContextValue = {
-//   components?: CustomComponents | undefined
-// }
-
-// type Registered = CustomComponentName
+export const CustomizationContext = createContext<CustomizationProps | null>(null)
+CustomizationContext.displayName = 'CustomizationContext'
 
 /**
- * Marks a component as a wrap override. The registered shell injects `Original`
- * (the built-in implementation) into the props.
- *
- * @experimental
+ * Value of {@link CustomizationContext}
  */
-function wrapOriginal<P>(
-  wrapper: Wrapper<P>,
-): (props: P) => any {
-  return Object.assign(wrapper, { [WrappedMarker]: true as const }) as any
-}
-
-/**
- * Defines overrides for registered customizable slots.
- *
- * Prefer keeping the returned object referentially stable (module scope) so
- * HMR and re-renders keep override identities stable via {@link CustomizationProvider}.
- *
- * @example
- * ```tsx
- * const components = defineCustomComponents(({ wrap }) => ({
- *   LogoSvg: () => <span>My logo</span>, // replace
- *   LogoIconSvg: wrap(({ Original, ...props }) => (
- *     <Original {...props} onClick={() => console.log('logo')} />
- *   )),
- * }))
- * ```
- *
- * @experimental
- */
-export function defineCustomComponents(
-  value: Partial<Customizables> | ((ctx: { wrap: typeof wrapOriginal }) => Partial<Customizables>),
-): CustomComponents {
-  if (typeof value === 'function') {
-    return value({ wrap: wrapOriginal })
-  }
-  return value
+export interface CustomizationProps {
+  /**
+   * Slot overrides from `customizeComponents`.
+   * Prefer a module-scoped constant so the map identity stays stable across HMR.
+   */
+  components?: CustomComponents | undefined
 }
 
 function useCustomization(name: CustomizableName): CustomComponent<FC<any>> | undefined {
@@ -175,7 +75,7 @@ function register<
 }
 
 /**
- * Registers a LikeC4 UI slot that consumers can override via {@link CustomizationProvider}.
+ * Registers a LikeC4 UI slot that consumers can override via `createCustomization`.
  *
  * @internal Prefer not to call from user code — slot names are owned by LikeC4.
  */

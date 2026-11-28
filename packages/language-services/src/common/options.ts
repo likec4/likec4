@@ -12,6 +12,7 @@ export interface InitOptions {
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.
+   * With {@link FromWorkspaceOptions.includeProjects}, only errors of the included projects are printed.
    *
    * @default true
    */
@@ -19,6 +20,7 @@ export interface InitOptions {
   /**
    * If true, initialization will return rejected promise with the LikeC4 instance.
    * Use `likec4.getErrors()` to get the errors.
+   * With {@link FromWorkspaceOptions.includeProjects}, only errors of the included projects reject.
    * @default false
    */
   throwIfInvalid?: boolean
@@ -72,4 +74,18 @@ export type FromWorkspaceOptions = InitOptions & {
    * If not provided, cache will be stored in memory.
    */
   cacheDir?: string | undefined
+
+  /**
+   * Limits the instance to these projects (by id).
+   * The whole workspace is still parsed, so imports between projects keep working.
+   *
+   * - {@link LikeC4.projects} returns only these projects
+   * - methods that accept a project reject the others
+   * - with a single project, it is used when no project is given,
+   *   and also owns sources that are outside of every project
+   *
+   * Unknown ids make initialization fail.
+   * If not set, all projects of the workspace are available.
+   */
+  includeProjects?: string | ReadonlyArray<string> | undefined
 }

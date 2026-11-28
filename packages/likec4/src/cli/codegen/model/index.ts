@@ -3,11 +3,10 @@ import { mkdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
 import { generateLikeC4Model } from '@likec4/generators'
-import { fromWorkspace } from '@likec4/language-services/node'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
-import { ensureProject } from '../../utils'
+import { ensureProject, initLikeC4 } from '../../utils'
 
 type HandlerParams = {
   project: string | undefined
@@ -33,11 +32,8 @@ type HandlerParams = {
 export async function modelHandler({ path, useDotBin, useCorePackage, outfile, project, skipLayout }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  await using languageServices = await fromWorkspace(path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-  const { projectId, projectFolder } = ensureProject(languageServices, project)
+  await using languageServices = await initLikeC4({ path: path, project: project, useDotBin: useDotBin })
+  const { projectId, projectFolder } = ensureProject(languageServices)
 
   if (project) {
     logger.info(`${k.dim('project')} ${k.green(projectId)}`)

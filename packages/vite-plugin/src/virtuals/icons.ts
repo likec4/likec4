@@ -277,6 +277,15 @@ function getLazyRenderer(projectId) {
   return Renderer
 }
 
+/**
+ * Loads icons of the project and returns the icon renderer, rendered without suspending.
+ * Repeated calls are cheap: the module of the project is imported once.
+ */
+export async function loadProjectIcons(projectId) {
+  const { IconRenderer } = await resolveLoader(projectId)()
+  return IconRenderer
+}
+
 export function getProjectIcons(projectId) {
   // Renderer is resolved on each render, so that HMR updates are picked up
   return (props) => jsx(Suspense, { children: jsx(getLazyRenderer(projectId), props) })

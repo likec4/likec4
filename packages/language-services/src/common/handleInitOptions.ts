@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core/types'
 import { type Logger, rootLogger } from '@likec4/log'
 import { type LikeC4Langium, LikeC4 } from './LikeC4'
 import { type InitOptions, DefaultInitOptions } from './options'
@@ -5,7 +6,9 @@ import { type InitOptions, DefaultInitOptions } from './options'
 const validationErrorsToError = (likec4: LikeC4) =>
   new Error(
     `Invalid model:\n${
-      likec4.getErrors().map(e => `  ${e.sourceFsPath}:${e.line} ${e.message.slice(0, 200)}`).join('\n')
+      likec4.getErrors({ scope: 'included' }).map(e => `  ${e.sourceFsPath}:${e.line} ${e.message.slice(0, 200)}`).join(
+        '\n',
+      )
     }`,
   )
 
@@ -13,17 +16,20 @@ export async function handleInitOptions(
   langium: LikeC4Langium,
   logger: Logger = rootLogger,
   options: InitOptions | undefined,
+  includedProjects?: ReadonlyArray<ProjectId>,
 ): Promise<LikeC4> {
-  const likec4 = new LikeC4(langium, logger)
+  const likec4 = new LikeC4(langium, logger, includedProjects)
 
   const throwIfInvalid = options?.throwIfInvalid ?? DefaultInitOptions.throwIfInvalid
   const printErrors = options?.printErrors ?? DefaultInitOptions.printErrors
-  if ((throwIfInvalid || printErrors) && likec4.hasErrors()) {
+  if ((throwIfInvalid || printErrors) && likec4.hasErrors({ scope: 'included' })) {
     if (throwIfInvalid) {
+      // build the error before dispose, it clears the projects
+      const error = validationErrorsToError(likec4)
       await likec4.dispose()
-      return Promise.reject(validationErrorsToError(likec4))
+      return Promise.reject(error)
     }
-    likec4.printErrors()
+    likec4.printErrors({ scope: 'included' })
   }
 
   return likec4

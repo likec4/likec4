@@ -1,11 +1,11 @@
 import type { DiffAction } from '@likec4/language-server'
 import type * as yargs from 'yargs'
 import { type DiffSummary, type ProjectId, DiffId } from '@likec4/core/types'
-import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { createLikeC4Logger } from '../../logger'
 import { findProject, printPreview, projectsToSearch, reportEditResult } from '../model-edits'
 import { path, project } from '../options'
+import { initLikeC4 } from '../utils'
 
 function describeDiff(diff: DiffSummary & { projectId: ProjectId }, withProject: boolean): string[] {
   const { added, removed, modified } = diff
@@ -23,7 +23,7 @@ async function applyDiff(
   args: { path: string; diff: string; project?: string | undefined; dryRun: boolean; acceptOverlaps?: boolean },
 ) {
   const logger = createLikeC4Logger(`c4:diff:${action}`)
-  await using likec4 = await fromWorkspace(args.path, { watch: false })
+  await using likec4 = await initLikeC4({ path: args.path, project: args.project })
   if (likec4.hasErrors()) {
     logger.warn('The workspace has errors, the result may need manual fixes')
   }
@@ -34,7 +34,7 @@ async function applyDiff(
     acceptOverlaps: args.acceptOverlaps,
   } as const
   const found = await findProject(
-    projectsToSearch(likec4, args.project),
+    projectsToSearch(likec4),
     `Diff ${args.diff}`,
     async projectId => !!(await likec4.parsedModel(projectId)).$data.diffs?.[request.diffId],
   )
@@ -81,12 +81,13 @@ const diffCmd = (yargs: yargs.Argv) => {
               .option('json', { type: 'boolean', default: false, desc: 'print as JSON' }),
           handler: async args => {
             const logger = createLikeC4Logger('c4:diff:list')
-            await using likec4 = await fromWorkspace(args.path, {
-              watch: false,
+            await using likec4 = await initLikeC4({
+              path: args.path,
+              project: args.project,
               // Logs go to stderr, so stdout has only the JSON
               ...(args.json && { printErrors: false, configureLogger: 'stderr' as const }),
             })
-            const projects = projectsToSearch(likec4, args.project)
+            const projects = projectsToSearch(likec4)
             const diffs: Array<DiffSummary & { projectId: ProjectId }> = []
             for (const projectId of projects) {
               diffs.push(...(await likec4.modelDiffs.list(projectId)).map(diff => ({ projectId, ...diff })))

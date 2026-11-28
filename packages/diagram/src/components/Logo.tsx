@@ -2,7 +2,7 @@ import type { SVGProps } from 'react'
 import { css } from '@likec4/styles/css'
 import { customizable } from '../customization/customizable'
 
-export const Logo = customizable('LogoSvg')(
+export const Logo = customizable('Logo')(
   (props: SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 222 56" {...props}>
       <path
@@ -22,7 +22,7 @@ export const Logo = customizable('LogoSvg')(
   ),
 )
 
-export const LogoIcon = customizable('LogoIconSvg')(
+export const LogoIcon = customizable('LogoIcon')(
   (props: SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 56 56" {...props}>
       <path

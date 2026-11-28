@@ -5,7 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { DiagramView } from '@likec4/core/types'
 import { pickViewBounds, StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import {
@@ -29,10 +28,11 @@ import {
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect, useMemo } from 'react'
-import { useModelDiffs } from '../../context/ModelDiffsContext'
-import { useCurrentProject, useCurrentView, useLikeC4Views } from '../../hooks'
+import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
+import { useLikeC4ProjectContext } from '../../context/safeCtx'
+import { useCurrentProject, useModelDiffs, useOptionalCurrentView } from '../../hooks'
 import { useModelDiffState } from '../model-diff/state'
-import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
+import { type GroupBy, isTreeNodeData, useDiagramsTree } from './data'
 import { SidebarDrawerOps } from './state'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -55,15 +55,14 @@ const FolderIcon = ({ node, expanded }: { node: TreeNodeData; expanded: boolean 
 export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   groupBy: GroupBy | undefined
 }) => {
-  const views = useLikeC4Views()
-  const data = useDiagramsTreeData(groupBy)
+  const { tree: data, viewIds } = useDiagramsTree(groupBy)
+  const knownViews = useMemo(() => new Set(viewIds), [viewIds])
   const { diffs } = useModelDiffs()
   const { diffId } = useModelDiffState()
   const introduced = useMemo(() => {
     const summary = diffs.find(diff => diff.id === diffId)
-    const ids = new Set(views.map(view => view.id))
-    return (summary?.views ?? []).filter(view => !ids.has(view.id))
-  }, [diffs, diffId, views])
+    return (summary?.views ?? []).filter(view => !knownViews.has(view.id))
+  }, [diffs, diffId, knownViews])
   const treeData = useMemo(() => {
     if (introduced.length === 0) {
       return data
@@ -96,7 +95,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       }),
     })
   }
-  const [diagram] = useCurrentView()
+  const diagram = useOptionalCurrentView()
   const viewId = diagram?.id ?? null
 
   const tree = useTree({
@@ -142,7 +141,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
         }}
         levelOffset={'md'}
         renderNode={({ node, selected, expanded, elementProps, hasChildren }) => (
-          <DiagramPreviewHoverCard diagram={!hasChildren ? views.find((v) => v.id === node.value) : undefined}>
+          <DiagramPreviewHoverCard viewId={!hasChildren && knownViews.has(node.value) ? node.value : undefined}>
             <Button
               fullWidth
               color={theme === 'light' ? 'dark' : 'gray'}
@@ -186,33 +185,33 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   )
 }, (prev, next) => prev.groupBy === next.groupBy)
 
-function DiagramPreviewHoverCard({ diagram, children }: PropsWithChildren<{ diagram: DiagramView | undefined }>) {
-  const bounds = diagram ? pickViewBounds(diagram) : null
-  const ratio = bounds ? Math.max(bounds.width / 400, bounds.height / 300) : 1
-
-  const width = bounds ? Math.round(bounds.width / ratio) : 0
-  const height = bounds ? Math.round(bounds.height / ratio) : 0
-
+function DiagramPreviewHoverCard({ viewId, children }: PropsWithChildren<{ viewId: string | undefined }>) {
+  if (!viewId) {
+    return <>{children}</>
+  }
   return (
-    <>
-      {diagram && (
-        <HoverCard position="right-start" openDelay={400} closeDelay={100} keepMounted={false} shadow="lg">
-          <HoverCardTarget>
-            {children}
-          </HoverCardTarget>
-          <HoverCardDropdown style={{ width, height }} p={'xs'}>
-            <DiagramPreview diagram={diagram} />
-          </HoverCardDropdown>
-        </HoverCard>
-      )}
-      {!diagram && children}
-    </>
+    <HoverCard position="right-start" openDelay={400} closeDelay={100} keepMounted={false} shadow="lg">
+      <HoverCardTarget>
+        {children}
+      </HoverCardTarget>
+      <HoverCardDropdown p={'xs'}>
+        <DiagramPreview viewId={viewId} />
+      </HoverCardDropdown>
+    </HoverCard>
   )
 }
 
+/**
+ * Takes the view from the model when the preview opens: the tree keeps only the ids
+ */
 const DiagramPreview = memo<{
-  diagram: DiagramView
-}>(({ diagram }) => {
+  viewId: string
+}>(({ viewId }) => {
+  const { $model } = useLikeC4ProjectContext()
+  const diagram = useMemo(() => $model.get().findView(viewId)?.$layouted ?? null, [$model, viewId])
+  if (!diagram) {
+    return null
+  }
   // Sequence views are laid out differently, use the bounds of the variant that is rendered
   const bounds = pickViewBounds(diagram)
   const ratio = Math.max(bounds.width / 400, bounds.height / 300)
@@ -221,14 +220,19 @@ const DiagramPreview = memo<{
   const height = Math.round(bounds.height / ratio)
 
   return (
-    <StaticLikeC4Diagram
-      view={diagram}
-      fitView
-      fitViewPadding={'4px'}
-      enableElementDetails={false}
-      reduceGraphics
-      initialWidth={width}
-      initialHeight={height}
-    />
+    <Box style={{ width, height }}>
+      {/* The model brings the styles of the project (custom palette) */}
+      <LikeC4ModelContext>
+        <StaticLikeC4Diagram
+          view={diagram}
+          fitView
+          fitViewPadding={'4px'}
+          enableElementDetails={false}
+          reduceGraphics
+          initialWidth={width}
+          initialHeight={height}
+        />
+      </LikeC4ModelContext>
+    </Box>
   )
-}, (prev, next) => prev.diagram.id === next.diagram.id)
+})

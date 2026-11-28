@@ -28,7 +28,7 @@ import type {
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { isTruthy } from 'remeda'
 import { applyManualLayout, calcDriftsFromSnapshot } from '../../manual-layout'
-import { type RichTextOrEmpty, _stage, _type } from '../../types'
+import { type RichTextOrEmpty, _stage, _type, isLayoutedStage } from '../../types'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
 import { memoizeDescription } from '../utils/richtext'

@@ -23,20 +23,22 @@ You describe the overrides in a **customization file**, and LikeC4 applies them 
 
 ```tsx
 // likec4.customization.tsx
-import { defineCustomComponents } from 'likec4/react'
+import { createCustomization, customizeComponents } from 'likec4/react'
 
-export default defineCustomComponents(({ wrap }) => ({
-  // Replace: the component receives the props of the slot
-  LogoSvg: props => (
-    <svg viewBox="0 0 120 32" {...props}>
-      <text x="0" y="24" fontSize="24" fill="currentColor">Acme</text>
-    </svg>
-  ),
-  // Wrap: `Original` is the built-in component
-  LikeC4Diagram: wrap(({ Original, ...props }) => (
-    <Original {...props} showNavigationButtons={false} />
-  )),
-}))
+export default createCustomization({
+  components: customizeComponents(({ wrap }) => ({
+    // Replace: the component receives the props of the slot
+    Logo: props => (
+      <svg viewBox="0 0 120 32" {...props}>
+        <text x="0" y="24" fontSize="24" fill="currentColor">Acme</text>
+      </svg>
+    ),
+    // Wrap: `Original` is the built-in component
+    LikeC4Diagram: wrap(({ Original, ...props }) => (
+      <Original {...props} showNavigationButtons={false} />
+    )),
+  })),
+})
 ```
 
 This page is about UI customization with React components.
@@ -45,7 +47,7 @@ To see how the customization file relates to the other config files, read [Confi
 
 ## Customization file
 
-The file must default-export the result of `defineCustomComponents` from `likec4/react`.  
+The file must default-export the result of `createCustomization` from `likec4/react`.  
 The file can have any name, because LikeC4 does not look for it. There are three ways to point LikeC4 to it:
 
 | Where                                        | How                                         | The path is relative to     |
@@ -66,7 +68,7 @@ With the Vite plugin, the overrides are applied to the components from `likec4:r
 
 <Aside type="tip">
 If you render LikeC4 components in your own React application, you do not need the file:
-pass the overrides to `CustomizationProvider`, see [React components](/tooling/react/#ui-slots-experimental).
+wrap them in the provider from `createCustomization`, see [React components](/tooling/react/#ui-slots-experimental).
 </Aside>
 
 ### Hot reload
@@ -84,21 +86,23 @@ With the CLI, the customization file is compiled together with the LikeC4 applic
 
 ## Replace and wrap
 
-`defineCustomComponents` takes an object, or a function that receives the `wrap` helper:
+`customizeComponents` takes an object, or a function that receives the `wrap` helper:
 
 - **Replace**: give a component. It receives the same props as the built-in one.
 - **Wrap**: give `wrap(Component)`. Your component receives the props and `Original`, the built-in component.
   Use it to change props, or to render something around the built-in component.
 
 ```tsx
-import { defineCustomComponents } from 'likec4/react'
+import { createCustomization, customizeComponents } from 'likec4/react'
 
-export default defineCustomComponents(({ wrap }) => ({
-  // The built-in shape, without the outline of the selected node
-  ElementShape: wrap(({ Original, ...props }) => (
-    <Original {...props} showSelectionOutline={false} />
-  )),
-}))
+export default createCustomization({
+  components: customizeComponents(({ wrap }) => ({
+    // The built-in shape, without the outline of the selected node
+    ElementShape: wrap(({ Original, ...props }) => (
+      <Original {...props} showSelectionOutline={false} />
+    )),
+  })),
+})
 ```
 
 Slots you do not mention keep the built-in components.
@@ -110,8 +114,8 @@ Slots you do not mention keep the built-in components.
 | `LikeC4Diagram` | The diagram: the canvas with nodes, edges and controls. The application renders it for every view | `LikeC4DiagramProps` |
 | `LikeC4View`    | [`LikeC4View`](/tooling/react/#likec4view): a view with the browser popup             | `LikeC4ViewProps`   |
 | `ReactLikeC4`   | [`ReactLikeC4`](/tooling/react/#reactlikec4): the low-level component                 | `ReactLikeC4Props`  |
-| `LogoSvg`       | LikeC4 logo with the name, in the navigation panel                                    | SVG props           |
-| `LogoIconSvg`   | LikeC4 logo without the name, in the navigation panel                                 | SVG props           |
+| `Logo`          | LikeC4 logo with the name, in the navigation panel                                    | SVG props           |
+| `LogoIcon`      | LikeC4 logo without the name, in the navigation panel                                 | SVG props           |
 | `ElementShape`  | Shape of an element: rectangle, cylinder, browser and so on                           | `ElementShapeProps` |
 
 The types of the props are exported from `likec4/react`. The names of the slots are checked by TypeScript.
@@ -231,11 +235,13 @@ The complete project, with all the shapes, is in [examples/customization-roughjs
 
     ```tsx
     // likec4.customization.tsx
-    import { defineCustomComponents } from 'likec4/react'
+    import { createCustomization } from 'likec4/react'
     import { RoughShape } from './RoughShape'
 
-    export default defineCustomComponents({
-      ElementShape: RoughShape,
+    export default createCustomization({
+      components: {
+        ElementShape: RoughShape,
+      },
     })
     ```
 

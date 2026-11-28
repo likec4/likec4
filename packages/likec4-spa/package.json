@@ -15,6 +15,13 @@
     "*.css"
   ],
   "type": "module",
+  "exports": {
+    "./vite": "./vite/index.ts",
+    "./vite/sources": "./vite/sources.ts",
+    "./vite/define": "./vite/app-config/define.ts",
+    "./vite/logger": "./vite/logger.ts",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --build --verbose",
@@ -27,7 +34,7 @@
     "dev:playground:deployment": "pnpm dev ../../apps/playground/src/examples/deployment",
     "dev:playground:dynamic": "pnpm dev ../../apps/playground/src/examples/dynamic",
     "dev:template": "pnpm dev ../create-likec4/template",
-    "dev:customization": "pnpm dev --customization=../../examples/customization-roughjs/likec4.customization.tsx",
+    "dev:customization": "pnpm dev --app-config=../../examples/customization-roughjs/likec4.app.config.ts",
     "dev:e2e": "pnpm dev ../../e2e/src",
     "test": "vitest run --no-isolate",
     "vitest:ui": "vitest --no-isolate --ui"
@@ -49,6 +56,8 @@
     "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/language-services": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vite-plugin": "workspace:*",
@@ -80,7 +89,10 @@
     "clsx": "catalog:react",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
+    "get-port": "^7.2.0",
     "html-to-image": "1.11.11",
+    "is-inside-container": "^1.0.0",
+    "jiti": "catalog:externals",
     "json5": "catalog:utils",
     "ky": "^1.14.3",
     "nanostores": "catalog:react",
@@ -104,6 +116,7 @@
     "use-sync-external-store": "catalog:react",
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
+    "vite-plugin-singlefile": "^2.3.3",
     "vitest": "catalog:vitest",
     "xstate": "catalog:xstate",
     "zx": "catalog:"

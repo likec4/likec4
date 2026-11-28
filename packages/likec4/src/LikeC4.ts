@@ -42,6 +42,12 @@ export type LikeC4Options = {
    * Applied if {@link logger} is not `false`
    */
   logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
+
+  /**
+   * Limits the instance to these projects (by id), see `FromWorkspaceOptions.includeProjects`.
+   * Applies only to {@link LikeC4.fromWorkspace}.
+   */
+  includeProjects?: string | ReadonlyArray<string> | undefined
 }
 
 export interface LikeC4 extends AbstractLikeC4 {
@@ -49,7 +55,7 @@ export interface LikeC4 extends AbstractLikeC4 {
 
 export namespace LikeC4 {
   export async function fromSource(likec4SourceCode: string, _opts?: LikeC4Options): Promise<LikeC4> {
-    const { logger: configureLogger, watch: _watch, ...opts } = _opts ?? {}
+    const { logger: configureLogger, watch: _watch, includeProjects: _includeProjects, ...opts } = _opts ?? {}
     return fromSourceImpl(
       likec4SourceCode,
       defu(

@@ -10,7 +10,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { createTestServices } from '@likec4/language-server/test'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
-import { setLanguageServicesCtx, setMcpServerCtx } from '../ctx'
+import { type TestAPI, test } from 'vitest'
+import { ctx, setLanguageServicesCtx, setMcpServerCtx } from '../ctx'
 import { createMCPServer } from '../server/createMCPServer'
 
 export interface MCPTestPair extends AsyncDisposable {

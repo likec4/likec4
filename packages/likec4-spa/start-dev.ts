@@ -1,12 +1,10 @@
 #!/usr/bin/env -S pnpm tsx
 
 import { resolve } from 'node:path'
-import { LikeC4VitePlugin } from '@likec4/vite-plugin'
-import postcssPanda from '@pandacss/dev/postcss'
-import { tanstackRouter } from '@tanstack/router-vite-plugin'
-import react from '@vitejs/plugin-react'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { defineCommand, runMain } from 'citty'
-import { createServer } from 'vite'
+import { resolveAppConfig, startDev } from './vite'
+import { appFromSources } from './vite/sources'
 
 const main = defineCommand({
   meta: {
@@ -20,10 +18,23 @@ const main = defineCommand({
       description: 'likec4 source directory',
       required: false,
     },
+    project: {
+      alias: 'p',
+      type: 'string',
+      valueHint: 'id',
+      description: 'limit to these projects (comma-separated ids)',
+      required: false,
+    },
     customization: {
       type: 'string',
       valueHint: 'file',
-      description: 'file with UI customizations (default export of defineCustomComponents)',
+      description: 'file with UI customizations (default export of createCustomization)',
+      required: false,
+    },
+    appConfig: {
+      type: 'string',
+      valueHint: 'file',
+      description: 'LikeC4 app config (by default likec4.app.config.* in the workspace)',
       required: false,
     },
     verbose: {
@@ -34,68 +45,50 @@ const main = defineCommand({
     },
   },
   async run(context) {
-    const workspace = resolve(context.args.workspace || '../../examples/')
+    process.env['NODE_ENV'] = 'development'
 
-    const server = await createServer({
-      configFile: false,
-      logLevel: 'info',
-      clearScreen: false,
-      env: {
-        NODE_ENV: 'development',
-      },
-      mode: 'development',
-      css: {
-        transformer: 'postcss',
-        postcss: {
-          plugins: [
-            postcssPanda() as any,
-          ],
-        },
-      },
-      server: {
-        fs: {
-          strict: false,
-        },
-        allowedHosts: true,
-      },
-      resolve: {
-        tsconfigPaths: true,
-        conditions: ['sources', 'import', 'default'],
-        alias: {
-          // Local paths for dev
-          // Virtual modules import `likec4/*`, tsconfig paths do not apply to them
-          'likec4/react': resolve('shims/react.ts'),
-          'likec4/model': resolve('shims/model.ts'),
-          'likec4/vite-plugin/internal': resolve('shims/vite-plugin.ts'),
-          '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
-          '@likec4/diagram': resolve('../diagram/src/index.ts'),
-        },
-      },
-      plugins: [
-        LikeC4VitePlugin({
-          workspace,
-          customization: context.args.customization ? resolve(context.args.customization) : undefined,
-          ai: 'disabled',
-          logLevel: context.args.verbose ? 'trace' : 'debug',
-          cacheDir: null,
-        }),
-        tanstackRouter(),
-        react({
-          compiler: true,
-          exclude: [/\.d\.[cm]?ts$/],
-        }),
-      ],
+    const config = await resolveAppConfig({
+      appConfig: context.args.appConfig,
+      path: resolve(context.args.workspace || '../../examples/'),
+      customization: context.args.customization ? resolve(context.args.customization) : undefined,
+    })
+    const includeProjects = context.args.project
+      ?.split(',')
+      .map(id => id.trim())
+      .filter(Boolean)
+
+    const likec4 = await fromWorkspace(config.workspace, {
+      ...(includeProjects && includeProjects.length > 0 && { includeProjects }),
+      graphviz: config.graphviz,
+      configureLogger: 'console',
+      logLevel: context.args.verbose ? 'trace' : 'debug',
+      watch: true,
     })
 
-    await server.listen()
+    const server = await startDev({
+      app: appFromSources(),
+      likec4,
+      ai: 'disabled',
+      openBrowser: false,
+      base: config.base,
+      title: config.title,
+      theme: config.theme,
+      useHashHistory: config.useHashHistory,
+      webcomponentPrefix: config.webcomponentPrefix,
+      customization: config.customization,
+      userPublicDir: config.publicDir,
+      listen: config.server.host,
+      port: config.server.port,
+      hmrPort: config.server.hmrPort,
+      allowedHosts: config.server.allowedHosts,
+    })
 
-    // await server.waitForRequestsIdle()
     console.log('')
     server.printUrls()
     console.log('')
 
     process.on('SIGINT', () => {
-      server.close().then(() => {
+      Promise.all([server.close(), likec4.dispose()]).then(() => {
         process.exit(0)
       }).catch((error) => {
         console.error('Error stopping server:', error)

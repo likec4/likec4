@@ -2,16 +2,14 @@ import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
-import { fromWorkspace } from '@likec4/language-services/node'
+import { buildWebcomponent, mkTempPublicDir } from '@likec4/spa/vite'
 import { hasAtLeast } from 'remeda'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
-import { build } from 'vite'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
-import { viteWebcomponentConfig } from '../../../vite/config-webcomponent'
-import { mkTempPublicDir } from '../../../vite/utils'
+import { appFromPackage } from '../../../vite/app-from-package'
 import { ensureReact } from '../../ensure-libs'
-import { ensureProject } from '../../utils'
+import { ensureProject, initLikeC4 } from '../../utils'
 
 type HandlerParams = {
   project: string | undefined
@@ -40,11 +38,8 @@ export async function webcomponentHandler({
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  await using languageServices = await fromWorkspace(path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-  const { projectId, projectFolder } = ensureProject(languageServices, project)
+  await using languageServices = await initLikeC4({ path: path, project: project, useDotBin: useDotBin })
+  const { projectId, projectFolder } = ensureProject(languageServices)
   if (project) {
     logger.info(`${k.dim('project')} ${k.green(projectId)}`)
   }
@@ -93,17 +88,15 @@ export async function webcomponentHandler({
   const publicDir = await mkTempPublicDir()
   logger.debug(`${k.dim('created temp public')} ${publicDir}`)
 
-  const webcomponentConfig = viteWebcomponentConfig({
-    languageServices,
+  logger.debug(`${k.dim('vite build webcomponent')}`)
+  await buildWebcomponent({
+    app: appFromPackage(),
+    likec4: languageServices,
     outDir: publicDir,
     filename: filename,
     webcomponentPrefix,
     base: '/',
     customization,
-  })
-  logger.debug(`${k.dim('vite build webcomponent')}`)
-  await build({
-    ...webcomponentConfig,
     logLevel: 'warn',
   })
 

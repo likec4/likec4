@@ -10,7 +10,6 @@ export interface ValidateOptions {
    * Workspace path, used to resolve source paths of views
    */
   path: string
-  project?: string | undefined
   /**
    * Paths given with `--file`
    */
@@ -58,9 +57,9 @@ export async function runValidate(
   const layoutErrors: DiagnosticItem[] = []
   if (options.layout) {
     logger.debug('running layout validation...')
-    // Without --project, check every project: `layoutedModel()` alone only
-    // works when the workspace has a single (default) project
-    const projects = options.project ? [options.project] : likec4.projects()
+    // Check every project of the instance (limited to `--project`, if specified):
+    // `layoutedModel()` alone only works when there is a single project
+    const projects = likec4.projects()
     for (const project of projects) {
       try {
         const model = await likec4.layoutedModel(project)

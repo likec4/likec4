@@ -212,12 +212,14 @@ Opções que carregam o modelo LikeC4:
 | Opção          | Descrição                                                                                         |
 | -----------------| --------------------------------------------------------------------------------------------------- |
 | `workspace`      | diretório dos arquivos-fonte (padrão: raiz do Vite) |
+| <span style="text-wrap:nowrap">`includeProjects`</span> | id do projeto, ou lista de ids, aos quais o plugin se limita (padrão: todos os projetos) |
 | `printErrors`    | se o modelo for inválido, os erros serão registrados no logger (padrão `true`) |
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | rejeita a Promise se o modelo for inválido (padrão `false`) |
 | `graphviz`       | `wasm` (padrão) ou `binary`: utiliza os executáveis locais Graphviz ("dot") ou o WASM incluído    |
 | `watch`          | monitora alterações nos arquivos-fonte no servidor de desenvolvimento (padrão `true`; o build nunca monitora) |
 | `logLevel`       | `'trace'`, `'debug'`, `'info'`, `'warning'` (padrão) ou `'error'` |
-| <span style="text-wrap:nowrap">`languageServices`</span> | um modelo já inicializado, veja [Utilização com a API](#utilização-com-a-api); não pode ser combinada com as opções acima |
+| `likec4`         | uma instância do LikeC4 já inicializada, veja [Utilização com a API](#utilização-com-a-api); não pode ser combinada com as opções acima |
+| <span style="text-wrap:nowrap">`languageServices`</span> | obsoleta, use `likec4` |
 
 Opções da aplicação, no nível superior das opções do plugin.
 Observe a coluna "Lida por": apenas `customization` altera os componentes que você incorpora.
@@ -307,7 +309,7 @@ import react from '@vitejs/plugin-react'
 import { LikeC4 } from 'likec4'
 import { LikeC4VitePlugin } from 'likec4/vite-plugin'
 
-const { languageServices } = await LikeC4.fromSource(`
+const likec4 = await LikeC4.fromSource(`
   specification {
     element system
     element user
@@ -327,7 +329,7 @@ export default defineConfig({
   plugins: [
     react(),
     LikeC4VitePlugin({
-      languageServices,
+      likec4,
     }),
   ],
 })

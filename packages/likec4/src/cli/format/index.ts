@@ -2,10 +2,10 @@ import type * as yargs from 'yargs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { path } from '../options'
+import { initLikeC4 } from '../utils'
 
 const formatCmd = (yargs: yargs.Argv) => {
   return yargs
@@ -43,7 +43,7 @@ const formatCmd = (yargs: yargs.Argv) => {
 
         let languageServices
         try {
-          languageServices = await fromWorkspace(args.path, { watch: false })
+          languageServices = await initLikeC4({ path: args.path })
         } catch (e) {
           logger.error(e instanceof Error ? e.message : String(e))
           process.exitCode = 1

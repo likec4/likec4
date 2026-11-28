@@ -3,14 +3,13 @@ import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
 import { generateReactTypes } from '@likec4/generators'
-import { fromWorkspace } from '@likec4/language-services/node'
+import { buildReact } from '@likec4/spa/vite'
 import stripIndent from 'strip-indent'
 import k from 'tinyrainbow'
-import { build } from 'vite'
 import { boxen, createLikeC4Logger, startTimer } from '../../../logger'
-import { viteReactConfig } from '../../../vite/config-react'
+import { appFromPackage } from '../../../vite/app-from-package'
 import { ensureReact } from '../../ensure-libs'
-import { ensureProject } from '../../utils'
+import { ensureProject, initLikeC4 } from '../../utils'
 
 type HandlerParams = {
   project: string | undefined
@@ -38,11 +37,8 @@ export async function reactHandler(
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  await using languageServices = await fromWorkspace(path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-  const { projectId, projectFolder } = ensureProject(languageServices, project)
+  await using languageServices = await initLikeC4({ path: path, project: project, useDotBin: useDotBin })
+  const { projectId, projectFolder } = ensureProject(languageServices)
   if (project) {
     logger.info(`${k.dim('project')} ${k.green(projectId)}`)
   }
@@ -98,16 +94,12 @@ export async function reactHandler(
     throw new Error(`output file ${outfile} must be a .js, .jsx or .mjs`)
   }
 
-  const cfg = await viteReactConfig({
-    languageServices,
+  await buildReact({
+    app: appFromPackage(),
+    likec4: languageServices,
     outDir,
     filename,
     customization,
-  })
-
-  await build({
-    ...cfg,
-    logLevel: 'warn',
   })
 
   const dts = resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts'))

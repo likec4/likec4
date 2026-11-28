@@ -15,12 +15,11 @@ import {
   isRelationModel,
 } from '@likec4/core/model'
 import { documentSourceUri } from '@likec4/language-server'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { UriUtils } from 'langium'
 import k from 'tinyrainbow'
 import { URI } from 'vscode-uri'
 import { logger as cliLogger, startTimer } from '../../logger'
-import { ensureProject } from '../utils'
+import { ensureProject, initLikeC4 } from '../utils'
 
 const logger = cliLogger.getChild('generator')
 
@@ -34,11 +33,8 @@ type HandlerParams = {
 /** Runs a custom generator by name from project config (generators[name]). */
 export async function customHandler({ name, path, useDotBin, project }: HandlerParams) {
   const timer = startTimer(logger)
-  await using likec4 = await fromWorkspace(path, {
-    graphviz: useDotBin ? 'binary' : 'wasm',
-    watch: false,
-  })
-  const { projectId, config } = ensureProject(likec4, project)
+  await using likec4 = await initLikeC4({ path: path, project: project, useDotBin: useDotBin })
+  const { projectId, config } = ensureProject(likec4)
 
   if (project) {
     logger.info(`${k.dim('project')} ${k.green(projectId)}`)

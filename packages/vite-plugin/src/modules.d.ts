@@ -28,7 +28,14 @@ declare module 'likec4:icons' {
   import type { ElementIconRenderer, ElementIconRendererProps } from 'likec4/react'
 
   export type { ElementIconRenderer, ElementIconRendererProps }
+  /**
+   * Returns the icon renderer of the project, loaded lazily (renders through `Suspense`)
+   */
   export function getProjectIcons(projectId: string): ElementIconRenderer
+  /**
+   * Loads icons of the project and returns the icon renderer, rendered without suspending
+   */
+  export function loadProjectIcons(projectId: string): Promise<ElementIconRenderer>
 }
 
 declare module 'likec4:model' {
@@ -274,12 +281,9 @@ declare module 'likec4:app-config' {
 
 declare module 'likec4:customization' {
   import type { JSX, PropsWithChildren } from 'react'
-  import type { CustomComponents } from 'likec4/react'
-  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
+  import type { CustomComponents, Customizables } from 'likec4/react'
 
-  export type { CustomComponents }
+  export type { CustomComponents, Customizables }
 
-  export const ComponentsAtom: ReadableAtom<CustomComponents>
-
-  export function CustomizationContext(props: PropsWithChildren): JSX.Element
+  export function CustomizationProvider(props: PropsWithChildren): JSX.Element
 }

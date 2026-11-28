@@ -1,40 +1,104 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
+import type { FromWorkspaceOptions, LikeC4 as LikeC4Instance } from '@likec4/language-services/node'
 import type { LikeC4 } from '../LikeC4'
 import { existsSync, statSync } from 'node:fs'
-import { resolve, sep } from 'node:path'
+import { join, resolve } from 'node:path'
+import { ConfigFilenames } from '@likec4/config'
+import { loadConfig } from '@likec4/config/node'
 import { ProjectId } from '@likec4/core/types'
-import { URI } from 'vscode-uri'
+import { fromWorkspace } from '@likec4/language-services/node'
 import { logger } from '../logger'
 
-function ensureProjectId(likec4: LikeC4, project: string | undefined): ProjectId {
-  if (!project) {
-    return likec4.languageServices.projectsManager.ensureProjectId()
-  }
-  const projectFolder = resolve(project)
-  if (projectFolder === likec4.workspace) {
-    return likec4.languageServices.projectsManager.ensureProjectId()
-  }
-  if (existsSync(projectFolder) && statSync(projectFolder).isDirectory()) {
-    logger.debug`Project path exists: ${projectFolder}`
-    const uri = URI.file(projectFolder.endsWith(sep) ? projectFolder : projectFolder + sep)
-    const foundProject = likec4.languageServices.projects().find(p => p.folder.fsPath === uri.fsPath)
-    if (foundProject) {
-      logger.debug`Found project ${foundProject.id} at path: ${projectFolder}`
-      return foundProject.id
-    }
-    logger.debug`No project registered at path: ${projectFolder}`
-  }
-  return likec4.languageServices.projectsManager.ensureProjectId(project as ProjectId)
+/**
+ * Options of {@link initLikeC4}: common CLI arguments and other options of `fromWorkspace`
+ */
+export type InitLikeC4Options = Omit<FromWorkspaceOptions, 'includeProjects' | 'graphviz'> & {
+  /**
+   * Workspace path
+   */
+  path: string
+  /**
+   * `--project` argument: project id or folder, see {@link resolveProjectArg}
+   */
+  project?: string | undefined
+  /**
+   * Use `dot` binary for layouting instead of WebAssembly
+   */
+  useDotBin?: boolean | undefined
 }
 
-/** Resolves projectId from path or default; returns projectId, projectFolder and config. */
+/**
+ * Initializes LikeC4 from the workspace, limited to the project from `--project` (if specified).
+ * Does not watch the workspace, unless `watch` is set.
+ */
+export async function initLikeC4({ path, project, useDotBin, ...options }: InitLikeC4Options): Promise<LikeC4Instance> {
+  return await fromWorkspace(path, {
+    watch: false,
+    ...options,
+    graphviz: useDotBin ? 'binary' : 'wasm',
+    includeProjects: await resolveProjectArg(path, project),
+  })
+}
+
+/**
+ * Resolves the `--project` argument to a project id, before the workspace is loaded,
+ * to pass it as `includeProjects` to `fromWorkspace`.
+ *
+ * The argument is either a project id or a path to the project folder.
+ * The project id of a folder is the name from its config file.
+ * A bare name (like `alpha`) of a folder without config is taken as a project id.
+ *
+ * @returns project id, or `undefined` if no project is specified (or it is the workspace folder without project config)
+ * @throws if the folder, given as a path, has no project config
+ */
+export async function resolveProjectArg(
+  workspacePath: string,
+  project: string | undefined,
+): Promise<string | undefined> {
+  if (!project) {
+    return undefined
+  }
+  const projectFolder = resolve(project)
+  if (!existsSync(projectFolder) || !statSync(projectFolder).isDirectory()) {
+    return project
+  }
+  const configFile = ConfigFilenames
+    .map(filename => join(projectFolder, filename))
+    .find(filepath => existsSync(filepath))
+  if (!configFile) {
+    // The workspace folder without config is not a project, nothing to limit
+    if (projectFolder === resolve(workspacePath)) {
+      return undefined
+    }
+    // A bare name can be a project id that matches a folder name
+    if (isBareName(project)) {
+      return project
+    }
+    throw new Error(`No LikeC4 project config found in ${projectFolder}`)
+  }
+  const config = await loadConfig(configFile)
+  logger.debug`Found project ${config.name} at path: ${projectFolder}`
+  return config.name
+}
+
+/**
+ * A name without path segments, like `alpha` (not `./alpha` or `src/alpha`)
+ */
+function isBareName(value: string): boolean {
+  return value !== '.' && value !== '..' && !/[\\/]/.test(value)
+}
+
+/**
+ * Returns the project of the instance, created with `includeProjects` from {@link resolveProjectArg}.
+ * Without `--project`, it is the only project of the workspace.
+ *
+ * @throws if there are several projects to choose from
+ */
 export function ensureProject(
   likec4: LikeC4,
-  project: string | undefined,
 ): { projectId: ProjectId; projectFolder: string; config: LikeC4ProjectConfig } {
-  const projectId = ensureProjectId(likec4, project)
-  const p = likec4.languageServices.projectsManager.getProject(projectId)
-  likec4.languageServices.projectsManager.defaultProjectId = projectId
+  const projectId = likec4.ensureProjectId()
+  const p = likec4.projectsManager.getProject(projectId)
   return {
     projectId,
     projectFolder: p.folderUri.fsPath,

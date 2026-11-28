@@ -6,11 +6,13 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core/types'
+import type { PropsWithChildren } from 'react'
 import { FramerMotionConfig, LikeC4MantineProvider } from '@likec4/diagram'
-import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
+import { createRootRouteWithContext, stripSearchParams } from '@tanstack/react-router'
 import { defaultTheme } from 'likec4:app-config'
-import { CustomizationContext } from 'likec4:customization'
-import { ErrorBoundary } from '../components/ErrorComponent'
+import { CustomizationProvider } from 'likec4:customization'
+import { ErrorComponent } from '../components/ErrorComponent'
+import { LikeC4ProjectsContext } from '../context/LikeC4ProjectsContext'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
 
 export type Context = {
@@ -39,10 +41,11 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
-  component: RootComponent,
+  errorComponent: ErrorComponent,
+  shellComponent: RootShellComponent,
 })
 
-function RootComponent() {
+function RootShellComponent({ children }: PropsWithChildren) {
   const theme = Route.useSearch({
     select: (search) => search.theme,
   })
@@ -59,11 +62,11 @@ function RootComponent() {
       {...(forceColorScheme && { forceColorScheme })}
     >
       <FramerMotionConfig>
-        <ErrorBoundary>
-          <CustomizationContext>
-            <Outlet />
-          </CustomizationContext>
-        </ErrorBoundary>
+        <CustomizationProvider>
+          <LikeC4ProjectsContext>
+            {children}
+          </LikeC4ProjectsContext>
+        </CustomizationProvider>
       </FramerMotionConfig>
     </LikeC4MantineProvider>
   )

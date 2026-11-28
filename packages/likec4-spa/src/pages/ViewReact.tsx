@@ -12,7 +12,6 @@ import {
   selectDiagramContext,
   useDiagram,
   useDiagramSelector,
-  useLikeC4Model,
   useOnDiagramEvent,
   useUpdateEffect,
 } from '@likec4/diagram'
@@ -26,8 +25,7 @@ import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDi
 import { selectDiff, useModelDiffState } from '../components/model-diff/state'
 import { NotFound } from '../components/NotFound'
 import { headerOps } from '../components/view-page/state'
-import { useModelDiffs } from '../context/ModelDiffsContext'
-import { useCurrentProject, useCurrentView, useCurrentViewId } from '../hooks'
+import { useCurrentProject, useCurrentView, useCurrentViewId, useModelDiffs, useProjectModel } from '../hooks'
 import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 
 export function ViewReact() {
@@ -36,7 +34,7 @@ export function ViewReact() {
   const viewId = useCurrentViewId()
   const [view, setLayoutType] = useCurrentView()
   const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
-  const model = useLikeC4Model()
+  const model = useProjectModel()
   const { dynamic, diff: diffParam } = useSearch({
     from: '__root__',
   })
