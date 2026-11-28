@@ -234,8 +234,9 @@ views {
     expect(read()).toContain('autoLayout TopBottom 40 10 80\n')
   })
 
-  it('fails when compoundSep would be written without nodeSep', async ({ expect, testDoc }) => {
-    const source = `
+  it('writes 0 before compoundSep for a reset nodeSep', async ({ expect, testDoc }) => {
+    const { change, read } = await testDoc(
+      `
 specification {
   element system
 }
@@ -247,11 +248,10 @@ views {
     include *
     autoLayout LeftRight 20 10 80
   }
-}`
-    const { tryChange, read } = await testDoc(source)
-    const before = read()
+}`,
+    )
 
-    const result = await tryChange({
+    await change({
       viewId: 'target' as ViewId,
       change: {
         op: 'change-autolayout',
@@ -262,8 +262,6 @@ views {
         },
       },
     })
-    expect(result.success).toBe(false)
-    expect(result).toHaveProperty('error', expect.stringContaining('compoundSep 80 needs rankSep and nodeSep'))
-    expect(read()).toBe(before)
+    expect(read()).toContain('autoLayout TopBottom 40 0 80\n')
   })
 })

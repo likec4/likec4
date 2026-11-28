@@ -280,6 +280,30 @@ describe('LikeC4.toBuilder / toDSL / writeDSL', () => {
     expect(reloaded.element('b').title).toBe('B')
   })
 
+  it('round-trips compoundSep with an unset nodeSep', async () => {
+    const source = `
+      specification {
+        element system
+      }
+      model {
+        a = system 'A'
+      }
+      views {
+        view index {
+          include *
+          autoLayout TopBottom 120 0 150
+        }
+      }
+    `
+    const original = (await fromSource(source, { throwIfInvalid: true })).syncComputedModel()
+    expect(original.view('index').$view.autoLayout).toEqual({ direction: 'TB', rankSep: 120, compoundSep: 150 })
+
+    const dsl = await (await fromSource(source)).toDSL()
+    expect(dsl).toContain('autoLayout TopBottom 120 0 150')
+    const reloaded = (await fromSource(dsl, { throwIfInvalid: true })).syncComputedModel()
+    expect(reloaded.view('index').$view.autoLayout).toEqual(original.view('index').$view.autoLayout)
+  })
+
   describe('writeDSL', () => {
     beforeEach(() => {
       vol.reset()

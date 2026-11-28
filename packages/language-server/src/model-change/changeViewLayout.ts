@@ -33,13 +33,10 @@ export function changeViewLayout(_services: LikeC4Services, {
   let { rankSep, nodeSep } = layout
   if (compoundSep != null) {
     // compoundSep is written after rankSep and nodeSep, so a change that leaves them out
-    // (the parsed view drops a 0 nodeSep) keeps the ones written in the source
+    // (the parsed view drops a 0 nodeSep) keeps the ones written in the source;
+    // `null` is written as 0, the default
     rankSep = rankSep === undefined ? existingRule?.rankSep : rankSep
     nodeSep = nodeSep === undefined ? existingRule?.nodeSep : nodeSep
-    invariant(
-      rankSep != null && nodeSep != null,
-      `Invalid autoLayout of view ${view.id}: compoundSep ${compoundSep} needs rankSep and nodeSep, set them or set compoundSep to null`,
-    )
   }
 
   let newRule = print(ops.views.viewRuleAutoLayout(), { ...layout, rankSep, nodeSep, compoundSep })

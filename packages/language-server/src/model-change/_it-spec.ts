@@ -80,13 +80,6 @@ export const it = test.extend('testDoc', ({ task }, { onCleanup }) => {
       return read()
     }
 
-    /**
-     * Applies the change and returns the result without expecting it to succeed.
-     */
-    async function tryChange(params: ChangeView.Params) {
-      return await services.likec4.ModelChanges.applyChange(params)
-    }
-
-    return { change, tryChange, read }
+    return { change, read }
   }
 })

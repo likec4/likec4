@@ -150,15 +150,20 @@ export const viewRuleAutoLayout = zodOp(schemas.views.viewRuleAutoLayout)(
   spaceBetween(
     print('autoLayout'),
     printProperty('direction'),
-    guard(
-      hasProp('rankSep'),
-      spaceBetween(
-        printProperty('rankSep'),
-        guard(
-          hasProp('nodeSep'),
-          spaceBetween(
-            printProperty('nodeSep'),
-            printProperty('compoundSep'),
+    select(
+      // compoundSep is the third number, so a rankSep or nodeSep that is not set is written as 0
+      // before it. The parser and compute read a 0 spacing as not set, so the rule parses back the same.
+      rule => hasProp(rule, 'compoundSep') ? { ...rule, rankSep: rule.rankSep ?? 0, nodeSep: rule.nodeSep ?? 0 } : rule,
+      guard(
+        hasProp('rankSep'),
+        spaceBetween(
+          printProperty('rankSep'),
+          guard(
+            hasProp('nodeSep'),
+            spaceBetween(
+              printProperty('nodeSep'),
+              printProperty('compoundSep'),
+            ),
           ),
         ),
       ),

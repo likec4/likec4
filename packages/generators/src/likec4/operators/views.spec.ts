@@ -1,7 +1,14 @@
+import type * as z from 'zod/v4'
 import { type ViewsBuilder, Builder } from '@likec4/core/builder'
 import { describe, expect as viExpect, it } from 'vitest'
+import { schemas } from '../schemas'
 import { materialize } from './base'
-import { deploymentView as deploymentViewOp, elementView as elementViewOp, views as viewsOp } from './views'
+import {
+  deploymentView as deploymentViewOp,
+  elementView as elementViewOp,
+  viewRuleAutoLayout,
+  views as viewsOp,
+} from './views'
 
 const builder = Builder
   .specification({
@@ -281,6 +288,19 @@ describe('view', () => {
         }
       }"
     `)
+  })
+
+  it('writes 0 for an unset rankSep or nodeSep before compoundSep', () => {
+    const printRule = (rule: z.input<typeof schemas.views.viewRuleAutoLayout>) =>
+      materialize(viewRuleAutoLayout(), rule)
+    viExpect(printRule({ direction: 'TB', rankSep: 120, compoundSep: 150 })).toBe('autoLayout TopBottom 120 0 150')
+    viExpect(printRule({ direction: 'TB', compoundSep: 150 })).toBe('autoLayout TopBottom 0 0 150')
+    viExpect(printRule({ direction: 'TB', rankSep: null, nodeSep: 110, compoundSep: 150 })).toBe(
+      'autoLayout TopBottom 0 110 150',
+    )
+    // without compoundSep the output stays as before
+    viExpect(printRule({ direction: 'TB', rankSep: 120 })).toBe('autoLayout TopBottom 120')
+    viExpect(printRule({ direction: 'TB', nodeSep: 110 })).toBe('autoLayout TopBottom')
   })
 
   it('should print scoped element view', () => {
