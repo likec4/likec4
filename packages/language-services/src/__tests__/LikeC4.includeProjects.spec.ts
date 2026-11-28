@@ -105,4 +105,20 @@ describe('LikeC4 includeProjects', () => {
   it('fails on empty list', async ({ expect }) => {
     await expect(open([])).rejects.toThrow(/must not be empty/)
   })
+
+  it('fails on the default project next to named projects', async ({ expect }) => {
+    await expect(open('default')).rejects.toThrow(/must name a project instead of "default", known: \[alpha, beta\]/)
+  })
+
+  it('accepts the default project when there are no other projects', async ({ expect }) => {
+    const root = mkdtempSync(join(tmpdir(), 'likec4-include-default-'))
+    try {
+      writeFileSync(join(root, 'model.c4'), `${spec}\nmodel {\n  component solo\n}\n`)
+      await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: 'default' })
+      const model = await likec4.computedModel()
+      expect(model.findElement('solo')).not.toBeNull()
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
 })

@@ -8,6 +8,7 @@ import { IconFolder } from '@tabler/icons-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { randomInteger } from 'remeda'
+import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import { Card, CardGrid, CardTitle, CardTitles } from '../ui/Card'
 import { DataTable, TableName } from '../ui/DataTable'
 import { type IndexView, viewTypeLabel } from './views'
@@ -69,13 +70,16 @@ function Preview({ view }: { view: IndexView }) {
   return (
     <PreviewBox ref={ref}>
       {visible && (
-        <StaticLikeC4Diagram
-          background={'transparent'}
-          view={view.view}
-          fitView
-          fitViewPadding={'12px'}
-          reduceGraphics
-        />
+        // The model brings the styles of the project (custom palette)
+        <LikeC4ModelContext>
+          <StaticLikeC4Diagram
+            background={'transparent'}
+            view={view.view}
+            fitView
+            fitViewPadding={'12px'}
+            reduceGraphics
+          />
+        </LikeC4ModelContext>
       )}
     </PreviewBox>
   )

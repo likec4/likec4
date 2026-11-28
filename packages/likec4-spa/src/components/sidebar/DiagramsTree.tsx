@@ -28,6 +28,7 @@ import {
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect, useMemo } from 'react'
+import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 import { useLikeC4ProjectContext } from '../../context/safeCtx'
 import { useCurrentProject, useModelDiffs, useOptionalCurrentView } from '../../hooks'
 import { useModelDiffState } from '../model-diff/state'
@@ -220,15 +221,18 @@ const DiagramPreview = memo<{
 
   return (
     <Box style={{ width, height }}>
-      <StaticLikeC4Diagram
-        view={diagram}
-        fitView
-        fitViewPadding={'4px'}
-        enableElementDetails={false}
-        reduceGraphics
-        initialWidth={width}
-        initialHeight={height}
-      />
+      {/* The model brings the styles of the project (custom palette) */}
+      <LikeC4ModelContext>
+        <StaticLikeC4Diagram
+          view={diagram}
+          fitView
+          fitViewPadding={'4px'}
+          enableElementDetails={false}
+          reduceGraphics
+          initialWidth={width}
+          initialHeight={height}
+        />
+      </LikeC4ModelContext>
     </Box>
   )
 })
