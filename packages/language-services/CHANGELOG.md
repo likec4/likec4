@@ -1,5 +1,28 @@
 # @likec4/language-services
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`392f39d`](https://github.com/likec4/likec4/commit/392f39d8908c6f4118c597347753edb9205aa408) Thanks [@davydkov](https://github.com/davydkov)! - The dev server (`likec4 start --project`, the Vite plugin with `includeProjects` or a `LikeC4` instance) ignores validation errors in projects it does not serve: such errors no longer block hot reload of the included projects and are not shown in the error overlay. With `includeProjects`, `printErrors` and `throwIfInvalid` of `fromWorkspace` also check only the included projects.
+  
+  `getErrors`, `getWarnings`, `hasErrors` and `printErrors` of `LikeC4` accept `{ scope: 'included' }` to check only documents of the included projects.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`8e4dc7d`](https://github.com/likec4/likec4/commit/8e4dc7d615944188b348d888ddcd62751d5dc874) Thanks [@davydkov](https://github.com/davydkov)! - `LikeC4.fromWorkspace` and the Vite plugin accept `includeProjects` (a project id or a list of ids) to limit the instance to these projects. The whole workspace is still parsed, so imports from other projects keep working. With a single project, it is used when no project is given, and sources outside of every project belong to it.
+  
+  The Vite plugin accepts a ready `LikeC4` instance with the new `likec4` option, which respects included projects. The `languageServices` option is deprecated.
+  
+  CLI commands with `--project` now load the workspace limited to that project, and accept the path to the project folder in every command. Sources outside of every project are now part of the selected project.
+  
+  `ProjectsManager.defaultProjectId` can no longer be set; pass `workspaceSettings.includeProjects` when creating the language services instead.
+- Updated dependencies [[`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c), [`0ae42a3`](https://github.com/likec4/likec4/commit/0ae42a39f3734a4ad575a8547d4d7ce52a4b865d), [`3e9c2fc`](https://github.com/likec4/likec4/commit/3e9c2fc4b8ba0795b526576dc38e586336d1ba86), [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2), [`ee06da4`](https://github.com/likec4/likec4/commit/ee06da4b95720cbf4bbe7c2b3a998a4debb25d73), [`8e4dc7d`](https://github.com/likec4/likec4/commit/8e4dc7d615944188b348d888ddcd62751d5dc874), [`7945a71`](https://github.com/likec4/likec4/commit/7945a713a5e7ee0c2bada3852b07c3f4ca21a9d5), [`b71e4fe`](https://github.com/likec4/likec4/commit/b71e4fed18f00e672cb85b5ec495ce7d99e59662)]:
+  - @likec4/core@1.61.2
+  - @likec4/language-server@1.61.2
+  - @likec4/layouts@1.61.2
+  - @likec4/generators@1.61.2
+  - @likec4/config@1.61.2
+  - @likec4/log@1.61.2
+
 ## 1.61.1
 
 ### Patch Changes

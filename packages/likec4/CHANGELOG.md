@@ -1,5 +1,58 @@
 # likec4
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3630](https://github.com/likec4/likec4/pull/3630) [`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c) Thanks [@hanoii](https://github.com/hanoii)! - Add an optional third number to `autoLayout` that sets the space between top-level compounds, `autoLayout TopBottom 120 110 150`. A compound is an element shown with its children, a deployment node with its children, or a group. The space applies next to other compounds and elements on the same level, in element, dynamic and deployment views; compounds nested in another compound keep their spacing. Views without it keep their layout. Changing the layout direction or spacing in the diagram keeps a compound distance written in the source.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`479a957`](https://github.com/likec4/likec4/commit/479a957e54f4fbd7cda1b60f5dfd5cfd8610475b) Thanks [@davydkov](https://github.com/davydkov)! - UI customization (experimental) has a new API: the customization file default-exports `createCustomization({ components })`, and the overrides are defined with `customizeComponents`, which takes the same object or the `wrap` function as before. In your own React app, render the provider returned by `createCustomization` above the diagrams.
+  
+  `defineCustomComponents` and `CustomizationProvider` are removed. The logo slots are renamed: `LogoSvg` to `Logo`, and `LogoIconSvg` to `LogoIcon`.
+  
+  Migration of a customization file:
+  
+  ```tsx
+  // before
+  export default defineCustomComponents(({ wrap }) => ({ ... }))
+  // after
+  export default createCustomization({
+    components: customizeComponents(({ wrap }) => ({ ... })),
+  })
+  ```
+  
+  The edge primitives (`EdgeContainer`, `EdgePath`, `EdgeLabel`, `EdgeLabelContainer`, `EdgeMarkers`, `EdgeActionButton`) are exported from `@likec4/diagram/custom` and `likec4/react`.
+
+- [#3626](https://github.com/likec4/likec4/pull/3626) [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2) Thanks [@amandomv](https://github.com/amandomv)! - Deployment views support `rank` blocks, like element views. `rank same` can align nodes in different zones, for example a database and its replica: `rank same { prod.eu.db, prod.us.dbReplica }`. An instance listed in a `rank` block is no longer aligned with the other instances of its element. Writing a model back to DSL also prints `rank` rules of element views now, instead of failing.
+
+- [#3631](https://github.com/likec4/likec4/pull/3631) [`ee06da4`](https://github.com/likec4/likec4/commit/ee06da4b95720cbf4bbe7c2b3a998a4debb25d73) Thanks [@davydkov](https://github.com/davydkov)! - Projects that have no files of their own and only use `include` paths are now listed with the other projects, so the app shows them instead of failing with `Unknown projectId`.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`392f39d`](https://github.com/likec4/likec4/commit/392f39d8908c6f4118c597347753edb9205aa408) Thanks [@davydkov](https://github.com/davydkov)! - The dev server (`likec4 start --project`, the Vite plugin with `includeProjects` or a `LikeC4` instance) ignores validation errors in projects it does not serve: such errors no longer block hot reload of the included projects and are not shown in the error overlay. With `includeProjects`, `printErrors` and `throwIfInvalid` of `fromWorkspace` also check only the included projects.
+  
+  `getErrors`, `getWarnings`, `hasErrors` and `printErrors` of `LikeC4` accept `{ scope: 'included' }` to check only documents of the included projects.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`8e4dc7d`](https://github.com/likec4/likec4/commit/8e4dc7d615944188b348d888ddcd62751d5dc874) Thanks [@davydkov](https://github.com/davydkov)! - `LikeC4.fromWorkspace` and the Vite plugin accept `includeProjects` (a project id or a list of ids) to limit the instance to these projects. The whole workspace is still parsed, so imports from other projects keep working. With a single project, it is used when no project is given, and sources outside of every project belong to it.
+  
+  The Vite plugin accepts a ready `LikeC4` instance with the new `likec4` option, which respects included projects. The `languageServices` option is deprecated.
+  
+  CLI commands with `--project` now load the workspace limited to that project, and accept the path to the project folder in every command. Sources outside of every project are now part of the selected project.
+  
+  `ProjectsManager.defaultProjectId` can no longer be set; pass `workspaceSettings.includeProjects` when creating the language services instead.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`d337956`](https://github.com/likec4/likec4/commit/d337956973756b87ba07ee4bba09992cd98ccab1) Thanks [@davydkov](https://github.com/davydkov)! - Icons of the project are loaded together with its model, before the diagram is shown. Nodes no longer appear without icons first, and `likec4 export png` and `export jpg` no longer take screenshots before the icons are drawn.
+  
+  The `likec4:icons` virtual module exports `loadProjectIcons(projectId)`, which loads the icon renderer of the project and returns it, ready to render without `Suspense`.
+
+- [#3631](https://github.com/likec4/likec4/pull/3631) [`84fb050`](https://github.com/likec4/likec4/commit/84fb050a0c85ad46c795f0e2761ea0248eca63f4) Thanks [@davydkov](https://github.com/davydkov)! - `likec4 export png` and `likec4 export jpg` start one browser for all projects instead of one per project, and capture views in parallel. Use the new `--concurrency` (`-j`) option to set how many views are captured at once (default 4). If some views fail, the export now finishes all projects first and then reports the failures for each project.
+
+- [#3613](https://github.com/likec4/likec4/pull/3613) [`c4195a5`](https://github.com/likec4/likec4/commit/c4195a5f7b7c71552c3392162d12ae37e87df82d) Thanks [@amandomv](https://github.com/amandomv)! - The landing page of a single-project workspace has an Elements tab next to Views. It lists every element of the project with its kind, parent, technology, tags, relationship counts and the views it appears in. You can filter by kind or text, or show only the elements that are in no view, and clicking a row opens the element focused in its first view.
+
+- [#3614](https://github.com/likec4/likec4/pull/3614) [`f643a23`](https://github.com/likec4/likec4/commit/f643a236558306e124b931d08a48b5e45a6ad6bf) Thanks [@amandomv](https://github.com/amandomv)! - Editing `.c4` files with the Vite plugin now updates server-rendered pages too. The plugin only reloaded the model for the browser, so a page that reads the model on the server, such as an Astro or Starlight page, kept showing the old model until the dev server was restarted.
+
+- [#3631](https://github.com/likec4/likec4/pull/3631) [`78a0a62`](https://github.com/likec4/likec4/commit/78a0a623178acb920ecaed9e001aa24b8829be2f) Thanks [@davydkov](https://github.com/davydkov)! - In dev mode, `likec4:single-project` and `likec4:react` now update when projects are added, removed or renamed, instead of keeping the previous project until a full reload.
+- Updated dependencies []:
+  - @likec4/log@1.61.2
+
 ## 1.61.1
 
 ### Patch Changes

@@ -1,5 +1,39 @@
 # @likec4/vite-plugin
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`479a957`](https://github.com/likec4/likec4/commit/479a957e54f4fbd7cda1b60f5dfd5cfd8610475b) Thanks [@davydkov](https://github.com/davydkov)! - UI customization (experimental) has a new API: the customization file default-exports `createCustomization({ components })`, and the overrides are defined with `customizeComponents`, which takes the same object or the `wrap` function as before. In your own React app, render the provider returned by `createCustomization` above the diagrams.
+  
+  `defineCustomComponents` and `CustomizationProvider` are removed. The logo slots are renamed: `LogoSvg` to `Logo`, and `LogoIconSvg` to `LogoIcon`.
+  
+  Migration of a customization file:
+  
+  ```tsx
+  // before
+  export default defineCustomComponents(({ wrap }) => ({ ... }))
+  // after
+  export default createCustomization({
+    components: customizeComponents(({ wrap }) => ({ ... })),
+  })
+  ```
+  
+  The edge primitives (`EdgeContainer`, `EdgePath`, `EdgeLabel`, `EdgeLabelContainer`, `EdgeMarkers`, `EdgeActionButton`) are exported from `@likec4/diagram/custom` and `likec4/react`.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`d337956`](https://github.com/likec4/likec4/commit/d337956973756b87ba07ee4bba09992cd98ccab1) Thanks [@davydkov](https://github.com/davydkov)! - Icons of the project are loaded together with its model, before the diagram is shown. Nodes no longer appear without icons first, and `likec4 export png` and `export jpg` no longer take screenshots before the icons are drawn.
+  
+  The `likec4:icons` virtual module exports `loadProjectIcons(projectId)`, which loads the icon renderer of the project and returns it, ready to render without `Suspense`.
+
+- [#3631](https://github.com/likec4/likec4/pull/3631) [`78a0a62`](https://github.com/likec4/likec4/commit/78a0a623178acb920ecaed9e001aa24b8829be2f) Thanks [@davydkov](https://github.com/davydkov)! - In dev mode, `likec4:single-project` and `likec4:react` now update when projects are added, removed or renamed, instead of keeping the previous project until a full reload.
+- Updated dependencies [[`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c), [`0ae42a3`](https://github.com/likec4/likec4/commit/0ae42a39f3734a4ad575a8547d4d7ce52a4b865d), [`3e9c2fc`](https://github.com/likec4/likec4/commit/3e9c2fc4b8ba0795b526576dc38e586336d1ba86), [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2), [`392f39d`](https://github.com/likec4/likec4/commit/392f39d8908c6f4118c597347753edb9205aa408), [`8e4dc7d`](https://github.com/likec4/likec4/commit/8e4dc7d615944188b348d888ddcd62751d5dc874), [`7945a71`](https://github.com/likec4/likec4/commit/7945a713a5e7ee0c2bada3852b07c3f4ca21a9d5), [`b71e4fe`](https://github.com/likec4/likec4/commit/b71e4fed18f00e672cb85b5ec495ce7d99e59662)]:
+  - @likec4/core@1.61.2
+  - @likec4/layouts@1.61.2
+  - @likec4/generators@1.61.2
+  - @likec4/language-services@1.61.2
+  - @likec4/config@1.61.2
+  - @likec4/log@1.61.2
+
 ## 1.61.1
 
 ### Patch Changes

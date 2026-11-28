@@ -1,5 +1,29 @@
 # @likec4/language-server
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3630](https://github.com/likec4/likec4/pull/3630) [`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c) Thanks [@hanoii](https://github.com/hanoii)! - Add an optional third number to `autoLayout` that sets the space between top-level compounds, `autoLayout TopBottom 120 110 150`. A compound is an element shown with its children, a deployment node with its children, or a group. The space applies next to other compounds and elements on the same level, in element, dynamic and deployment views; compounds nested in another compound keep their spacing. Views without it keep their layout. Changing the layout direction or spacing in the diagram keeps a compound distance written in the source.
+
+- [#3626](https://github.com/likec4/likec4/pull/3626) [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2) Thanks [@amandomv](https://github.com/amandomv)! - Deployment views support `rank` blocks, like element views. `rank same` can align nodes in different zones, for example a database and its replica: `rank same { prod.eu.db, prod.us.dbReplica }`. An instance listed in a `rank` block is no longer aligned with the other instances of its element. Writing a model back to DSL also prints `rank` rules of element views now, instead of failing.
+
+- [#3631](https://github.com/likec4/likec4/pull/3631) [`ee06da4`](https://github.com/likec4/likec4/commit/ee06da4b95720cbf4bbe7c2b3a998a4debb25d73) Thanks [@davydkov](https://github.com/davydkov)! - Projects that have no files of their own and only use `include` paths are now listed with the other projects, so the app shows them instead of failing with `Unknown projectId`.
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`8e4dc7d`](https://github.com/likec4/likec4/commit/8e4dc7d615944188b348d888ddcd62751d5dc874) Thanks [@davydkov](https://github.com/davydkov)! - `LikeC4.fromWorkspace` and the Vite plugin accept `includeProjects` (a project id or a list of ids) to limit the instance to these projects. The whole workspace is still parsed, so imports from other projects keep working. With a single project, it is used when no project is given, and sources outside of every project belong to it.
+  
+  The Vite plugin accepts a ready `LikeC4` instance with the new `likec4` option, which respects included projects. The `languageServices` option is deprecated.
+  
+  CLI commands with `--project` now load the workspace limited to that project, and accept the path to the project folder in every command. Sources outside of every project are now part of the selected project.
+  
+  `ProjectsManager.defaultProjectId` can no longer be set; pass `workspaceSettings.includeProjects` when creating the language services instead.
+- Updated dependencies [[`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c), [`0ae42a3`](https://github.com/likec4/likec4/commit/0ae42a39f3734a4ad575a8547d4d7ce52a4b865d), [`3e9c2fc`](https://github.com/likec4/likec4/commit/3e9c2fc4b8ba0795b526576dc38e586336d1ba86), [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2), [`7945a71`](https://github.com/likec4/likec4/commit/7945a713a5e7ee0c2bada3852b07c3f4ca21a9d5), [`b71e4fe`](https://github.com/likec4/likec4/commit/b71e4fed18f00e672cb85b5ec495ce7d99e59662)]:
+  - @likec4/core@1.61.2
+  - @likec4/layouts@1.61.2
+  - @likec4/generators@1.61.2
+  - @likec4/config@1.61.2
+  - @likec4/log@1.61.2
+
 ## 1.61.1
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @likec4/diagram
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3637](https://github.com/likec4/likec4/pull/3637) [`479a957`](https://github.com/likec4/likec4/commit/479a957e54f4fbd7cda1b60f5dfd5cfd8610475b) Thanks [@davydkov](https://github.com/davydkov)! - UI customization (experimental) has a new API: the customization file default-exports `createCustomization({ components })`, and the overrides are defined with `customizeComponents`, which takes the same object or the `wrap` function as before. In your own React app, render the provider returned by `createCustomization` above the diagrams.
+  
+  `defineCustomComponents` and `CustomizationProvider` are removed. The logo slots are renamed: `LogoSvg` to `Logo`, and `LogoIconSvg` to `LogoIcon`.
+  
+  Migration of a customization file:
+  
+  ```tsx
+  // before
+  export default defineCustomComponents(({ wrap }) => ({ ... }))
+  // after
+  export default createCustomization({
+    components: customizeComponents(({ wrap }) => ({ ... })),
+  })
+  ```
+  
+  The edge primitives (`EdgeContainer`, `EdgePath`, `EdgeLabel`, `EdgeLabelContainer`, `EdgeMarkers`, `EdgeActionButton`) are exported from `@likec4/diagram/custom` and `likec4/react`.
+
+- [#3625](https://github.com/likec4/likec4/pull/3625) [`4c72bd9`](https://github.com/likec4/likec4/commit/4c72bd940eefdb36a0a68c5e4778fc68505047ae) Thanks [@amandomv](https://github.com/amandomv)! - Search lists relationships next to elements and views. They match by title, technology, kind, description or either endpoint, and `#tag`, `kind:` and `meta:` filter them too. Picking one opens the view that shows it, or lets you choose when there are several. Tags in the relationship popover now open search, like element tags do.
+- Updated dependencies [[`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c), [`0ae42a3`](https://github.com/likec4/likec4/commit/0ae42a39f3734a4ad575a8547d4d7ce52a4b865d), [`3e9c2fc`](https://github.com/likec4/likec4/commit/3e9c2fc4b8ba0795b526576dc38e586336d1ba86), [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2), [`7945a71`](https://github.com/likec4/likec4/commit/7945a713a5e7ee0c2bada3852b07c3f4ca21a9d5), [`b71e4fe`](https://github.com/likec4/likec4/commit/b71e4fed18f00e672cb85b5ec495ce7d99e59662)]:
+  - @likec4/core@1.61.2
+  - @likec4/styles@1.61.2
+
 ## 1.61.1
 
 ### Patch Changes
