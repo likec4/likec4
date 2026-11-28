@@ -29,6 +29,38 @@ describe('keepOwnTrack', () => {
     expect(keepOwnTrack(b, [a])).toEqual(pts(866, 201, 641, 201, 641, -27, 409, -27))
   })
 
+  it('puts the route that turns first on the outside when the routes start at different points', () => {
+    // both turn up; `a` starts further left but turns at x 300, inside the stretch of `b`
+    const a = route('a', pts(0, 100, 300, 100, 300, -100))
+    const b = route('b', pts(200, 100, 400, 100, 400, -100))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(0, 94, 300, 94, 300, -100))
+    expect(keepOwnTrack(b, [a])).toEqual(pts(200, 106, 400, 106, 400, -100))
+  })
+
+  it('puts the route that turns first on the outside when both turn at their start', () => {
+    // both come down and run right; `b` is longer but turns into the stretch at x 200, inside the stretch of `a`
+    const a = route('a', pts(0, -100, 0, 100, 300, 100))
+    const b = route('b', pts(200, -100, 200, 100, 600, 100))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(0, -100, 0, 106, 300, 106))
+    expect(keepOwnTrack(b, [a])).toEqual(pts(200, -100, 200, 94, 600, 94))
+  })
+
+  it('puts the shorter route on the outside when one turns at its start and the other at its end', () => {
+    // `a` turns up at x 300; `b` comes down at x 50, outside the stretch of `a`, and runs on past it
+    const a = route('a', pts(100, 100, 300, 100, 300, -100))
+    const b = route('b', pts(50, -100, 50, 100, 400, 100))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(100, 94, 300, 94, 300, -100))
+    expect(keepOwnTrack(b, [a])).toEqual(pts(50, -100, 50, 106, 400, 106))
+  })
+
+  it('breaks a tie at a shared corner by length, so the routes nest without crossing', () => {
+    // both come down at x 100 and turn right at y 300; `a` is the shorter on both stretches
+    const a = route('a', pts(100, 100, 100, 300, 400, 300))
+    const b = route('b', pts(100, 0, 100, 300, 500, 300))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(106, 100, 106, 294, 400, 294))
+    expect(keepOwnTrack(b, [a])).toEqual(pts(94, 0, 94, 306, 500, 306))
+  })
+
   it('orders vertical tracks the same way: the route turning left runs on the left', () => {
     const a = route('a', pts(100, 0, 100, 300, 400, 300))
     const b = route('b', pts(100, 0, 100, 200, -200, 200))

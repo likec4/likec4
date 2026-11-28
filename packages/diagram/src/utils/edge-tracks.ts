@@ -1,7 +1,6 @@
 import type { EdgeRouting } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { type BBox, type XYPoint, nearlyEqual } from '@likec4/core/geometry'
-import { sortBy } from 'remeda'
 import {
   type Axis,
   type DrawnEdge,
@@ -35,6 +34,10 @@ interface Run {
   indices: number[]
   /** Where the route goes at the ends of the run: negative up or left, positive down or right. */
   turn: number
+  /** Whether the route turns at the low end of the run. */
+  turnsAtLo: boolean
+  /** Whether the route turns at the high end of the run. */
+  turnsAtHi: boolean
 }
 
 /** A route of a track group with the run that decides its place in the group. */
@@ -63,11 +66,18 @@ function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
       previous.hi = Math.max(previous.hi, hi)
       previous.indices.push(i)
     } else {
-      runs.push({ axis, at, lo, hi, indices: [i - 1, i], turn: 0 })
+      runs.push({ axis, at, lo, hi, indices: [i - 1, i], turn: 0, turnsAtLo: false, turnsAtHi: false })
     }
   }
   for (const run of runs) {
-    run.turn = sideOf(run, points[run.indices[0]! - 1]) + sideOf(run, points[run.indices.at(-1)! + 1])
+    const before = sideOf(run, points[run.indices[0]! - 1])
+    const after = sideOf(run, points[run.indices.at(-1)! + 1])
+    // a run that doubles back can end anywhere along it, so place each turn by its own point
+    const nearLo = (p: XYPoint) => (run.axis === 'h' ? p.x : p.y) - run.lo <= run.hi - (run.axis === 'h' ? p.x : p.y)
+    const [first, last] = [points[run.indices[0]!]!, points[run.indices.at(-1)!]!]
+    run.turn = before + after
+    run.turnsAtLo = (before !== 0 && nearLo(first)) || (after !== 0 && nearLo(last))
+    run.turnsAtHi = (before !== 0 && !nearLo(first)) || (after !== 0 && !nearLo(last))
   }
   return runs
 }
@@ -79,18 +89,38 @@ function shareTrack(a: Run, b: Run): boolean {
 }
 
 /**
+ * Negative when the route of run `a` belongs above or left of the route of run `b`. Routes turning up or
+ * left come first. Of two turning the same way the one that leaves the group first runs on the outside:
+ * compared by where they turn when both turn at the same end of the group, otherwise the shorter one.
+ */
+function compareRuns(a: Run, b: Run): number {
+  if (a.turn !== b.turn) {
+    return a.turn - b.turn
+  }
+  const s = Math.sign(a.turn)
+  const byLength = -s * ((a.hi - a.lo) - (b.hi - b.lo))
+  switch (true) {
+    case a.turnsAtHi && b.turnsAtHi && !a.turnsAtLo && !b.turnsAtLo:
+      return -s * (a.hi - b.hi) || byLength
+    case a.turnsAtLo && b.turnsAtLo && !a.turnsAtHi && !b.turnsAtHi:
+      return s * (a.lo - b.lo) || byLength
+    default:
+      return byLength
+  }
+}
+
+/**
  * Track offsets for the movable routes of a group: around a fixed route, otherwise centered on the
  * original track. The tracks are ordered so that routes do not cross where they leave the group: a
  * route turning up or left runs above or left of one turning down or right, and of two turning the
  * same way the one that turns first runs on the outside. Ties keep a stable id order.
  */
 function offsetsOf(members: ReadonlyArray<Member>): Map<string, number> {
-  const sorted = sortBy(
-    members,
-    ({ run }) => run.turn,
-    ({ run }) => -Math.sign(run.turn) * (run.hi - run.lo),
-    ({ id }) => id,
-  )
+  // every route of the group must compute the same order, and the comparison is not transitive across
+  // routes that turn at different ends, so it always starts from the id order
+  const sorted = [...members]
+    .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+    .sort((a, b) => compareRuns(a.run, b.run))
   const fixed = sorted.find(m => !m.movable)
   const order = sorted.filter(m => m.movable || m === fixed)
   // shortcut: routes that turn the same way all sit on one side of a fixed route, so a short node side
