@@ -1,5 +1,11 @@
 # likec4-vscode
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3630](https://github.com/likec4/likec4/pull/3630) [`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c) Thanks [@hanoii](https://github.com/hanoii)! - Add an optional third number to `autoLayout` that sets the space between top-level compounds, `autoLayout TopBottom 120 110 150`. A compound is an element shown with its children, a deployment node with its children, or a group. The space applies next to other compounds and elements on the same level, in element, dynamic and deployment views; compounds nested in another compound keep their spacing. Views without it keep their layout. Changing the layout direction or spacing in the diagram keeps a compound distance written in the source.
+
 ## 1.61.1
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @likec4/core
 
+## 1.61.2
+
+### Patch Changes
+
+- [#3630](https://github.com/likec4/likec4/pull/3630) [`8e14d01`](https://github.com/likec4/likec4/commit/8e14d01f06d4323b5a0339d4223a77981c3df41c) Thanks [@hanoii](https://github.com/hanoii)! - Add an optional third number to `autoLayout` that sets the space between top-level compounds, `autoLayout TopBottom 120 110 150`. A compound is an element shown with its children, a deployment node with its children, or a group. The space applies next to other compounds and elements on the same level, in element, dynamic and deployment views; compounds nested in another compound keep their spacing. Views without it keep their layout. Changing the layout direction or spacing in the diagram keeps a compound distance written in the source.
+
+- [#3633](https://github.com/likec4/likec4/pull/3633) [`0ae42a3`](https://github.com/likec4/likec4/commit/0ae42a39f3734a4ad575a8547d4d7ce52a4b865d) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Compare view "Changes": steps of a dynamic view are matched by their source, so a step inserted by a diff is marked as added and the steps after it are no longer marked as modified or added
+
+- [#3547](https://github.com/likec4/likec4/pull/3547) [`3e9c2fc`](https://github.com/likec4/likec4/commit/3e9c2fc4b8ba0795b526576dc38e586336d1ba86) Thanks [@chiliec](https://github.com/chiliec)! - Deployment views now apply `with { ... }` on element predicates (title, color, description and the rest), the same way element views do. An element predicate with `with` also includes the matched node on its own, instead of silently dropping it when no other predicate had included it.
+
+- [#3626](https://github.com/likec4/likec4/pull/3626) [`5a71bd3`](https://github.com/likec4/likec4/commit/5a71bd3d1480804e8390dfbba0867167d29ae7a2) Thanks [@amandomv](https://github.com/amandomv)! - Deployment views support `rank` blocks, like element views. `rank same` can align nodes in different zones, for example a database and its replica: `rank same { prod.eu.db, prod.us.dbReplica }`. An instance listed in a `rank` block is no longer aligned with the other instances of its element. Writing a model back to DSL also prints `rank` rules of element views now, instead of failing.
+
+- [#3627](https://github.com/likec4/likec4/pull/3627) [`7945a71`](https://github.com/likec4/likec4/commit/7945a713a5e7ee0c2bada3852b07c3f4ca21a9d5) Thanks [@bardrop](https://github.com/bardrop)! - Plain text of Markdown descriptions and summaries now understands GFM, like the rendered HTML does. Tables become one line per row instead of raw `| a | b |` source, and `~~strikethrough~~` and task list markers are removed. This text is used to size elements in the layout and in search.
+
+- [#3600](https://github.com/likec4/likec4/pull/3600) [`b71e4fe`](https://github.com/likec4/likec4/commit/b71e4fed18f00e672cb85b5ec495ce7d99e59662) Thanks [@amandomv](https://github.com/amandomv)! - Fix `include * -> X where …` and `include X -> * where …` dropping relationships that start or end at an element nested inside `X`. They now show up connected to `X`, like they do without `where`.
+
 ## 1.61.1
 
 ### Patch Changes
