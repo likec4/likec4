@@ -40,6 +40,20 @@ describe('resolveProjectArg', () => {
     )
   })
 
+  it('returns the root project for the workspace folder with project config', async ({ expect }) => {
+    const root = mkdtempSync(join(tmpdir(), 'likec4-resolve-root-'))
+    try {
+      writeFileSync(join(root, 'likec4.config.json'), JSON.stringify({ name: 'root' }))
+      mkdirSync(join(root, 'nested'))
+      writeFileSync(join(root, 'nested', 'likec4.config.json'), JSON.stringify({ name: 'nested' }))
+      // the selection stays limited to the root project, the nested one is not included
+      await expect(resolveProjectArg(root, root)).resolves.toBe('root')
+      await expect(resolveProjectArg(root, join(root, 'nested'))).resolves.toBe('nested')
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   describe('in the workspace folder', () => {
     beforeAll(() => {
       vi.spyOn(process, 'cwd').mockReturnValue(workspace)

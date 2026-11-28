@@ -28,13 +28,16 @@ const logger = {
 type ProjectSpec = { id: string; folder: string; hasViews?: boolean; description?: string }
 
 function mockWorkspace(projects: ProjectSpec[]) {
+  const toProject = (p: ProjectSpec) => ({
+    id: p.id,
+    folder: { fsPath: p.folder },
+    config: { metadata: p.description ? { description: p.description } : {} },
+  })
+  const named = projects.filter(p => p.id !== 'default')
+  // Emulates `languageServices.project()`: `default` stands for the only named project
   const project = (id: string) => {
-    const p = projects.find(p => p.id === id)!
-    return {
-      id: p.id,
-      folder: { fsPath: p.folder },
-      config: { metadata: p.description ? { description: p.description } : {} },
-    }
+    const resolved = id === 'default' && named.length === 1 ? named[0]! : projects.find(p => p.id === id)!
+    return toProject(resolved)
   }
   // Emulates `includeProjects` of the real `fromWorkspace`
   fromWorkspace.mockImplementation(async (_path, opts) => {
@@ -46,7 +49,11 @@ function mockWorkspace(projects: ProjectSpec[]) {
   })
   const makeWorkspace = (ids: string[]) => ({
     projects: () => ids,
-    languageServices: { project },
+    languageServices: {
+      project,
+      // Projects that own source documents, each with its own folder
+      projects: () => projects.map(toProject),
+    },
     layoutedModel: vi.fn<(id: string) => Promise<{ projectId: string; views: () => Array<unknown> }>>(async id => ({
       projectId: id,
       views: () => (projects.find(p => p.id === id)?.hasViews ?? true) ? [{ $view: { sourcePath: 'views.c4' } }] : [],
@@ -76,6 +83,15 @@ describe('export markdown handler', () => {
     await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
     expect(existsSync(join(a, 'README.md'))).toBe(true)
     expect(existsSync(join(b, 'README.md'))).toBe(true)
+  })
+
+  it('keeps the folder of the default project next to the only named project', async () => {
+    const a = join(tmp, 'project-a')
+    await mkdir(a, { recursive: true })
+    mockWorkspace([{ id: 'project-a', folder: a }, { id: 'default', folder: tmp }])
+    await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
+    expect(existsSync(join(a, 'README.md'))).toBe(true)
+    expect(existsSync(join(tmp, 'README.md'))).toBe(true)
   })
 
   it('skips a project that renders to no views', async () => {
