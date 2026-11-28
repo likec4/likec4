@@ -25,7 +25,7 @@ import { logger } from './logger'
 import { enableOpenProjectInEditor } from './openProjectInEditor'
 import { reloadModuleInEnvironments } from './reloadModule'
 import { enablePluginRPC } from './rpc'
-import { splitErrorMessage } from './rpc/sendError'
+import { firstValidationError } from './validationError'
 import {
   type ProjectVirtualModule,
   type SharedVirtualModuleOptions,
@@ -373,24 +373,13 @@ export function LikeC4VitePlugin({
           }
 
           const hasErrors = () => {
-            const [error] = likec4.getErrors()
-            if (!error) {
+            // errors of the projects excluded by `includeProjects` do not block hot reload
+            const err = firstValidationError(instance ?? likec4)
+            if (!err) {
               return false
             }
             try {
-              hotChannel.send({
-                type: 'error',
-                err: {
-                  name: 'LikeC4ValidationError',
-                  ...splitErrorMessage(error.message),
-                  plugin: 'vite-plugin-likec4',
-                  loc: {
-                    file: error.sourceFsPath,
-                    line: error.line,
-                    column: error.range.start.character + 1,
-                  },
-                },
-              })
+              hotChannel.send({ type: 'error', err })
               logger.trace(
                 k.dim('sent LikeC4ValidationError'),
               )
