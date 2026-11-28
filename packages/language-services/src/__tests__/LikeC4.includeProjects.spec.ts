@@ -213,7 +213,7 @@ describe('LikeC4 includeProjects diagnostics', () => {
         printErrors: false,
         throwIfInvalid: true,
         includeProjects: 'beta',
-      })).rejects.toThrow(/Invalid model/)
+      })).rejects.toThrow(/Invalid model:\n.*beta[\\/]model\.c4/)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

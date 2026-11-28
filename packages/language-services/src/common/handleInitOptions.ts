@@ -24,8 +24,10 @@ export async function handleInitOptions(
   const printErrors = options?.printErrors ?? DefaultInitOptions.printErrors
   if ((throwIfInvalid || printErrors) && likec4.hasErrors({ scope: 'included' })) {
     if (throwIfInvalid) {
+      // build the error before dispose, it clears the projects
+      const error = validationErrorsToError(likec4)
       await likec4.dispose()
-      return Promise.reject(validationErrorsToError(likec4))
+      return Promise.reject(error)
     }
     likec4.printErrors({ scope: 'included' })
   }
