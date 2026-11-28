@@ -54,6 +54,20 @@ export interface LikeC4Diagnostic {
   sourceFsPath: string
 }
 
+/**
+ * Options for {@link LikeC4.getErrors}, {@link LikeC4.getWarnings} and {@link LikeC4.hasErrors}
+ */
+export interface LikeC4DiagnosticsOptions {
+  /**
+   * Which documents to check:
+   * - `'workspace'` (default) - all documents of the workspace
+   * - `'included'` - only documents of the projects this instance is limited to
+   *   (see {@link FromWorkspaceOptions.includeProjects}), including the files these projects include.
+   *   Same as `'workspace'` if the instance is not limited.
+   */
+  scope?: 'workspace' | 'included' | undefined
+}
+
 export class LikeC4 {
   protected readonly langium: LikeC4Langium
 
@@ -391,23 +405,40 @@ Please specify a project folder`)
   }
 
   /**
-   * Returns validation errors of all documents in the workspace
+   * Returns validation errors of all documents in the workspace,
+   * or of the included projects only, see {@link LikeC4DiagnosticsOptions.scope}
    */
-  getErrors(): LikeC4Diagnostic[] {
-    return this.collectDiagnostics(isErrorDiagnostic)
+  getErrors(options?: LikeC4DiagnosticsOptions): LikeC4Diagnostic[] {
+    return this.collectDiagnostics(isErrorDiagnostic, options)
   }
 
   /**
-   * Returns validation warnings of all documents in the workspace.
+   * Returns validation warnings of all documents in the workspace,
+   * or of the included projects only, see {@link LikeC4DiagnosticsOptions.scope}.
    * Warnings do not make the model invalid, see {@link getErrors}
    */
-  getWarnings(): LikeC4Diagnostic[] {
-    return this.collectDiagnostics(isWarningDiagnostic)
+  getWarnings(options?: LikeC4DiagnosticsOptions): LikeC4Diagnostic[] {
+    return this.collectDiagnostics(isWarningDiagnostic, options)
   }
 
-  private collectDiagnostics(predicate: (diagnostic: { severity?: number }) => boolean): LikeC4Diagnostic[] {
-    const docs = [...this.LangiumDocuments.userDocuments]
-    return docs.flatMap(doc => {
+  /**
+   * Documents to check for diagnostics, see {@link LikeC4DiagnosticsOptions.scope}
+   */
+  private diagnosticDocuments(options?: LikeC4DiagnosticsOptions) {
+    const docs = this.LangiumDocuments.userDocuments.toArray()
+    const included = this.includedProjects
+    if (options?.scope !== 'included' || !included) {
+      return docs
+    }
+    const projectsManager = this.projectsManager
+    return docs.filter(doc => included.some(projectId => projectsManager.isIncluded(projectId, doc)))
+  }
+
+  private collectDiagnostics(
+    predicate: (diagnostic: { severity?: number }) => boolean,
+    options?: LikeC4DiagnosticsOptions,
+  ): LikeC4Diagnostic[] {
+    return this.diagnosticDocuments(options).flatMap(doc => {
       const diagnostics = doc.diagnostics?.filter(predicate) ?? []
       return diagnostics.map(({ message, range }) => ({
         message: typeof message === 'string' ? message : message.value,
@@ -418,11 +449,16 @@ Please specify a project folder`)
     })
   }
 
-  hasErrors(): boolean {
-    return this.LangiumDocuments.userDocuments.some(doc => {
+  /**
+   * Checks if there are validation errors in the workspace,
+   * or in the included projects only, see {@link LikeC4DiagnosticsOptions.scope}
+   */
+  hasErrors(options?: LikeC4DiagnosticsOptions): boolean {
+    return this.diagnosticDocuments(options).some(doc => {
       return doc.diagnostics && doc.diagnostics.some(isErrorDiagnostic)
     })
   }
+
   /**
    * @returns true if there are errors
    */
