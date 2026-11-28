@@ -6,6 +6,7 @@
 
 import { pickViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
+import { LikeC4ModelContext } from '../context/LikeC4ModelContext'
 import { useCurrentProject, useCurrentView, useTransparentBackground } from '../hooks'
 import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 
@@ -44,17 +45,19 @@ export function EmbedPage() {
         maxHeight: '100vh',
       }}
     >
-      <StaticLikeC4Diagram
-        view={diagram}
-        fitView={true}
-        background={'transparent'}
-        fitViewPadding={0}
-        dynamicViewVariant={dynamic}
-        enableRelationshipDetails
-        enableRelationshipBrowser
-        relationshipBrowserScope={relationshipBrowserScope}
-        initialWidth={bounds.width}
-        initialHeight={bounds.height} />
+      <LikeC4ModelContext>
+        <StaticLikeC4Diagram
+          view={diagram}
+          fitView={true}
+          background={'transparent'}
+          fitViewPadding={0}
+          dynamicViewVariant={dynamic}
+          enableRelationshipDetails
+          enableRelationshipBrowser
+          relationshipBrowserScope={relationshipBrowserScope}
+          initialWidth={bounds.width}
+          initialHeight={bounds.height} />
+      </LikeC4ModelContext>
     </div>
   )
 }

@@ -2,13 +2,12 @@ import type { ProjectId } from '@likec4/core/types'
 import { Button, Container, Stack, Title } from '@mantine/core'
 import { createFileRoute, Link, notFound, Outlet, redirect } from '@tanstack/react-router'
 import { loadDiffs } from 'likec4:diffs'
+import { loadProjectIcons } from 'likec4:icons'
 import { loadModel } from 'likec4:model'
 import { z } from 'zod'
 import { ErrorComponent } from '../../components/ErrorComponent'
 import { ViewOutlet } from '../../components/ViewOutlet'
-import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
-import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
-import { ModelDiffsContext } from '../../context/ModelDiffsContext'
+import { LikeC4ProjectContext } from '../../context/LikeC4ProjectContext'
 
 export const Route = createFileRoute('/project/$projectId')({
   staleTime: Infinity,
@@ -20,12 +19,13 @@ export const Route = createFileRoute('/project/$projectId')({
   }),
   loader: async ({ params }) => {
     const projectId = params.projectId
-    const [likec4model, { $diffs }] = await Promise.all([
+    const [likec4model, { $diffs }, IconRenderer] = await Promise.all([
       loadModel(projectId).catch((error) => {
         console.error(`Failed to load model for project ${projectId}`, error)
         throw notFound()
       }),
       loadDiffs(projectId),
+      loadProjectIcons(projectId),
     ])
     const data = likec4model.$likec4data.value
     if (!data) {
@@ -43,6 +43,7 @@ export const Route = createFileRoute('/project/$projectId')({
     return {
       $likec4model: likec4model.$likec4model,
       $diffs,
+      IconRenderer,
       projectId,
     }
   },
@@ -61,16 +62,12 @@ export const Route = createFileRoute('/project/$projectId')({
 })
 
 function RouteComponent() {
-  const { $likec4model, $diffs, projectId } = Route.useLoaderData()
+  const { $likec4model, $diffs, IconRenderer, projectId } = Route.useLoaderData()
   return (
     <ViewOutlet>
-      <LikeC4IconRendererContext projectId={projectId}>
-        <LikeC4ModelContext likec4model={$likec4model}>
-          <ModelDiffsContext diffs={$diffs}>
-            <Outlet />
-          </ModelDiffsContext>
-        </LikeC4ModelContext>
-      </LikeC4IconRendererContext>
+      <LikeC4ProjectContext projectId={projectId} $model={$likec4model} $diffs={$diffs} IconRenderer={IconRenderer}>
+        <Outlet />
+      </LikeC4ProjectContext>
     </ViewOutlet>
   )
 }

@@ -5,9 +5,11 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { ViewId } from '@likec4/core/types'
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 import { z } from 'zod'
 import { ErrorComponent } from '../../components/ErrorComponent'
+import { LikeC4ViewContext } from '../../context/LikeC4ViewContext'
 import {
   DEFAULT_EXPORT_NOTATION_POSITION,
   DEFAULT_EXPORT_NOTATION_TEXT,
@@ -39,6 +41,15 @@ export const Route = createFileRoute('/project/$projectId/export/$viewId')({
       }),
     ],
   },
-  component: ExportPage,
+  component: ExportRoute,
   errorComponent: ErrorComponent,
 })
+
+function ExportRoute() {
+  const { viewId } = Route.useParams()
+  return (
+    <LikeC4ViewContext viewId={viewId as ViewId}>
+      <ExportPage />
+    </LikeC4ViewContext>
+  )
+}

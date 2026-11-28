@@ -15,7 +15,7 @@ import { LazyAIChat } from '../aichat'
 import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'
 import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDiffPanel'
 import { NotFound } from '../components/NotFound'
-import { useLikeC4ModelAtom } from '../context/safeCtx'
+import { useLikeC4ProjectContext } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
 import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 import { FocusElementFromUrl, ListenForDiagramStateChanges, OpenRelationshipBrowserFromUrl } from './ViewReact'
@@ -25,7 +25,7 @@ export function ViewEditor() {
   const project = useCurrentProject()
   const [view, setLayoutType] = useCurrentView()
   const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
-  const $likec4model = useLikeC4ModelAtom()
+  const { $model: $likec4model } = useLikeC4ProjectContext()
   const { dynamic } = useSearch({ strict: false })
   const compareView = useCompareView(view?.id)
 

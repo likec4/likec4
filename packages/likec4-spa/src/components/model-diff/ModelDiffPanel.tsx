@@ -1,11 +1,10 @@
 import { type CompareViewMode, filterCompareView } from '@likec4/core/compute-view'
 import { type LayoutedView, type ViewId, DiffId } from '@likec4/core/types'
-import { useLikeC4Model } from '@likec4/diagram'
 import { token } from '@likec4/styles/tokens'
 import { Box, Group, Paper, SegmentedControl, Select, Stack, Text } from '@mantine/core'
 import { useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
-import { useModelDiffs } from '../../context/ModelDiffsContext'
+import { useModelDiffs, useProjectModel } from '../../hooks'
 import { selectCompareMode, selectDiff, useModelDiffState } from './state'
 
 const NoDiff = '__as-is__'
@@ -52,7 +51,7 @@ export function ModelDiffPanel({ viewId }: { viewId: ViewId }) {
   const { diffs, views } = useModelDiffs()
   const { diffId, mode } = useModelDiffState()
   const navigate = useNavigate()
-  const model = useLikeC4Model()
+  const model = useProjectModel()
   const existsOnlyInDiff = diffId !== null && views[diffId]?.[viewId] !== undefined && model.findView(viewId) === null
 
   const chooseDiff = (next: string | null) => {

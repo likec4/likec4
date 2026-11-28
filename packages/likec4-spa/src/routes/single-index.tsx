@@ -7,13 +7,12 @@
 
 import { createFileRoute, notFound, stripSearchParams } from '@tanstack/react-router'
 import { loadDiffs } from 'likec4:diffs'
+import { loadProjectIcons } from 'likec4:icons'
 import { loadModel } from 'likec4:model'
 import { z } from 'zod'
 import { ErrorComponent } from '../components/ErrorComponent'
 import { ViewOutlet } from '../components/ViewOutlet'
-import { LikeC4IconRendererContext } from '../context/LikeC4IconRendererContext'
-import { LikeC4ModelContext } from '../context/LikeC4ModelContext'
-import { ModelDiffsContext } from '../context/ModelDiffsContext'
+import { LikeC4ProjectContext } from '../context/LikeC4ProjectContext'
 import { ProjectIndexPage } from '../pages/ProjectIndex'
 
 export const Route = createFileRoute('/single-index')({
@@ -32,7 +31,11 @@ export const Route = createFileRoute('/single-index')({
   staleTime: Infinity,
   loader: async ({ context }) => {
     const projectId = context.projectId
-    const [data, { $diffs }] = await Promise.all([loadModel(projectId), loadDiffs(projectId)])
+    const [data, { $diffs }, IconRenderer] = await Promise.all([
+      loadModel(projectId),
+      loadDiffs(projectId),
+      loadProjectIcons(projectId),
+    ])
     const modelData = data.$likec4data.value
     if (!modelData) {
       throw notFound()
@@ -40,6 +43,7 @@ export const Route = createFileRoute('/single-index')({
     return {
       $likec4model: data.$likec4model,
       $diffs,
+      IconRenderer,
       projectId,
     }
   },
@@ -48,27 +52,23 @@ export const Route = createFileRoute('/single-index')({
 })
 
 function RouteComponent() {
-  const { $likec4model, $diffs, projectId } = Route.useLoaderData()
+  const { $likec4model, $diffs, IconRenderer, projectId } = Route.useLoaderData()
   const section = Route.useSearch({ select: s => s.section ?? 'views' })
   const mode = Route.useSearch({ select: s => s.view ?? 'cards' })
   const navigate = Route.useNavigate()
   return (
     <ViewOutlet>
-      <LikeC4IconRendererContext projectId={projectId}>
-        <LikeC4ModelContext likec4model={$likec4model}>
-          <ModelDiffsContext diffs={$diffs}>
-            <ProjectIndexPage
-              section={section}
-              onSectionChange={next => {
-                void navigate({ search: prev => ({ ...prev, section: next }), replace: true })
-              }}
-              mode={mode}
-              onModeChange={next => {
-                void navigate({ search: prev => ({ ...prev, view: next }), replace: true })
-              }} />
-          </ModelDiffsContext>
-        </LikeC4ModelContext>
-      </LikeC4IconRendererContext>
+      <LikeC4ProjectContext projectId={projectId} $model={$likec4model} $diffs={$diffs} IconRenderer={IconRenderer}>
+        <ProjectIndexPage
+          section={section}
+          onSectionChange={next => {
+            void navigate({ search: prev => ({ ...prev, section: next }), replace: true })
+          }}
+          mode={mode}
+          onModeChange={next => {
+            void navigate({ search: prev => ({ ...prev, view: next }), replace: true })
+          }} />
+      </LikeC4ProjectContext>
     </ViewOutlet>
   )
 }
