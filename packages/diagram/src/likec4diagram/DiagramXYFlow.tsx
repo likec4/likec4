@@ -194,10 +194,8 @@ export function LikeC4DiagramXYFlow({
     onMove: OnMove = useCallbackRef((event) => {
       const manually = !!event
       if (manually) {
-        $panning.startPanning()
-      } else {
-        $panning.resetPanning()
-      }
+        $panning.startPanning()      
+      }    
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
       const manually = !!event
