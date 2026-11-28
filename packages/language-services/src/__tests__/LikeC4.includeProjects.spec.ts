@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, it } from 'vitest'
@@ -117,6 +117,117 @@ describe('LikeC4 includeProjects', () => {
       await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: 'default' })
       const model = await likec4.computedModel()
       expect(model.findElement('solo')).not.toBeNull()
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+})
+
+/**
+ * Workspace with two projects, beta has a validation error:
+ *   alpha/  - project "alpha", includes ../shared
+ *   beta/   - project "beta", with an error
+ *   shared/ - included by alpha
+ */
+function createWorkspaceWithErrors(sharedSource: string): string {
+  const root = mkdtempSync(join(tmpdir(), 'likec4-include-projects-errors-'))
+  mkdirSync(join(root, 'alpha'))
+  writeFileSync(
+    join(root, 'alpha', 'likec4.config.json'),
+    JSON.stringify({ name: 'alpha', include: { paths: ['../shared'] } }),
+  )
+  writeFileSync(join(root, 'alpha', 'model.c4'), `${spec}\nmodel {\n  component alpha\n}\n`)
+  mkdirSync(join(root, 'beta'))
+  writeFileSync(join(root, 'beta', 'likec4.config.json'), JSON.stringify({ name: 'beta' }))
+  writeFileSync(join(root, 'beta', 'model.c4'), `${spec}\nmodel {\n  component beta\n  beta -> unknown\n}\n`)
+  mkdirSync(join(root, 'shared'))
+  writeFileSync(join(root, 'shared', 'shared.c4'), sharedSource)
+  return root
+}
+
+describe('LikeC4 includeProjects diagnostics', () => {
+  const validShared = `model {\n  component shared\n}\n`
+  const invalidShared = `model {\n  component shared\n  shared -> missing\n}\n`
+
+  it('scope "included" ignores errors of excluded projects', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: 'alpha' })
+      const betaErrors = likec4.getErrors().filter(e => e.sourceFsPath.includes('beta'))
+      expect(betaErrors).not.toEqual([])
+      expect(likec4.hasErrors()).toBe(true)
+
+      expect(likec4.getErrors({ scope: 'included' })).toEqual([])
+      expect(likec4.hasErrors({ scope: 'included' })).toBe(false)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('scope "included" reports errors of included projects', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: 'beta' })
+      const errors = likec4.getErrors({ scope: 'included' })
+      expect(errors).not.toEqual([])
+      expect(errors.every(e => e.sourceFsPath.includes('beta'))).toBe(true)
+      expect(likec4.hasErrors({ scope: 'included' })).toBe(true)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('scope "included" reports errors in files included by the project', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(invalidShared)
+    try {
+      await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: 'alpha' })
+      const errors = likec4.getErrors({ scope: 'included' })
+      expect(errors).not.toEqual([])
+      expect(errors.every(e => e.sourceFsPath.includes('shared'))).toBe(true)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('scope "included" checks the whole workspace without includeProjects', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, { printErrors: false })
+      expect(likec4.getErrors({ scope: 'included' })).toEqual(likec4.getErrors())
+      expect(likec4.hasErrors({ scope: 'included' })).toBe(true)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('throwIfInvalid ignores errors of excluded projects', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, {
+        printErrors: false,
+        throwIfInvalid: true,
+        includeProjects: 'alpha',
+      })
+      expect(likec4.hasErrors()).toBe(true)
+      await expect(fromWorkspace(root, {
+        printErrors: false,
+        throwIfInvalid: true,
+        includeProjects: 'beta',
+      })).rejects.toThrow(/Invalid model:\n.*beta[\\/]model\.c4/)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('scope "included" skips included projects that are no longer registered', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: ['beta', 'alpha'] })
+      unlinkSync(join(root, 'beta', 'likec4.config.json'))
+      await likec4.projectsManager.reloadProjects()
+      expect(likec4.projectsManager.all).not.toContain('beta')
+      expect(() => likec4.getErrors({ scope: 'included' })).not.toThrow()
+      expect(() => likec4.hasErrors({ scope: 'included' })).not.toThrow()
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

@@ -8,7 +8,13 @@ import { withTrailingSlash } from 'ufo'
 import { createFromSources } from '../common/createFromSources'
 import { handleInitOptions } from '../common/handleInitOptions'
 import { normalizeIncludeProjects, validateIncludeProjects } from '../common/includeProjects'
-import { type LikeC4Diagnostic, type LikeC4Langium, type LikeC4LanguageServices, LikeC4 } from '../common/LikeC4'
+import {
+  type LikeC4Diagnostic,
+  type LikeC4DiagnosticsOptions,
+  type LikeC4Langium,
+  type LikeC4LanguageServices,
+  LikeC4,
+} from '../common/LikeC4'
 import { type FromWorkspaceOptions, type InitOptions, DefaultInitOptions } from '../common/options'
 import { configureLogger } from './configureLogger'
 import { type CreateLanguageServiceOptions, createLanguageServices } from './createLanguageServices'
@@ -17,6 +23,7 @@ export type {
   FromWorkspaceOptions,
   InitOptions,
   LikeC4Diagnostic,
+  LikeC4DiagnosticsOptions,
   LikeC4Langium,
   LikeC4LanguageServices,
 }
