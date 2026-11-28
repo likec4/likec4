@@ -81,6 +81,13 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         return scope(this.fqnIndex.rootElements(projectId))
       }
 
+      if (ast.isViewRef(container) || ast.isDynamicViewRef(container)) {
+        const diff = AstUtils.getContainerOfType(container, ast.isModelDiff)
+        if (diff) {
+          return this.scopeForDiffViews(diff, referenceType, context)
+        }
+      }
+
       // Fallback to project scope for other types
       return this.projectScope(
         referenceType,
@@ -373,6 +380,19 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
       container = container.$container
     }
+  }
+
+  /**
+   * Views of a diff exist only while the diff is selected,
+   * so they are visible only to references inside the same diff (on top of the project scope).
+   */
+  protected scopeForDiffViews(diff: ast.ModelDiff, referenceType: string, context: ReferenceInfo): Scope {
+    const document = getDocument(diff)
+    const views = diff.viewBlocks
+      .flatMap(block => block.views)
+      .filter(view => !!view.name && this.reflection.isSubtype(view.$type, referenceType))
+      .map(view => this.descriptions.createDescription(view, view.name, document))
+    return new StreamScope(stream(views), this.projectScope(referenceType, context))
   }
 
   /**
