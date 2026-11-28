@@ -24,7 +24,6 @@ const testState = vi.hoisted(() => ({
 vi.mock('@likec4/diagram', () => ({
   LikeC4Diagram: () => React.createElement('div', { 'data-testid': 'diagram' }),
   pickViewBounds: () => testState.diagram.bounds,
-  useLikeC4Model: () => ({ resolveMarkdownRef: () => null }),
   useLikeC4Styles: () => ({
     colors: () => ({
       elements: {
@@ -59,8 +58,13 @@ vi.mock('../components/NotFound', () => ({
   NotFound: () => React.createElement('div', { 'data-testid': 'not-found' }, 'not found'),
 }))
 
+vi.mock('../context/LikeC4ModelContext', () => ({
+  LikeC4ModelContext: ({ children }: React.PropsWithChildren) => React.createElement(React.Fragment, null, children),
+}))
+
 vi.mock('../hooks', () => ({
   useCurrentView: () => [testState.diagram],
+  useProjectModel: () => ({ resolveMarkdownRef: () => null }),
   useTransparentBackground: vi.fn<(transparent: boolean) => void>(),
 }))
 

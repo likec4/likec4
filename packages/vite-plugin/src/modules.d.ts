@@ -28,7 +28,14 @@ declare module 'likec4:icons' {
   import type { ElementIconRenderer, ElementIconRendererProps } from 'likec4/react'
 
   export type { ElementIconRenderer, ElementIconRendererProps }
+  /**
+   * Returns the icon renderer of the project, loaded lazily (renders through `Suspense`)
+   */
   export function getProjectIcons(projectId: string): ElementIconRenderer
+  /**
+   * Loads icons of the project and returns the icon renderer, rendered without suspending
+   */
+  export function loadProjectIcons(projectId: string): Promise<ElementIconRenderer>
 }
 
 declare module 'likec4:model' {

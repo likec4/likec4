@@ -7,13 +7,14 @@
 
 import type { CSSProperties } from 'react'
 import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
-import { LikeC4Diagram, pickViewBounds, useLikeC4Model, useLikeC4Styles } from '@likec4/diagram'
+import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
 import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
 import { useRef } from 'react'
-import { useCurrentView, useTransparentBackground } from '../hooks'
+import { LikeC4ModelContext } from '../context/LikeC4ModelContext'
+import { useCurrentView, useProjectModel, useTransparentBackground } from '../hooks'
 import {
   type ExportNotationText,
   DEFAULT_EXPORT_NOTATION_POSITION,
@@ -154,7 +155,7 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   const downloadedRef = useRef(false)
 
   const bounds = pickViewBounds(diagram, dynamic)
-  const model = useLikeC4Model()
+  const model = useProjectModel()
   // Resolve [[…]] links to titles, the layout measures the plain text
   const viewDescription = RichText.from(diagram.description, model.resolveMarkdownRef)
   const showDescription = isExportSearchFlagEnabled(description) && viewDescription.nonEmpty
@@ -214,49 +215,51 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
       <Box
         data-testid="export-diagram-area"
         style={grid.diagram}>
-        <LikeC4Diagram
-          view={diagram}
-          fitView={false}
-          fitViewPadding={{
-            top: '0px',
-            bottom: '0px',
-            left: '0px',
-            right: '0px',
-          }}
-          background={isJpeg ? 'solid' : 'transparent'}
-          reduceGraphics={false}
-          dynamicViewVariant={dynamic}
-          className={'likec4-static-view'}
-          pannable={false}
-          zoomable={false}
-          controls={false}
-          enableNotations={false}
-          enableElementDetails={false}
-          enableRelationshipDetails={false}
-          enableRelationshipBrowser={false}
-          enableDynamicViewWalkthrough={false}
-          enableFocusMode={false}
-          enableSearch={false}
-          nodesSelectable={false}
-          enableElementTags={false}
-          onInitialized={() => {
-            if (!viewportRef.current) {
-              console.error('viewportRef.current is null')
-              return
-            }
-            const x = Math.round(-bounds.x + padding)
-            const y = Math.round(-bounds.y + padding)
+        <LikeC4ModelContext>
+          <LikeC4Diagram
+            view={diagram}
+            fitView={false}
+            fitViewPadding={{
+              top: '0px',
+              bottom: '0px',
+              left: '0px',
+              right: '0px',
+            }}
+            background={isJpeg ? 'solid' : 'transparent'}
+            reduceGraphics={false}
+            dynamicViewVariant={dynamic}
+            className={'likec4-static-view'}
+            pannable={false}
+            zoomable={false}
+            controls={false}
+            enableNotations={false}
+            enableElementDetails={false}
+            enableRelationshipDetails={false}
+            enableRelationshipBrowser={false}
+            enableDynamicViewWalkthrough={false}
+            enableFocusMode={false}
+            enableSearch={false}
+            nodesSelectable={false}
+            enableElementTags={false}
+            onInitialized={() => {
+              if (!viewportRef.current) {
+                console.error('viewportRef.current is null')
+                return
+              }
+              const x = Math.round(-bounds.x + padding)
+              const y = Math.round(-bounds.y + padding)
 
-            const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
-            viewports.forEach((el) => {
-              el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-            })
+              const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
+              viewports.forEach((el) => {
+                el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+              })
 
-            if (download) {
-              window.setTimeout(downloadDiagram, 500)
-            }
-          }}
-        />
+              if (download) {
+                window.setTimeout(downloadDiagram, 500)
+              }
+            }}
+          />
+        </LikeC4ModelContext>
       </Box>
       {grid.description && (
         <ExportDescriptionPanel

@@ -1,9 +1,12 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { TreeNodeData } from '@mantine/core'
 import { compareNatural, nonexhaustive } from '@likec4/core/utils'
-import { useLikeC4Model } from '@likec4/diagram'
+import { useStore } from '@nanostores/react'
+import { deepEqual } from 'fast-equals'
+import { computed } from 'nanostores'
 import { useMemo } from 'react'
 import { find } from 'remeda'
+import { useLikeC4ProjectContext } from '../../context/safeCtx'
 
 interface DiagramTreeNodeData {
   label: string
@@ -99,7 +102,31 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
   return root.children!.sort(compareTreeNodes)
 }
 
-export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
-  const model = useLikeC4Model()
-  return useMemo(() => buildDiagramTreeData([...model.views()], groupBy), [model, groupBy])
+/**
+ * The part of the model the sidebar shows
+ */
+export interface DiagramsTreeSlice {
+  tree: DiagramTreeNodeData[]
+  viewIds: string[]
+}
+
+/**
+ * Returns the tree of views, computed from the model of the project while the sidebar is mounted.
+ * Re-renders only when the tree changes, not on every change of the model.
+ */
+export function useDiagramsTree(groupBy: GroupBy = 'by-files'): DiagramsTreeSlice {
+  const { $model } = useLikeC4ProjectContext()
+  const $slice = useMemo(() => {
+    const $slice = computed($model, (model): DiagramsTreeSlice => {
+      const views = [...model.views()]
+      return {
+        tree: buildDiagramTreeData(views, groupBy),
+        viewIds: views.map(view => view.id),
+      }
+    })
+    // The slice is small, comparing it is cheaper than re-rendering the tree
+    $slice.eq = deepEqual
+    return $slice
+  }, [$model, groupBy])
+  return useStore($slice)
 }
