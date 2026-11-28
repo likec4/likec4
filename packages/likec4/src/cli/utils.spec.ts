@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterAll, beforeAll, describe, it } from 'vitest'
+import { afterAll, beforeAll, describe, it, vi } from 'vitest'
 import { resolveProjectArg } from './utils'
 
 describe('resolveProjectArg', () => {
@@ -38,5 +38,23 @@ describe('resolveProjectArg', () => {
     await expect(resolveProjectArg(workspace, join(workspace, 'no-config'))).rejects.toThrow(
       /No LikeC4 project config found/,
     )
+  })
+
+  describe('in the workspace folder', () => {
+    beforeAll(() => {
+      vi.spyOn(process, 'cwd').mockReturnValue(workspace)
+    })
+
+    afterAll(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('takes a bare name of a folder without config as a project id', async ({ expect }) => {
+      await expect(resolveProjectArg(workspace, 'no-config')).resolves.toBe('no-config')
+    })
+
+    it('fails for a relative path to a folder without config', async ({ expect }) => {
+      await expect(resolveProjectArg(workspace, './no-config')).rejects.toThrow(/No LikeC4 project config found/)
+    })
   })
 })

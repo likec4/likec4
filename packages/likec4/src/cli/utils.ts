@@ -46,9 +46,10 @@ export async function initLikeC4({ path, project, useDotBin, ...options }: InitL
  *
  * The argument is either a project id or a path to the project folder.
  * The project id of a folder is the name from its config file.
+ * A bare name (like `alpha`) of a folder without config is taken as a project id.
  *
  * @returns project id, or `undefined` if no project is specified (or it is the workspace itself)
- * @throws if the folder has no project config
+ * @throws if the folder, given as a path, has no project config
  */
 export async function resolveProjectArg(
   workspacePath: string,
@@ -68,11 +69,22 @@ export async function resolveProjectArg(
     .map(filename => join(projectFolder, filename))
     .find(filepath => existsSync(filepath))
   if (!configFile) {
+    // A bare name can be a project id that matches a folder name
+    if (isBareName(project)) {
+      return project
+    }
     throw new Error(`No LikeC4 project config found in ${projectFolder}`)
   }
   const config = await loadConfig(configFile)
   logger.debug`Found project ${config.name} at path: ${projectFolder}`
   return config.name
+}
+
+/**
+ * A name without path segments, like `alpha` (not `./alpha` or `src/alpha`)
+ */
+function isBareName(value: string): boolean {
+  return value !== '.' && value !== '..' && !/[\\/]/.test(value)
 }
 
 /**

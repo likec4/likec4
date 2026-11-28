@@ -1,16 +1,15 @@
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutType, ViewId } from '@likec4/core/types'
 import type { ReadableAtom } from 'nanostores'
-import { useDidUpdate } from '@mantine/hooks'
 import { shallowEqual } from 'fast-equals'
-import { atom, batch, batched, computed, readonlyType } from 'nanostores'
-import { type PropsWithChildren, useState } from 'react'
+import { atom, batched, computed, readonlyType } from 'nanostores'
+import { type PropsWithChildren, useMemo } from 'react'
 import { LikeC4ViewCtx, useLikeC4ProjectContext } from './safeCtx'
 
 function createViewContext($model: ReadableAtom<LikeC4Model.Layouted>, viewId: ViewId) {
   const $viewId = atom(viewId)
   const $layoutType = atom<LayoutType>('manual')
-  const $viewContext = batched([$model, $viewId, $layoutType], (model, viewId, layoutType) => {
+  const $viewContext = batched([$model, $layoutType], (model, layoutType) => {
     const viewModel = model.findView(viewId)
     if (viewModel) {
       return {
@@ -28,18 +27,6 @@ function createViewContext($model: ReadableAtom<LikeC4Model.Layouted>, viewId: V
     $viewId: readonlyType($viewId),
     $viewModel: computed($viewContext, context => context.viewModel),
     $view: computed($viewContext, context => context.view),
-    /**
-     * Switches to another view, back to the manual layout
-     */
-    setViewId: (viewId: ViewId) => {
-      if ($viewId.get() === viewId) {
-        return
-      }
-      batch(() => {
-        $viewId.set(viewId)
-        $layoutType.set('manual')
-      })
-    },
     setLayoutType: (layoutType: LayoutType) => $layoutType.set(layoutType),
   }
 }
@@ -50,20 +37,13 @@ function createViewContext($model: ReadableAtom<LikeC4Model.Layouted>, viewId: V
 export type LikeC4ViewContextValue = ReturnType<typeof createViewContext>
 
 /**
- * Provides the view the user is on, inside `LikeC4ProjectContext`
+ * Provides the view the user is on, inside `LikeC4ProjectContext`.
+ * A new view id creates a new context, so children read the new view in the same render,
+ * and the layout is back to manual.
  */
 export function LikeC4ViewContext({ viewId, children }: PropsWithChildren<{ viewId: ViewId }>) {
   const { $model } = useLikeC4ProjectContext()
-  const [value, setValue] = useState(() => createViewContext($model, viewId))
-
-  useDidUpdate(() => {
-    setValue(createViewContext($model, viewId))
-  }, [$model])
-
-  useDidUpdate(() => {
-    value.setViewId(viewId)
-  }, [viewId])
-
+  const value = useMemo(() => createViewContext($model, viewId), [$model, viewId])
   return (
     <LikeC4ViewCtx value={value}>
       {children}
