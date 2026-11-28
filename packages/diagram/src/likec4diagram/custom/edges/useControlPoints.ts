@@ -7,7 +7,7 @@ import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYStoreApi } from '../../../hooks/useXYFlow'
 import { initialControlPoints, insertCorner } from '../../../utils/edge-corners'
-import { edgeEndCenters } from '../../../utils/edge-endpoints'
+import { edgeEndsFromNodes } from '../../../utils/edge-endpoints'
 
 export function useControlPoints(props: Types.EdgeProps<'relationship'>, routing: EdgeRouting) {
   const { data } = props
@@ -31,7 +31,7 @@ export function useControlPoints(props: Types.EdgeProps<'relationship'>, routing
     const newControlPoints = insertCorner({
       point,
       controlPoints,
-      ...edgeEndCenters(xyflowStore.getState().nodeLookup, props),
+      ...edgeEndsFromNodes(xyflowStore.getState().nodeLookup, props),
       dir: data.dir,
       routing,
     })

@@ -9,11 +9,12 @@ import {
   drawnFromRoute,
   editedEdgePath,
   editedEdgeRoute,
+  END_INSET,
+  stretchAxis,
 } from './edge-path'
 
 // Track separation, in diagram units
 const TRACK_SPACING = 12
-const END_INSET = 8
 const SAME_TRACK = 4 // runs this close share a track; handles can sit off the node center
 
 /** An orthogonal edge polyline and whether it may move to another track. */
@@ -31,6 +32,21 @@ interface Run {
   hi: number
   /** Indices of all points on the run, including collinear corners. */
   indices: number[]
+  /** Where the route goes at the ends of the run: negative up or left, positive down or right. */
+  turn: number
+  /** Whether the route turns at the low end of the run. */
+  turnsAtLo: boolean
+  /** Whether the route turns at the high end of the run. */
+  turnsAtHi: boolean
+}
+
+/** A route of a track group with the run that decides its place in the group. */
+type Member = { id: string; movable: boolean; run: Run }
+
+/** The side of the run a point lies on: negative up or left, positive down or right, zero on the run. */
+function sideOf(run: Run, p: XYPoint | undefined): number {
+  const value = p && (run.axis === 'h' ? p.y : p.x)
+  return value === undefined || nearlyEqual(value, run.at) ? 0 : Math.sign(value - run.at)
 }
 
 /** Straight runs, merging collinear pieces so each run shifts as a whole. */
@@ -38,16 +54,9 @@ function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
   const runs: Run[] = []
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1]!, b = points[i]!
-    let axis: Axis
-    switch (true) {
-      case nearlyEqual(a.y, b.y) && !nearlyEqual(a.x, b.x):
-        axis = 'h'
-        break
-      case nearlyEqual(a.x, b.x) && !nearlyEqual(a.y, b.y):
-        axis = 'v'
-        break
-      default:
-        continue
+    const axis = stretchAxis(a, b)
+    if (!axis) {
+      continue
     }
     const at = axis === 'h' ? a.y : a.x
     const [lo, hi] = axis === 'h' ? [Math.min(a.x, b.x), Math.max(a.x, b.x)] : [Math.min(a.y, b.y), Math.max(a.y, b.y)]
@@ -57,8 +66,18 @@ function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
       previous.hi = Math.max(previous.hi, hi)
       previous.indices.push(i)
     } else {
-      runs.push({ axis, at, lo, hi, indices: [i - 1, i] })
+      runs.push({ axis, at, lo, hi, indices: [i - 1, i], turn: 0, turnsAtLo: false, turnsAtHi: false })
     }
+  }
+  for (const run of runs) {
+    const before = sideOf(run, points[run.indices[0]! - 1])
+    const after = sideOf(run, points[run.indices.at(-1)! + 1])
+    // a run that doubles back can end anywhere along it, so place each turn by its own point
+    const nearLo = (p: XYPoint) => (run.axis === 'h' ? p.x : p.y) - run.lo <= run.hi - (run.axis === 'h' ? p.x : p.y)
+    const [first, last] = [points[run.indices[0]!]!, points[run.indices.at(-1)!]!]
+    run.turn = before + after
+    run.turnsAtLo = (before !== 0 && nearLo(first)) || (after !== 0 && nearLo(last))
+    run.turnsAtHi = (before !== 0 && !nearLo(first)) || (after !== 0 && !nearLo(last))
   }
   return runs
 }
@@ -69,46 +88,75 @@ function shareTrack(a: Run, b: Run): boolean {
     && Math.min(a.hi, b.hi) - Math.max(a.lo, b.lo) > 1
 }
 
-/** Track offsets for the movable routes of a group, in stable id order. */
-function offsetsOf(members: ReadonlyArray<{ id: string; movable: boolean }>): Map<string, number> {
-  const offsets = new Map<string, number>()
-  const movable = members.filter(m => m.movable).map(m => m.id).sort()
-  const fixed = members.some(m => !m.movable)
-  movable.forEach((id, k) => {
-    offsets.set(id, trackSlot(k, movable.length, fixed) * TRACK_SPACING)
-  })
-  return offsets
-}
-
-/** Slot of the k-th movable route: alternating around a fixed route, otherwise centered on the original track. */
-function trackSlot(k: number, count: number, aroundFixed: boolean): number {
-  if (!aroundFixed) {
-    return k - (count - 1) / 2
+/**
+ * Negative when the route of run `a` belongs above or left of the route of run `b`. Routes turning up or
+ * left come first. Of two turning the same way the one that leaves the group first runs on the outside:
+ * compared by where they turn when both turn at the same end of the group, otherwise the shorter one.
+ */
+function compareRuns(a: Run, b: Run): number {
+  if (a.turn !== b.turn) {
+    return a.turn - b.turn
   }
-  return k % 2 === 0 ? k / 2 + 1 : -(k + 1) / 2
+  const s = Math.sign(a.turn)
+  const byLength = -s * ((a.hi - a.lo) - (b.hi - b.lo))
+  switch (true) {
+    case a.turnsAtHi && b.turnsAtHi && !a.turnsAtLo && !b.turnsAtLo:
+      return -s * (a.hi - b.hi) || byLength
+    case a.turnsAtLo && b.turnsAtLo && !a.turnsAtHi && !b.turnsAtHi:
+      return s * (a.lo - b.lo) || byLength
+    default:
+      return byLength
+  }
 }
 
-/** Routes sharing a track with this run, following transitive overlaps so every route computes the same group. */
+/**
+ * Track offsets for the movable routes of a group: around a fixed route, otherwise centered on the
+ * original track. The tracks are ordered so that routes do not cross where they leave the group: a
+ * route turning up or left runs above or left of one turning down or right, and of two turning the
+ * same way the one that turns first runs on the outside. Ties keep a stable id order.
+ */
+function offsetsOf(members: ReadonlyArray<Member>): Map<string, number> {
+  // every route of the group must compute the same order, and the comparison is not transitive across
+  // routes that turn at different ends, so it always starts from the id order
+  const sorted = [...members]
+    .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+    .sort((a, b) => compareRuns(a.run, b.run))
+  const fixed = sorted.find(m => !m.movable)
+  const order = sorted.filter(m => m.movable || m === fixed)
+  // shortcut: routes that turn the same way all sit on one side of a fixed route, so a short node side
+  // runs out of room sooner; space the tracks closer when that shows up
+  const origin = fixed ? order.indexOf(fixed) : (order.length - 1) / 2
+  return new Map(order.map((m, k) => [m.id, (k - origin) * TRACK_SPACING]))
+}
+
+/**
+ * Routes sharing a track with this run, following transitive overlaps so every route computes the
+ * same group. A route with several runs in the group is placed by its first one along the track.
+ */
 function trackMembers(
-  own: { id: string; run: Run },
-  others: ReadonlyArray<{ id: string; movable: boolean; runs: Run[] }>,
-): Array<{ id: string; movable: boolean }> {
-  const members = new Map<string, boolean>([[own.id, true]])
+  own: Member,
+  routes: ReadonlyArray<{ id: string; movable: boolean; runs: Run[] }>,
+): Member[] {
+  const members = new Map<string, Member>([[own.id, own]])
   const queue: Run[] = [own.run]
-  const seen = new Set<Run>([own.run])
+  const seen = new Set<Run>(queue)
   while (queue.length > 0) {
     const run = queue.shift()!
-    for (const other of others) {
-      for (const candidate of other.runs) {
-        if (!seen.has(candidate) && shareTrack(run, candidate)) {
-          seen.add(candidate)
-          queue.push(candidate)
-          members.set(other.id, other.movable)
+    for (const { id, movable, runs } of routes) {
+      for (const candidate of runs) {
+        if (seen.has(candidate) || !shareTrack(run, candidate)) {
+          continue
+        }
+        seen.add(candidate)
+        queue.push(candidate)
+        const member = members.get(id)
+        if (!member || (candidate.lo - member.run.lo || candidate.hi - member.run.hi) < 0) {
+          members.set(id, { id, movable, run: candidate })
         }
       }
     }
   }
-  return [...members].map(([id, movable]) => ({ id, movable }))
+  return [...members.values()]
 }
 
 function clampToSide(offset: number, run: Run, end: XYPoint, box: BBox): number {
@@ -128,13 +176,15 @@ export function keepOwnTrack(route: TrackRoute, others: ReadonlyArray<TrackRoute
     return [...route.points]
   }
   const runs = runsOf(route.points)
-  const otherRuns = others
-    .filter(o => o.id !== route.id)
-    .map(o => ({ id: o.id, movable: o.movable, runs: runsOf(o.points) }))
+  // the route's own runs take part too: its other runs on the track belong to the same group
+  const routes = [
+    { id: route.id, movable: true, runs },
+    ...others.filter(o => o.id !== route.id).map(o => ({ id: o.id, movable: o.movable, runs: runsOf(o.points) })),
+  ]
   const dx: number[] = []
   const dy: number[] = []
   for (const run of runs) {
-    const members = trackMembers({ id: route.id, run }, otherRuns)
+    const members = trackMembers({ id: route.id, movable: true, run }, routes)
     if (members.length < 2) {
       continue
     }

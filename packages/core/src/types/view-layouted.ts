@@ -97,6 +97,15 @@ interface BaseLayoutedViewProperties<A extends AnyAux> extends BaseViewPropertie
    * If undefined or null, there is no layout drift or view is auto-layouted
    */
   readonly drifts?: NonEmptyReadonlyArray<LayoutedViewDriftReason> | null
+
+  /**
+   * How the ends of edited relationships attach to their elements under orthogonal routing:
+   * - `corner`: an end follows the control point next to it when that point faces a side of the element
+   * - undefined: an end stays at the middle of a side (layouts saved before `corner` existed)
+   *
+   * Written with a manual layout; not part of the layout hash and causes no layout drift.
+   */
+  readonly edgeEnds?: 'corner'
 }
 
 export interface LayoutedElementView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {

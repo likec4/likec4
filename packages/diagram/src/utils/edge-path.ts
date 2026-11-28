@@ -31,6 +31,18 @@ export type Endpoints<T> = {
 /** The axis of a straight segment: horizontal (`h`) or vertical (`v`). */
 export type Axis = 'h' | 'v'
 
+/** The axis of the straight stretch between two points, level on one axis and apart on the other, or `null`. */
+export function stretchAxis(a: XYPosition, b: XYPosition): Axis | null {
+  switch (true) {
+    case nearlyEqual(a.y, b.y) && !nearlyEqual(a.x, b.x):
+      return 'h'
+    case nearlyEqual(a.x, b.x) && !nearlyEqual(a.y, b.y):
+      return 'v'
+    default:
+      return null
+  }
+}
+
 type EdgeEndpoints = Endpoints<EdgeEnd>
 
 /** Endpoints in drawing order, reversed for `dir: 'back'`. */
@@ -55,6 +67,9 @@ const catmullRom = d3line<XYPosition>()
 const ORTHO_NODE_MARGIN = 2
 const ORTHO_CORNER_RADIUS = 8
 const MIN_ROUNDED_RADIUS = 1
+
+/** How far an edge end stays from the ends of a node side, in diagram units. */
+export const END_INSET = 8
 
 /**
  * Collects straight segments, merging collinear pieces only when they share the same endpoint object,
@@ -187,13 +202,67 @@ export function orthoPolyline(
   return { points, insertAt }
 }
 
-function orthoRoute(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): XYPosition[] {
-  const { points } = orthoPolyline(anchors, from.center, to.center)
+/**
+ * The point on the center line of the node level with a corner that faces one of its sides, or `null`.
+ * A corner faces a side when it lies outside the node and at least `END_INSET` from both ends of that
+ * side. A corner level with the center within the tolerance of the polyline gives `null` too.
+ */
+function facingAnchor(corner: XYPosition, center: XYPosition, node: BBox): XYPosition | null {
+  const alongX = corner.x >= node.x + END_INSET && corner.x <= node.x + node.width - END_INSET
+  const alongY = corner.y >= node.y + END_INSET && corner.y <= node.y + node.height - END_INSET
+  switch (true) {
+    case alongY && (corner.x < node.x || corner.x > node.x + node.width):
+      return nearlyEqual(corner.y, center.y) ? null : { x: center.x, y: corner.y }
+    case alongX && (corner.y < node.y || corner.y > node.y + node.height):
+      return nearlyEqual(corner.x, center.x) ? null : { x: corner.x, y: center.y }
+    default:
+      return null
+  }
+}
+
+/**
+ * Orthogonal polyline of an edited edge, before clipping at the nodes: {@link orthoPolyline} from the
+ * node centers, with each end moved level with the corner next to it when that corner faces a side of
+ * the node. Everything between the first and the last corner stays as it is.
+ */
+export function editedOrthoPolyline(
+  controlPoints: ReadonlyArray<XYPosition>,
+  from: EdgeEnd,
+  to: EdgeEnd,
+): { points: XYPosition[]; insertAt: number[] } {
+  const { points, insertAt } = orthoPolyline(controlPoints, from.center, to.center)
+  if (controlPoints.length === 0) {
+    return { points, insertAt }
+  }
+  const last = insertAt.findLastIndex(i => i < controlPoints.length)
+  const entry = facingAnchor(points[last]!, points.at(-1)!, to.node)
+  if (entry) {
+    points.splice(last + 1, points.length, entry)
+    insertAt.splice(last + 1, insertAt.length, controlPoints.length)
+  }
+  const first = insertAt.findLastIndex(i => i === 0)
+  const exit = facingAnchor(points[first]!, points[0]!, from.node)
+  if (exit) {
+    points.splice(0, first, exit)
+    insertAt.splice(0, first, 0)
+  }
+  return { points, insertAt }
+}
+
+function clipEnds(points: XYPosition[], from: EdgeEnd, to: EdgeEnd): XYPosition[] {
   clipStart(points, from.node, ORTHO_NODE_MARGIN)
   points.reverse()
   clipStart(points, to.node, ORTHO_NODE_MARGIN)
   points.reverse()
   return points
+}
+
+function orthoRoute(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): XYPosition[] {
+  return clipEnds(orthoPolyline(anchors, from.center, to.center).points, from, to)
+}
+
+function editedOrthoRoute(controlPoints: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): XYPosition[] {
+  return clipEnds(editedOrthoPolyline(controlPoints, from, to).points, from, to)
 }
 
 export function drawnFromRoute(points: XYPosition[]): DrawnEdge {
@@ -239,7 +308,7 @@ export function editedEdgeRoute({
   if (isEqualRects(from.node, to.node)) {
     return null
   }
-  return { points: orthoRoute(controlPoints, from, to), bounds: { from: from.node, to: to.node } }
+  return { points: editedOrthoRoute(controlPoints, from, to), bounds: { from: from.node, to: to.node } }
 }
 
 /**
@@ -275,7 +344,7 @@ export function editedEdgePath({
   if (routing === 'ortho') {
     return isEqualRects(from.node, to.node)
       ? orthoSelfLoopPath(controlPoints, from.node)
-      : orthoPath(controlPoints, from, to)
+      : drawnFromRoute(editedOrthoRoute(controlPoints, from, to))
   }
   const points: XYPosition[] = [
     from.center,

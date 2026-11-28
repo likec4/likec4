@@ -33,7 +33,7 @@ import { getViewFolderPath } from '@likec4/core/model'
 import { isString } from '@likec4/core/utils'
 import { type NodeChange, type Rect, getNodeDimensions, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy, mapToObj, omit } from 'remeda'
+import { hasAtLeast, mapToObj, omit } from 'remeda'
 import {
   type ActorSystem,
   assertEvent,

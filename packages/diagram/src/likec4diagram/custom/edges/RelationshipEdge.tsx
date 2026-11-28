@@ -31,8 +31,8 @@ import { selectLabelRoutes } from '../../../hooks/useEdgeTracks'
 import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
-import { snapCorner } from '../../../utils/edge-corners'
-import { edgeEndCenters } from '../../../utils/edge-endpoints'
+import { dragCorner } from '../../../utils/edge-corners'
+import { edgeEndsFromNodes } from '../../../utils/edge-endpoints'
 import { edgeLabelPosition } from '../../../utils/edge-label'
 import {
   isSamePoint,
@@ -444,11 +444,15 @@ function ControlPoints({
 
     let animationFrameId: number | null = null
 
-    let cp = [...controlPointsRef.current]
+    // Every frame starts from the corners at the press, so a corner the drag passes does not start to follow.
+    const pressedControlPoints = [...controlPointsRef.current]
+    let cp = pressedControlPoints
+    let alone = false
 
     const onPointerMove = (e: PointerEvent) => {
       clientPoint.x = e.clientX
       clientPoint.y = e.clientY
+      alone = e.altKey
 
       const isDragging = !isSamePoint(initialPoint, clientPoint)
 
@@ -462,14 +466,14 @@ function ControlPoints({
         animationFrameId ??= requestAnimationFrame(() => {
           animationFrameId = null
           const { x, y } = xyflow.screenToFlowPosition(clientPoint, { snapToGrid: false })
-          cp = [...cp]
-          cp[index] = snapCorner({
+          cp = dragCorner({
             index,
             point: { x: Math.trunc(x), y: Math.trunc(y) },
-            controlPoints: cp,
-            ...edgeEndCenters(xyflowStore.getState().nodeLookup, edgeProps),
+            controlPoints: pressedControlPoints,
+            ...edgeEndsFromNodes(xyflowStore.getState().nodeLookup, edgeProps),
             dir: edgeProps.data.dir,
             routing,
+            alone,
           })
           onMove(cp)
         })

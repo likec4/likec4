@@ -108,6 +108,15 @@ describe('applyCachedLayout', () => {
     expect(result[_stage]).toBe('layouted')
   })
 
+  it('should preserve edgeEnds from cached view', () => {
+    const { layouted } = prepareFixtures()
+    const current = toComputedView(layouted)
+
+    const result = applyCachedLayout(current, { ...layouted, edgeEnds: 'corner' })
+
+    expect(result.edgeEnds).toBe('corner')
+  })
+
   describe('view-level metadata', () => {
     it('should update view title from current', () => {
       const { layouted } = prepareFixtures()

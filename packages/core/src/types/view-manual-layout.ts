@@ -58,6 +58,8 @@ type ViewManualLayoutSnapshotPerType = Simplify<
     readonly autoLayout: ViewAutoLayout
     // Routing when the snapshot was saved; rendering uses the view's current routing
     readonly routing?: EdgeRouting
+    // Set when the ends of edited relationships follow their corners, see `edgeEnds` of the layouted view
+    readonly edgeEnds?: 'corner'
   }
   & ViewWithNotation
   & (

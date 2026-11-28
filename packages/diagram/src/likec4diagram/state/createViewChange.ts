@@ -4,6 +4,7 @@ import { calcViewLayoutHash } from '@likec4/core/compute-view'
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
+import { viewRouting } from '../../utils/view-routing'
 
 function omitFields<T extends { drifts?: any; diffBefore?: any; diffStatus?: any }>({
   drifts: _drifts,
@@ -93,6 +94,8 @@ export function createViewChange(
 
   const snapshot = calcViewLayoutHash<LayoutedView>({
     ...view,
+    // a layout saved without the record under spline routing must still be converted under ortho later
+    ...(viewRouting(view) === 'ortho' && { edgeEnds: 'corner' }),
     _stage: 'layouted',
     _layout: 'manual',
     bounds: calcViewBounds({ nodes, edges }),

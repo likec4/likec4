@@ -73,33 +73,41 @@ const view = {
   bounds: { x: 0, y: 0, width: 500, height: 100 },
 } satisfies LayoutedElementView
 
+/** The layout the editor saves for the view, with some nodes moved to the given positions. */
+function save(view: LayoutedElementView, moved: Record<string, { x: number; y: number }> = {}) {
+  const { xynodes, xyedges } = diagramToXY({ view, currentViewId: undefined, where: null })
+  const nodeLookup = new Map(xynodes.map(node => [
+    node.id,
+    {
+      ...node,
+      measured: { width: node.initialWidth, height: node.initialHeight },
+      internals: { positionAbsolute: moved[node.id] ?? node.position },
+    } as InternalNode<typeof node>,
+  ]))
+  const xystore = {
+    getState: () => ({ nodeLookup, edgeLookup: new Map(xyedges.map(edge => [edge.id, edge])) }),
+  } as unknown as XYStoreApi
+  return createViewChange({ view, xynodes, xyedges, xystore }).layout
+}
+
 describe('createViewChange', () => {
   it('does not persist generated routing as authored control points after a node moves', () => {
-    const { xynodes, xyedges } = diagramToXY({
-      view,
-      currentViewId: undefined,
-      where: null,
+    const layout = save(view, { [source.id]: { x: 100, y: 0 } })
+
+    expect(layout.edges[0]?.controlPoints).toBeNull()
+  })
+
+  describe('edge ends', () => {
+    it('records that ends follow the corners when saved with orthogonal routing', () => {
+      expect(save({ ...view, routing: 'ortho' }).edgeEnds).toBe('corner')
     })
-    const nodeLookup = new Map(xynodes.map(node => {
-      const positionAbsolute = node.id === source.id ? { x: 100, y: 0 } : node.position
-      return [
-        node.id,
-        {
-          ...node,
-          measured: { width: node.initialWidth, height: node.initialHeight },
-          internals: { positionAbsolute },
-        } as InternalNode<typeof node>,
-      ]
-    }))
-    const xystore = {
-      getState: () => ({
-        nodeLookup,
-        edgeLookup: new Map(xyedges.map(edge => [edge.id, edge])),
-      }),
-    } as unknown as XYStoreApi
 
-    const change = createViewChange({ view, xynodes, xyedges, xystore })
+    it('keeps the record when a recorded layout is saved with spline routing', () => {
+      expect(save({ ...view, routing: 'spline', edgeEnds: 'corner' }).edgeEnds).toBe('corner')
+    })
 
-    expect(change.layout.edges[0]?.controlPoints).toBeNull()
+    it('adds no record when a layout without it is saved with spline routing', () => {
+      expect(save({ ...view, routing: 'spline' })).not.toHaveProperty('edgeEnds')
+    })
   })
 })
