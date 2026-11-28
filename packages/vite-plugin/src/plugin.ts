@@ -23,7 +23,7 @@ import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enableOpenProjectInEditor } from './openProjectInEditor'
-import { reloadModuleInEnvironments } from './reloadModule'
+import { codeHash, codeHashMeta, hasOutdatedModule, isModuleImported, reloadModuleInEnvironments } from './reloadModule'
 import { enablePluginRPC } from './rpc'
 import { firstValidationError } from './validationError'
 import {
@@ -203,11 +203,6 @@ export function LikeC4VitePlugin({
   }
 
   /**
-   * Dev server only: code served to the client, by resolved id.
-   * Used to skip HMR updates when the generated code did not change.
-   */
-  const servedCode = new Map<string, string>()
-  /**
    * Dev server only: results generated while checking for changes,
    * served by the next `load` instead of generating again.
    */
@@ -308,7 +303,13 @@ export function LikeC4VitePlugin({
           return null
         }
         if (rpcEnabled) {
-          servedCode.set(id, codeOf(result))
+          // The hash of the served code is kept in the module graph of the environment,
+          // HMR skips environments that already have the same code
+          const code = codeOf(result)
+          return {
+            ...(typeof result === 'string' ? { code } : result),
+            meta: codeHashMeta(code),
+          }
         }
         return result
       },
@@ -342,14 +343,10 @@ export function LikeC4VitePlugin({
 
           /**
            * Reloads the module in every environment that imports it,
-           * but only if its generated code has changed
+           * but only where the served code differs from the generated one
            */
           const reloadModule = async (id: string): Promise<boolean> => {
-            const isImported = Object.values(server.environments).some(env => {
-              const md = env.moduleGraph.getModuleById(id)
-              return !!md && md.importers.size > 0
-            })
-            if (!isImported) {
+            if (!isModuleImported(server, id)) {
               return false
             }
             try {
@@ -357,14 +354,15 @@ export function LikeC4VitePlugin({
               if (!result) {
                 return false
               }
-              if (servedCode.get(id) === codeOf(result)) {
+              const hash = codeHash(codeOf(result))
+              if (!hasOutdatedModule(server, id, hash)) {
                 // drop the result of a change that was reverted before the module was loaded
                 pendingResults.delete(id)
                 logger.trace(k.dim('unchanged ') + id.slice(1))
                 return false
               }
               pendingResults.set(id, result)
-              return await reloadModuleInEnvironments(server, id)
+              return await reloadModuleInEnvironments(server, id, hash)
             } catch (err) {
               pendingResults.delete(id)
               logger.error(loggable(err))
