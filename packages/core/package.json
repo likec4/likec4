@@ -135,7 +135,7 @@
     "graphology-dag": "catalog:",
     "graphology-types": "catalog:",
     "mdast-util-from-markdown": "^2.1.0",
-    "mdast-util-to-hast": "^13.2.1",
+    "mdast-util-to-hast": "^13.2.2",
     "mdast-util-to-string": "^4.0.0",
     "micromark-util-decode-string": "^2.0.1",
     "micromark-util-types": "^2.0.3",
