@@ -6,8 +6,8 @@ import { join, resolve } from 'node:path'
 import { ConfigFilenames } from '@likec4/config'
 import { loadConfig } from '@likec4/config/node'
 import { ProjectId } from '@likec4/core/types'
-import { fromWorkspace } from '@likec4/language-services/node'
 import { logger } from '../logger'
+import { useCli } from './context'
 
 /**
  * Options of {@link initLikeC4}: common CLI arguments and other options of `fromWorkspace`
@@ -32,7 +32,7 @@ export type InitLikeC4Options = Omit<FromWorkspaceOptions, 'includeProjects' | '
  * Does not watch the workspace, unless `watch` is set.
  */
 export async function initLikeC4({ path, project, useDotBin, ...options }: InitLikeC4Options): Promise<LikeC4Instance> {
-  return await fromWorkspace(path, {
+  return await useCli().fromWorkspace(path, {
     watch: false,
     ...options,
     graphviz: useDotBin ? 'binary' : 'wasm',

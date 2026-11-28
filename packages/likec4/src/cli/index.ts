@@ -18,6 +18,7 @@ import pkg from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
 import checkUpdateCmd from './check-update'
 import codegenCmd from './codegen'
+import { createCliContext, setCliContext } from './context'
 import diffCmd from './diff'
 import exportCmd from './export'
 import formatCmd from './format'
@@ -59,6 +60,7 @@ function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLe
  * Configures logger from --verbose, then parses yargs and runs the handler.
  */
 async function main() {
+  setCliContext(createCliContext())
   const y = pipe(
     yargs(hideBin(argv)),
     serveCmd,

@@ -1,18 +1,16 @@
+import type { LikeC4 } from '@likec4/language-services/node'
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useCli } from '../../context'
 import { GENERATED_MARKER, runExportMarkdown } from './handler'
-
-const fromWorkspace = vi.hoisted(() => vi.fn<(path: string, opts: unknown) => Promise<unknown>>())
 
 vi.mock('@likec4/generators', () => ({
   generateMarkdown: (model: { projectId: string }, options?: { description?: string }) =>
     `# ${model.projectId}${options?.description ? '\n\n' + options.description : ''}\n`,
 }))
-
-vi.mock('@likec4/language-services/node', () => ({ fromWorkspace }))
 
 vi.mock('node:fs/promises', async importOriginal => {
   const actual = await importOriginal<typeof import('node:fs/promises')>()
@@ -40,12 +38,14 @@ function mockWorkspace(projects: ProjectSpec[]) {
     return toProject(resolved)
   }
   // Emulates `includeProjects` of the real `fromWorkspace`
-  fromWorkspace.mockImplementation(async (_path, opts) => {
-    const include = (opts as { includeProjects?: string } | undefined)?.includeProjects
+  vi.spyOn(useCli(), 'fromWorkspace').mockImplementation(async (_path, opts) => {
+    // the handler passes a single project id
+    const include = opts?.includeProjects as string | undefined
     if (include && !projects.some(p => p.id === include)) {
       throw new Error(`Unknown projects in includeProjects: [${include}]`)
     }
-    return makeWorkspace(include ? [include] : projects.map(p => p.id))
+    // a partial fake, enough for the handler
+    return makeWorkspace(include ? [include] : projects.map(p => p.id)) as unknown as LikeC4
   })
   const makeWorkspace = (ids: string[]) => ({
     projects: () => ids,
