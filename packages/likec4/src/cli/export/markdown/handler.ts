@@ -58,7 +58,10 @@ export async function runExportMarkdown(args: MarkdownExportArgs, logger: ViteLo
   const timer = startTimer(logger)
   await using likec4 = await initLikeC4({ path: args.path, project: args.project, useDotBin: args.useDot })
 
-  const projects = likec4.projects().map(id => likec4.languageServices.project(id))
+  // Take the projects with their own folders: resolving the ids again turns `default`
+  // into the only named project, and its README would be written twice
+  const included = new Set<string>(likec4.projects())
+  const projects = likec4.languageServices.projects().filter(p => included.has(p.id))
   if (!args.project) {
     logger.info(`${k.dim('workspace:')} Found ${projects.length} projects`)
   }

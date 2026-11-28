@@ -48,7 +48,7 @@ export async function initLikeC4({ path, project, useDotBin, ...options }: InitL
  * The project id of a folder is the name from its config file.
  * A bare name (like `alpha`) of a folder without config is taken as a project id.
  *
- * @returns project id, or `undefined` if no project is specified (or it is the workspace itself)
+ * @returns project id, or `undefined` if no project is specified (or it is the workspace folder without project config)
  * @throws if the folder, given as a path, has no project config
  */
 export async function resolveProjectArg(
@@ -59,9 +59,6 @@ export async function resolveProjectArg(
     return undefined
   }
   const projectFolder = resolve(project)
-  if (projectFolder === resolve(workspacePath)) {
-    return undefined
-  }
   if (!existsSync(projectFolder) || !statSync(projectFolder).isDirectory()) {
     return project
   }
@@ -69,6 +66,10 @@ export async function resolveProjectArg(
     .map(filename => join(projectFolder, filename))
     .find(filepath => existsSync(filepath))
   if (!configFile) {
+    // The workspace folder without config is not a project, nothing to limit
+    if (projectFolder === resolve(workspacePath)) {
+      return undefined
+    }
     // A bare name can be a project id that matches a folder name
     if (isBareName(project)) {
       return project
