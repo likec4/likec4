@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, it } from 'vitest'
@@ -195,6 +195,39 @@ describe('LikeC4 includeProjects diagnostics', () => {
       await using likec4 = await fromWorkspace(root, { printErrors: false })
       expect(likec4.getErrors({ scope: 'included' })).toEqual(likec4.getErrors())
       expect(likec4.hasErrors({ scope: 'included' })).toBe(true)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('throwIfInvalid ignores errors of excluded projects', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, {
+        printErrors: false,
+        throwIfInvalid: true,
+        includeProjects: 'alpha',
+      })
+      expect(likec4.hasErrors()).toBe(true)
+      await expect(fromWorkspace(root, {
+        printErrors: false,
+        throwIfInvalid: true,
+        includeProjects: 'beta',
+      })).rejects.toThrow(/Invalid model/)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('scope "included" skips included projects that are no longer registered', async ({ expect }) => {
+    const root = createWorkspaceWithErrors(validShared)
+    try {
+      await using likec4 = await fromWorkspace(root, { printErrors: false, includeProjects: ['beta', 'alpha'] })
+      unlinkSync(join(root, 'beta', 'likec4.config.json'))
+      await likec4.projectsManager.reloadProjects()
+      expect(likec4.projectsManager.all).not.toContain('beta')
+      expect(() => likec4.getErrors({ scope: 'included' })).not.toThrow()
+      expect(() => likec4.hasErrors({ scope: 'included' })).not.toThrow()
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

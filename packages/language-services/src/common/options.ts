@@ -12,6 +12,7 @@ export interface InitOptions {
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.
    * Disable this behavior by setting this option to false.
+   * With {@link FromWorkspaceOptions.includeProjects}, only errors of the included projects are printed.
    *
    * @default true
    */
@@ -19,6 +20,7 @@ export interface InitOptions {
   /**
    * If true, initialization will return rejected promise with the LikeC4 instance.
    * Use `likec4.getErrors()` to get the errors.
+   * With {@link FromWorkspaceOptions.includeProjects}, only errors of the included projects reject.
    * @default false
    */
   throwIfInvalid?: boolean

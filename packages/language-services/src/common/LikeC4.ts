@@ -431,7 +431,10 @@ Please specify a project folder`)
       return docs
     }
     const projectsManager = this.projectsManager
-    return docs.filter(doc => included.some(projectId => projectsManager.isIncluded(projectId, doc)))
+    // skip projects that are no longer registered (e.g. removed config)
+    const registered = new Set<ProjectId>(projectsManager.all)
+    const projectIds = included.filter(id => registered.has(id))
+    return docs.filter(doc => projectIds.some(projectId => projectsManager.isIncluded(projectId, doc)))
   }
 
   private collectDiagnostics(
@@ -460,11 +463,13 @@ Please specify a project folder`)
   }
 
   /**
+   * Prints validation errors of all documents in the workspace,
+   * or of the included projects only, see {@link LikeC4DiagnosticsOptions.scope}
    * @returns true if there are errors
    */
-  printErrors(): boolean {
+  printErrors(options?: LikeC4DiagnosticsOptions): boolean {
     let hasErrors = false
-    for (const doc of this.LangiumDocuments.userDocuments) {
+    for (const doc of this.diagnosticDocuments(options)) {
       const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
       if (!hasAtLeast(errors, 1)) {
         continue
