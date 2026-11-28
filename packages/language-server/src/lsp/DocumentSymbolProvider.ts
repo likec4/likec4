@@ -18,6 +18,7 @@ import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
 import { ast, isLikeC4LangiumDocument } from '../ast'
 import { logger as rootLogger } from '../logger'
 import { readStrictFqn } from '../utils/elementRef'
+import { isDependencyUri } from '../workspace/dependency-uri'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider
@@ -39,7 +40,12 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     _params: DocumentSymbolParams,
     cancelToken: CancellationToken = CancellationToken.None,
   ): Promise<DocumentSymbol[]> {
-    if (!isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
+    // Outline is provided for read-only documents of external projects (`likec4-dep` scheme) as well,
+    // ProjectsManager is asked only about workspace documents
+    if (
+      !isLikeC4LangiumDocument(doc)
+      || (!isDependencyUri(doc.uri) && this.services.shared.workspace.ProjectsManager.isExcluded(doc))
+    ) {
       return []
     }
     const {

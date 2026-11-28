@@ -48,6 +48,7 @@ import { serverLogger } from '../../logger'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
 import { type IsInvalidFn, type IsValidFn, checksFromDiagnostics } from '../../validation'
+import { documentSourceUri } from '../../workspace/dependency-uri'
 
 const logger = serverLogger.getChild('parser')
 
@@ -543,7 +544,8 @@ export class BaseParser {
         return this.parseImageAlias(value) as c4.IconUrl
       }
       case value && isRelative(value): {
-        return joinRelativeURL(this.doc.uri.toString(), '../', value) as c4.IconUrl
+        // Documents of local dependencies (likec4-dep scheme) resolve against their real file
+        return joinRelativeURL(documentSourceUri(this.doc.uri).toString(), '../', value) as c4.IconUrl
       }
       case value && hasLeadingSlash(value): {
         return joinURL(this.project.folderUri.toString(), value) as c4.IconUrl

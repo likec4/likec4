@@ -15,6 +15,7 @@ export type * from './common-exports'
 
 export {
   createLanguageServices,
+  documentSourceUri,
   NoFileSystem,
   NoFileSystemWatcher,
   NoLikeC4ManualLayouts,

@@ -10,7 +10,7 @@ const data: ElementShapeProps['data'] = { shape: 'cylinder', width: 320, height:
  */
 const specCustomization = (...args: Parameters<typeof customizeComponents>) => {
   return createCustomization({
-    components: customizeComponents(...args)
+    components: customizeComponents(...args),
   })
 }
 

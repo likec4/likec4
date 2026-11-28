@@ -76,9 +76,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
 
       if (ast.isImported(container)) {
-        // Project ID here is the project we import from, not the project of the document
-        const projectId = projectIdFrom(container)
-        return scope(this.fqnIndex.rootElements(projectId))
+        return this.scopeForImported(container)
       }
 
       // Fallback to project scope for other types
@@ -90,6 +88,21 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       logWarnError(e)
       return EMPTY_SCOPE
     }
+  }
+
+  /**
+   * Scope for `import { … } from 'name'`: root elements of the project the name resolves to
+   * (via `dependencies` of the consumer project, or by the workspace project name).
+   */
+  protected scopeForImported(container: ast.Imported): Scope {
+    // projectIdFrom returns the import name for imported nodes, and the consumer project for documents
+    const importName = projectIdFrom(container)
+    const consumer = projectIdFrom(getDocument(container))
+    const resolved = this.services.shared.workspace.DependencyResolver.resolve(consumer, importName)
+    if (!resolved) {
+      return EMPTY_SCOPE
+    }
+    return scope(this.fqnIndex.rootElements(resolved.projectId))
   }
 
   /**
@@ -128,7 +141,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
    * A document included by several projects can be extended in any of them, so the referencing project wins.
    */
   protected descendantsProjectOf(element: AstNode, projectId: ProjectId): ProjectId {
-    return this.services.shared.workspace.ProjectsManager.isIncluded(projectId, getDocument(element))
+    return this.services.shared.workspace.ProjectsLookup.isIncluded(projectId, getDocument(element))
       ? projectId
       : projectIdFrom(element)
   }

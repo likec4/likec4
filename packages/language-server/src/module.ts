@@ -17,7 +17,7 @@ import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 import { type GraphvizPort, QueueGraphvizLayoter } from '@likec4/layouts'
 import { loggable } from '@likec4/log'
 import { DocumentState, inject, WorkspaceCache } from 'langium'
-import { createDefaultModule, createDefaultSharedModule } from 'langium/lsp'
+import { createDefaultModule, createDefaultSharedModule, DefaultTextDocumentContentProvider } from 'langium/lsp'
 import { LikeC4DocumentationProvider } from './documentation'
 import { NoFileSystem, NoLikeC4ManualLayouts, NoopFileSystemProvider } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
@@ -68,11 +68,15 @@ import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
   type Unstorage,
   type UnstorageModuleContext,
+  DEPENDENCY_URI_SCHEME,
+  DependencyResolver,
+  ExternalProjects,
   IndexManager,
   LangiumDocuments,
   LikeC4DocumentBuilder,
   LikeC4WorkspaceManager,
   MemoryUnstorage,
+  ProjectsLookup,
   ProjectsManager,
 } from './workspace'
 
@@ -93,6 +97,18 @@ interface LikeC4AddedSharedServices {
     // WorkspaceCache on Validated state
     Cache: WorkspaceCache<string, any>
     ProjectsManager: ProjectsManager
+    /**
+     * Facade for document ownership and inclusion (workspace and external projects)
+     */
+    ProjectsLookup: ProjectsLookup
+    /**
+     * Registry of external project instances
+     */
+    ExternalProjects: ExternalProjects
+    /**
+     * Resolves import names (`from 'name'`) to projects
+     */
+    DependencyResolver: DependencyResolver
     IndexManager: IndexManager
     LangiumDocuments: LangiumDocuments
     WorkspaceManager: LikeC4WorkspaceManager
@@ -138,6 +154,8 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       DocumentUpdateHandler: services => new LikeC4DocumentUpdateHandler(services),
       NodeKindProvider: services => new NodeKindProvider(services),
       WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
+      // Serves documents of external projects (in memory) to the client (`workspace/textDocumentContent`)
+      TextDocumentContentProvider: services => new DefaultTextDocumentContentProvider(services, DEPENDENCY_URI_SCHEME),
       ExecuteCommandHandler: services => new LikeC4ExecuteCommandHandler(services),
     },
     workspace: {
@@ -145,6 +163,9 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       IndexManager: services => new IndexManager(services),
       LangiumDocuments: services => new LangiumDocuments(services),
       ProjectsManager: services => new ProjectsManager(services, context.workspaceSettings),
+      ProjectsLookup: services => new ProjectsLookup(services),
+      ExternalProjects: services => new ExternalProjects(services),
+      DependencyResolver: services => new DependencyResolver(services),
       WorkspaceManager: services => new LikeC4WorkspaceManager(services),
       DocumentBuilder: services => new LikeC4DocumentBuilder(services),
       FileSystemProvider: services => context.fileSystemProvider(services),

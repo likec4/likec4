@@ -28,6 +28,11 @@ export {
 } from './schema'
 
 export type {
+  DependenciesConfig,
+  DependencyPath,
+} from './schema.dependencies'
+
+export type {
   IncludeConfig,
 } from './schema.include'
 

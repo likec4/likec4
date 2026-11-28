@@ -1,6 +1,7 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { LayoutedView } from '@likec4/core'
 import type { Disposable, FileSystemNode, URI } from 'langium'
+import type { LikeC4SharedServices } from '../module'
 import type {
   FileNode,
   FileSystemModuleContext,
@@ -13,8 +14,25 @@ import type {
 import { LibIcons } from '../generated/icons'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger } from '../logger'
+import { isDependencyUri } from '../workspace/dependency-uri'
 
+/**
+ * File system provider without a file system.
+ * Serves only in-memory documents: the built-in library and documents of external projects (`likec4-dep` scheme).
+ */
 export class NoopFileSystemProvider implements FileSystemProvider {
+  constructor(private services?: LikeC4SharedServices) {}
+
+  /**
+   * Text of a document of an external project, from memory
+   */
+  private readDependency(uri: URI): string | undefined {
+    if (!isDependencyUri(uri)) {
+      return undefined
+    }
+    return this.services?.workspace.ExternalProjects.readFile(uri)
+  }
+
   scanProjectFiles(): Promise<FileNode[]> {
     return Promise.resolve([])
   }
@@ -30,12 +48,12 @@ export class NoopFileSystemProvider implements FileSystemProvider {
     throw new Error('No file system is available.')
   }
 
-  exists(): Promise<boolean> {
-    return Promise.resolve(false)
+  exists(uri: URI): Promise<boolean> {
+    return Promise.resolve(this.existsSync(uri))
   }
 
-  existsSync(): boolean {
-    return false
+  existsSync(uri: URI): boolean {
+    return this.readDependency(uri) !== undefined
   }
 
   readBinary(uri: URI): Promise<Uint8Array> {
@@ -50,6 +68,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
     if (isLikeC4Builtin(uri)) {
       return LibIcons
     }
+    const dependency = this.readDependency(uri)
+    if (dependency !== undefined) {
+      return dependency
+    }
     throw new Error(`No file system is available (${uri.toString()})`)
   }
 
@@ -60,6 +82,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
   readFile(uri: URI): Promise<string> {
     if (isLikeC4Builtin(uri)) {
       return Promise.resolve(LibIcons)
+    }
+    const dependency = this.readDependency(uri)
+    if (dependency !== undefined) {
+      return Promise.resolve(dependency)
     }
     throw new Error(`No file system is available (${uri.toString()})`)
   }
@@ -138,7 +164,7 @@ export const NoFileSystemWatcher: FileSystemWatcherModuleContext = {
   fileSystemWatcher: () => new NoopFileSystemWatcher(),
 }
 export const NoFileSystem: FileSystemModuleContext = {
-  fileSystemProvider: () => new NoopFileSystemProvider(),
+  fileSystemProvider: services => new NoopFileSystemProvider(services),
   ...NoFileSystemWatcher,
 }
 export const NoLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {

@@ -9,6 +9,8 @@ const useDocumentSelector = defineService(() => {
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' },
       { language: languageId, scheme: 'vscode-remote' },
+      // Read-only documents of dependencies outside the workspace, served by the language server
+      { language: languageId, scheme: 'likec4-dep' },
     ] satisfies TextDocumentFilter[],
   )
   return computed(() => selector.value)

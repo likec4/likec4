@@ -17,6 +17,10 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     if (!isLikeC4LangiumDocument(doc)) {
       return
     }
+    // Views of external projects (dependencies) are not built: nothing to preview
+    if (this.services.shared.workspace.ProjectsLookup.isExternalDocument(doc)) {
+      return []
+    }
     const views = doc.parseResult.value.views.flatMap(v => v.views)
     if (views.length === 0) {
       return []

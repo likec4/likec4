@@ -14,6 +14,7 @@ import {
   isLikeC4ViewModel,
   isRelationModel,
 } from '@likec4/core/model'
+import { documentSourceUri } from '@likec4/language-server'
 import { UriUtils } from 'langium'
 import k from 'tinyrainbow'
 import { URI } from 'vscode-uri'
@@ -102,7 +103,8 @@ async function runCustomGenerator({
             logger.error(`Cannot locate ${target.id}`, { target })
             throw new Error(`Cannot locate ${target.id}`)
           }
-          const document = URI.parse(location.uri)
+          // Elements imported from a local dependency are located in its real file (not the likec4-dep document)
+          const document = documentSourceUri(URI.parse(location.uri))
           return {
             range: location.range,
             document,

@@ -15,6 +15,7 @@ import {
 import { type DocumentLink, type DocumentLinkParams, CancellationToken } from 'vscode-languageserver'
 import { ast, isLikeC4UserDocument, resolveDescriptionFile } from '../ast'
 import { logWarnError } from '../logger'
+import { documentSourceUri, isDependencyUri } from '../workspace/dependency-uri'
 
 export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   constructor(private services: LikeC4Services) {
@@ -26,7 +27,12 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     _params: DocumentLinkParams,
     cancelToken: CancellationToken = CancellationToken.None,
   ): Promise<DocumentLink[]> {
-    if (!isLikeC4UserDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
+    // Documents of external projects (`likec4-dep` scheme) are not validated, but their links are provided
+    // (relative links resolve against the real file of a local dependency)
+    if (
+      !isLikeC4UserDocument(doc)
+      || (!isDependencyUri(doc.uri) && this.services.shared.workspace.ProjectsLookup.isExcluded(doc))
+    ) {
       return Promise.resolve([])
     }
     const links: DocumentLink[] = []
@@ -62,10 +68,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return link
     }
     if (isRelative(link)) {
-      return joinRelativeURL(UriUtils.dirname(doc.uri).toString(), link)
+      // Documents of local dependencies (likec4-dep scheme) resolve against their real file
+      return joinRelativeURL(UriUtils.dirname(documentSourceUri(doc.uri)).toString(), link)
     }
-    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri.toString()
-    return joinRelativeURL(base, link)
+    const base = this.services.shared.workspace.ProjectsLookup.getProject(doc).folderUri
+    return joinRelativeURL(base.toString(), link)
   }
 
   relativeLink(doc: LangiumDocument, link: string): string | null {
@@ -73,8 +80,8 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return withoutLeadingSlash(link)
     }
     if (isRelative(link)) {
-      const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri.toString()
-      const docURL = new URL(doc.uri.toString())
+      const base = this.services.shared.workspace.ProjectsLookup.getProject(doc).folderUri.toString()
+      const docURL = new URL(documentSourceUri(doc.uri).toString())
       const linkURL = new URL(link, docURL).toString()
       return withoutLeadingSlash(
         withoutBase(linkURL, base),

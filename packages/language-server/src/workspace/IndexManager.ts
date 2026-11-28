@@ -9,7 +9,7 @@ export class IndexManager extends DefaultIndexManager {
   }
 
   override async updateContent(document: LangiumDocument, cancelToken?: CancellationToken): Promise<void> {
-    const projects = this.services.workspace.ProjectsManager
+    const projects = this.services.workspace.ProjectsLookup
     // Ensure the document is assigned to a project
     document.likec4ProjectId = projects.ownerProjectId(document)
     await super.updateContent(document, cancelToken)
@@ -29,7 +29,7 @@ export class IndexManager extends DefaultIndexManager {
     if (changedUris.size === 0 || !document.textDocument.getText().includes('[[')) {
       return false
     }
-    const projects = this.services.workspace.ProjectsManager
+    const projects = this.services.workspace.ProjectsLookup
     const projectId = document.likec4ProjectId ?? projects.ownerProjectId(document)
     for (const uri of changedUris) {
       if (projects.isIncluded(projectId, uri)) {
@@ -40,7 +40,7 @@ export class IndexManager extends DefaultIndexManager {
   }
 
   projectElements(projectId: ProjectId, nodeType?: string, uris?: Set<string>): Stream<AstNodeDescription> {
-    const projects = this.services.workspace.ProjectsManager
+    const projects = this.services.workspace.ProjectsLookup
     let documentUris = stream(this.symbolIndex.keys())
     return documentUris
       .filter(uri => {
