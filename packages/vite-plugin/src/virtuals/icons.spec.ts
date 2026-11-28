@@ -2,9 +2,7 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ReadableAtom } from 'nanostores'
 import { createContext, runInContext } from 'node:vm'
-import { atom } from 'nanostores'
 import { describe, expect, it, vi } from 'vitest'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 import { generateIconRendererCode, iconsModule } from './icons'
